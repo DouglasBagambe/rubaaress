@@ -15,7 +15,7 @@ export function LocationSection() {
             href={findUs.directionsHref}
             className="mt-8 inline-flex min-h-12 w-fit items-center justify-center bg-[var(--school-blue)] px-6 text-sm font-bold text-white hover:bg-[var(--school-blue-dark)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2"
             target="_blank"
-            rel="noreferrer"
+            rel="noopener noreferrer"
           >
             Get Directions
           </Link>

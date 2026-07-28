@@ -11,6 +11,8 @@ import {
   navigation,
   pageIntros,
   galleryAlbums,
+  enrolmentRows,
+  enrolmentTotals,
   schoolStats,
   upcomingEvents,
   utilityLinks,
@@ -18,11 +20,11 @@ import {
 
 test("navigation exposes grouped primary items", () => {
   assert.deepEqual(navigation.map((item) => item.label), [
+    "Home",
     "About",
     "Academics",
     "Admissions",
     "Student Life",
-    "News",
   ]);
 });
 
@@ -74,4 +76,14 @@ test("find us data uses Rubaare location and map URLs", () => {
   assert.match(findUs.address, /Rubaare, Ntungamo District, Uganda/);
   assert.match(findUs.directionsHref, /^https:\/\/www\.google\.com\/maps/);
   assert.match(findUs.mapEmbedSrc, /^https:\/\/www\.google\.com\/maps/);
+});
+
+test("verified enrolment totals are calculated from class rows", () => {
+  assert.equal(enrolmentRows.length, 6);
+  assert.equal(enrolmentTotals.totalFemale, 801);
+  assert.equal(enrolmentTotals.totalMale, 609);
+  assert.equal(enrolmentTotals.totalDay, 341);
+  assert.equal(enrolmentTotals.totalBoarding, 1069);
+  assert.equal(enrolmentTotals.grandTotal, 1410);
+  assert.equal(enrolmentRows.every((row) => row.femaleDay + row.femaleBoarding + row.maleDay + row.maleBoarding === row.total), true);
 });

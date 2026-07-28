@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { schoolIdentity } from "@/lib/site-data";
+import { findUs, schoolIdentity } from "@/lib/site-data";
 
 const schoolLinks = [
   { label: "About", href: "/about" },
@@ -27,11 +27,11 @@ export function Footer() {
             <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={50} height={56} />
             <div>
               <p className="font-serif text-xl font-semibold">{schoolIdentity.name}</p>
-              <p className="mt-1 text-sm font-semibold text-[var(--school-gold)]">Rise and Shine</p>
+              <p className="mt-1 text-sm font-semibold text-[var(--school-gold)]">{schoolIdentity.motto}</p>
             </div>
           </div>
           <p className="max-w-sm text-sm leading-6 text-blue-100">
-            A mixed day and boarding secondary school serving learners in Rubaare, Ntungamo District.
+            A mixed day and boarding secondary school serving learners in {schoolIdentity.locationDisplay}.
           </p>
         </div>
         <FooterColumn title="School">
@@ -41,7 +41,18 @@ export function Footer() {
           {resourceLinks.map((item) => <FooterLink key={item.href} href={item.href} label={item.label} />)}
         </FooterColumn>
         <FooterColumn title="Contact">
-          <p>{schoolIdentity.location}</p>
+          <a href={findUs.directionsHref} target="_blank" rel="noopener noreferrer" className="font-medium hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)]">
+            {schoolIdentity.location}
+          </a>
+          <a href={schoolIdentity.phoneHref} className="font-medium hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)]">
+            {schoolIdentity.phoneDisplay}
+          </a>
+          <p>{schoolIdentity.postalAddress}</p>
+          {schoolIdentity.email ? (
+            <a href={`mailto:${schoolIdentity.email}`} className="font-medium hover:text-white focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)]">
+              {schoolIdentity.email}
+            </a>
+          ) : null}
         </FooterColumn>
       </div>
       <div className="border-t border-white/15">

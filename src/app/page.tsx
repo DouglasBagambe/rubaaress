@@ -12,6 +12,7 @@ import {
   latestNews,
   masterPlanItems,
   quickAccessLinks,
+  enrolmentReportingDate,
   schoolIdentity,
   schoolLife,
   schoolStats,
@@ -43,7 +44,7 @@ export default function Home() {
           <SectionHeading
             eyebrow="Welcome"
             title="A secondary-school community in Rubaare, Ntungamo District."
-            description="Rubaare Secondary School serves O-Level and A-Level learners through a mixed day and boarding environment."
+            description={`${schoolIdentity.mission} ${schoolIdentity.vision}`}
           />
           <div className="border-l-4 border-[var(--school-gold)] bg-white p-7 text-lg leading-8 text-[var(--school-ink)]">
             The website is structured around the journeys families use most: admissions, academics, school life, news, events, documents, gallery and contact.
@@ -114,7 +115,7 @@ export default function Home() {
       </Section>
 
       <Section className="bg-[var(--school-blue)] text-white">
-        <SectionHeading eyebrow="School Profile" title="Verified public profile." description="Further figures will be added after school confirmation." />
+        <SectionHeading eyebrow="2026 School Enrolment" title="Rubaare SS at a Glance" description={`Enrolment figures as of ${enrolmentReportingDate}.`} />
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {schoolStats.map((stat) => (
             <div key={stat.label} className="border-t border-white/40 py-6">

@@ -1,5 +1,7 @@
+import { enrolmentTotals } from "@/content/enrolment";
 import { galleryAlbums, masterPlanItems, schoolMedia } from "@/content/media";
 import { navigation } from "@/content/navigation";
+import { officialSchoolProfile } from "@/content/site";
 
 export type VerificationStatus = "verified" | "school-confirmation-required";
 
@@ -113,9 +115,18 @@ export type FindUs = {
 };
 
 export const schoolIdentity = {
-  name: "Rubaare Secondary School",
-  shortName: "Rubaare SS",
-  location: "Rubaare, Ntungamo District, Uganda",
+  name: officialSchoolProfile.schoolName,
+  shortName: officialSchoolProfile.shortName,
+  motto: officialSchoolProfile.motto,
+  vision: officialSchoolProfile.vision,
+  mission: officialSchoolProfile.mission,
+  location: officialSchoolProfile.contact.location,
+  locationDisplay: officialSchoolProfile.contact.locationDisplay,
+  phoneDisplay: officialSchoolProfile.contact.phoneDisplay,
+  phoneHref: officialSchoolProfile.contact.phoneHref,
+  postalAddress: officialSchoolProfile.contact.postalAddress,
+  mapsUrl: officialSchoolProfile.contact.mapsUrl,
+  email: officialSchoolProfile.contact.email,
   schoolType: "Mixed day and boarding secondary school",
   levels: "O-Level and A-Level",
   status: "Government-aided",
@@ -228,10 +239,10 @@ export const coreValues: ReadonlyArray<ValueItem> = [
 ];
 
 export const schoolStats: ReadonlyArray<Stat> = [
-  { label: "School type", value: "Mixed", note: "Day and boarding", verificationStatus: "school-confirmation-required" },
-  { label: "Levels", value: "O & A", note: "Secondary education", verificationStatus: "school-confirmation-required" },
-  { label: "Status", value: "Govt", note: "Government-aided", verificationStatus: "school-confirmation-required" },
-  { label: "Location", value: "Ntungamo", note: "Rubaare", verificationStatus: "verified" },
+  { label: "Total Learners", value: enrolmentTotals.grandTotal.toLocaleString("en-US"), note: "2026 School Enrolment", verificationStatus: "verified" },
+  { label: "Female Learners", value: enrolmentTotals.totalFemale.toLocaleString("en-US"), note: "Girls enrolled", verificationStatus: "verified" },
+  { label: "Male Learners", value: enrolmentTotals.totalMale.toLocaleString("en-US"), note: "Boys enrolled", verificationStatus: "verified" },
+  { label: "Boarding Learners", value: enrolmentTotals.totalBoarding.toLocaleString("en-US"), note: "Boarding students", verificationStatus: "verified" },
 ];
 
 export const latestNews: ReadonlyArray<NewsItem> = [
@@ -287,8 +298,8 @@ export const downloads: ReadonlyArray<DownloadItem> = [
 export const findUs: FindUs = {
   heading: "Find Rubaare Secondary School",
   address: schoolIdentity.location,
-  directionsHref: "https://www.google.com/maps/search/?api=1&query=Rubaare%20Secondary%20School%20Ntungamo%20District%20Uganda",
-  mapEmbedSrc: "https://www.google.com/maps?q=Rubaare%20Secondary%20School%20Ntungamo%20District%20Uganda&output=embed",
+  directionsHref: officialSchoolProfile.contact.mapsUrl,
+  mapEmbedSrc: officialSchoolProfile.contact.mapEmbedSrc,
   mapTitle: "Map showing Rubaare Secondary School in Ntungamo District, Uganda",
 };
 
@@ -344,7 +355,7 @@ export const pageIntros: Record<string, PageIntro> = {
   contact: {
     eyebrow: "Contact",
     title: "Reach Rubaare Secondary School.",
-    description: "Contact details will be expanded when official phone, email and office hours are confirmed.",
+    description: `${officialSchoolProfile.contact.location}. Telephone: ${officialSchoolProfile.contact.phoneDisplay}.`,
     image: images.heroCampus,
   },
   masterPlan: {
@@ -354,3 +365,6 @@ export const pageIntros: Record<string, PageIntro> = {
     image: masterPlanItems[0],
   },
 };
+
+export { enrolmentReportingDate, enrolmentRows, enrolmentTotals } from "@/content/enrolment";
+export { officialSchoolProfile } from "@/content/site";

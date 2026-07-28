@@ -32,6 +32,7 @@ export type NavigationItem = {
 };
 
 export const navigation: ReadonlyArray<NavigationItem> = [
+  { label: "Home", href: "/", type: "direct" },
   {
     label: "About",
     href: "/about",
@@ -128,14 +129,6 @@ export const navigation: ReadonlyArray<NavigationItem> = [
           { label: "Spiritual Life", href: "/school-life" },
         ],
       },
-      {
-        heading: "Explore",
-        items: [
-          { label: "School Events", href: "/events" },
-          { label: "Gallery", href: "/gallery" },
-          { label: "Student Life Stories", href: "/news" },
-        ],
-      },
     ],
     feature: {
       heading: "Beyond the Classroom",
@@ -147,35 +140,35 @@ export const navigation: ReadonlyArray<NavigationItem> = [
       },
     },
   },
-  {
-    label: "News",
-    href: "/news",
-    type: "dropdown",
-    groups: [
-      {
-        heading: "Stay Informed",
-        items: [
-          { label: "Latest News", href: "/news" },
-          { label: "Upcoming Events", href: "/events" },
-          { label: "Announcements", href: "/news" },
-          { label: "School Calendar", href: "/events" },
-        ],
-      },
-    ],
-  },
 ];
 
+export const newsNavigation: NavigationItem = {
+  label: "News",
+  href: "/news",
+  type: "dropdown",
+  groups: [
+    {
+      heading: "Stay Informed",
+      items: [
+        { label: "Latest News", href: "/news" },
+        { label: "Upcoming Events", href: "/events" },
+        { label: "Announcements", href: "/news" },
+        { label: "School Calendar", href: "/events" },
+      ],
+    },
+  ],
+};
+
 export const utilityNavigation: ReadonlyArray<NavigationLink> = [
-  { label: "School Calendar", href: "/events" },
+  { label: "News", href: "/news" },
   { label: "Downloads", href: "/downloads" },
   { label: "Contact", href: "/contact" },
 ];
 
 export const mobileNavigation: ReadonlyArray<NavigationItem> = [
-  { label: "Home", href: "/", type: "direct" },
   ...navigation,
+  newsNavigation,
   { label: "Gallery", href: "/gallery", type: "direct" },
   { label: "Downloads", href: "/downloads", type: "direct" },
-  { label: "School Calendar", href: "/events", type: "direct" },
   { label: "Contact", href: "/contact", type: "direct" },
 ];

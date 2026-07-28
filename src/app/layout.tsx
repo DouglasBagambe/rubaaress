@@ -1,12 +1,13 @@
 import type { Metadata } from "next";
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { officialSchoolProfile } from "@/content/site";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Rubaare Secondary School",
   description:
-    "Frontend foundation for the official Rubaare Secondary School website.",
+    `${officialSchoolProfile.schoolName} - ${officialSchoolProfile.motto}. ${officialSchoolProfile.mission}`,
 };
 
 export default function RootLayout({

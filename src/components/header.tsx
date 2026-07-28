@@ -4,7 +4,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react";
-import { mobileNavigation, navigation, utilityNavigation, type NavigationItem } from "@/content/navigation";
+import { mobileNavigation, navigation, newsNavigation, utilityNavigation, type NavigationItem } from "@/content/navigation";
+import { officialSchoolProfile } from "@/content/site";
 import { schoolIdentity } from "@/lib/site-data";
 
 const focusClass =
@@ -27,6 +28,7 @@ function isActiveSection(pathname: string, item: NavigationItem) {
 export function Header() {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openMobileGroup, setOpenMobileGroup] = useState<string | null>(null);
+  const [activeUtilityMenu, setActiveUtilityMenu] = useState<string | null>(null);
   const [activeDesktopMenu, setActiveDesktopMenu] = useState<string | null>(null);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const headerRef = useRef<HTMLElement | null>(null);
@@ -36,11 +38,12 @@ export function Header() {
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!activeDesktopMenu && !isSearchOpen && !isMobileOpen) return;
+    if (!activeUtilityMenu && !activeDesktopMenu && !isSearchOpen && !isMobileOpen) return;
 
     const handlePointerDown = (event: MouseEvent) => {
       const target = event.target as Node;
       if (headerRef.current?.contains(target)) return;
+      setActiveUtilityMenu(null);
       setActiveDesktopMenu(null);
       setIsSearchOpen(false);
       setIsMobileOpen(false);
@@ -48,6 +51,7 @@ export function Header() {
 
     const handleKeyDown = (event: globalThis.KeyboardEvent) => {
       if (event.key !== "Escape") return;
+      setActiveUtilityMenu(null);
       setActiveDesktopMenu(null);
       setIsMobileOpen(false);
       setIsSearchOpen(false);
@@ -60,7 +64,7 @@ export function Header() {
       document.removeEventListener("mousedown", handlePointerDown);
       document.removeEventListener("keydown", handleKeyDown);
     };
-  }, [activeDesktopMenu, isMobileOpen, isSearchOpen]);
+  }, [activeDesktopMenu, activeUtilityMenu, isMobileOpen, isSearchOpen]);
 
   useEffect(() => {
     if (!isSearchOpen) return;
@@ -79,8 +83,8 @@ export function Header() {
 
   return (
     <header ref={headerRef} className="sticky top-0 z-50 border-b border-[var(--school-border)] bg-white shadow-sm">
-      <UtilityBar />
-      <div className="mx-auto grid min-h-20 max-w-[1380px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-2 md:px-6 lg:px-8 xl:grid-cols-[minmax(300px,340px)_1fr_auto] xl:gap-8">
+      <UtilityBar activeMenu={activeUtilityMenu} setActiveMenu={setActiveUtilityMenu} />
+      <div className="mx-auto grid min-h-20 max-w-[1380px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-2 md:px-6 lg:px-8 xl:grid-cols-[minmax(285px,330px)_1fr_auto] xl:gap-8">
         <SchoolIdentity />
         <DesktopNavigation activeMenu={activeDesktopMenu} setActiveMenu={setActiveDesktopMenu} pathname={pathname} />
         <div className="hidden items-center justify-end gap-2 xl:flex">
@@ -98,11 +102,11 @@ export function Header() {
           >
             <SearchIcon />
           </button>
-          <AdmissionsHeaderCTA />
+          <GalleryHeaderCTA />
         </div>
         <div className="flex items-center justify-end gap-2 xl:hidden">
-          <Link href="/admissions" className={`hidden min-h-11 items-center bg-[var(--school-gold)] px-4 text-sm font-bold text-[var(--school-ink)] sm:flex ${focusClass}`}>
-            Admissions
+          <Link href="/gallery" aria-label="View School Gallery" className={`hidden min-h-11 items-center bg-[var(--school-gold)] px-4 text-sm font-bold text-[var(--school-ink)] hover:bg-[#e1ad58] sm:flex ${focusClass}`}>
+            Gallery
           </Link>
           <button
             type="button"
@@ -121,16 +125,78 @@ export function Header() {
   );
 }
 
-function UtilityBar() {
+function UtilityBar({
+  activeMenu,
+  setActiveMenu,
+}: {
+  activeMenu: string | null;
+  setActiveMenu: (label: string | null) => void;
+}) {
+  const menuId = "utility-news-menu";
+  const isNewsOpen = activeMenu === newsNavigation.label;
+
   return (
     <div className="bg-[var(--school-blue-dark)] text-white">
       <div className="mx-auto flex min-h-9 max-w-[1380px] items-center justify-between gap-4 px-4 text-xs md:px-6 lg:px-8">
-        <p className="truncate font-medium">Rubaare, Ntungamo District</p>
+        <div className="flex min-w-0 items-center gap-3 font-medium">
+          <a
+            href={officialSchoolProfile.contact.mapsUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            aria-label="Open Rubaare Secondary School location in Google Maps"
+            className={`hidden min-h-9 items-center gap-1.5 whitespace-nowrap text-blue-50 hover:text-white sm:inline-flex ${focusClass}`}
+          >
+            <LocationIcon />
+            {officialSchoolProfile.contact.locationDisplay}
+          </a>
+          <a
+            href={officialSchoolProfile.contact.phoneHref}
+            aria-label={`Call Rubaare Secondary School on ${officialSchoolProfile.contact.phoneDisplay}`}
+            className={`inline-flex min-h-9 items-center gap-1.5 whitespace-nowrap text-blue-50 hover:text-white ${focusClass}`}
+          >
+            <PhoneIcon />
+            {officialSchoolProfile.contact.phoneDisplay}
+          </a>
+          {officialSchoolProfile.contact.email ? (
+            <a
+              href={`mailto:${officialSchoolProfile.contact.email}`}
+              aria-label="Email Rubaare Secondary School"
+              className={`hidden min-h-9 items-center gap-1.5 whitespace-nowrap text-blue-50 hover:text-white lg:inline-flex ${focusClass}`}
+            >
+              <MailIcon />
+              {officialSchoolProfile.contact.email}
+            </a>
+          ) : null}
+        </div>
         <nav aria-label="Utility links" className="hidden items-center gap-1 md:flex">
           {utilityNavigation.map((item) => (
-            <Link key={`${item.label}-${item.href}`} href={item.href} className={`min-h-9 px-3 py-2 font-semibold text-blue-50 hover:bg-white/10 ${focusClass}`}>
-              {item.label}
-            </Link>
+            item.label === "News" ? (
+              <div
+                key={`${item.label}-${item.href}`}
+                className="relative"
+                onMouseEnter={() => setActiveMenu(newsNavigation.label)}
+                onMouseLeave={() => setActiveMenu(null)}
+              >
+                <button
+                  type="button"
+                  aria-label="Toggle News menu"
+                  aria-haspopup="true"
+                  aria-expanded={isNewsOpen}
+                  aria-controls={menuId}
+                  className={`flex min-h-9 items-center gap-1 whitespace-nowrap px-3 py-2 font-semibold text-blue-50 hover:bg-white/10 hover:text-white ${focusClass}`}
+                  onClick={() => setActiveMenu(isNewsOpen ? null : newsNavigation.label)}
+                  onFocus={() => setActiveMenu(newsNavigation.label)}
+                >
+                  News
+                  <ChevronIcon isOpen={isNewsOpen} />
+                </button>
+                {isNewsOpen ? <UtilityNewsMenu id={menuId} /> : null}
+              </div>
+            ) : (
+              <Link key={`${item.label}-${item.href}`} href={item.href} className={`min-h-9 whitespace-nowrap px-3 py-2 font-semibold text-blue-50 hover:bg-white/10 ${focusClass}`}>
+                {item.label}
+              </Link>
+            )
           ))}
         </nav>
       </div>
@@ -140,13 +206,13 @@ function UtilityBar() {
 
 function SchoolIdentity() {
   return (
-    <Link href="/" className={`flex min-h-14 min-w-0 items-center gap-3 xl:min-w-[300px] xl:shrink-0 ${focusClass}`}>
-      <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={46} height={69} priority />
-      <span className="min-w-0">
+    <Link href="/" className={`flex min-h-14 min-w-0 items-center gap-3 xl:min-w-[285px] xl:max-w-[330px] xl:shrink-0 ${focusClass}`}>
+      <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={50} height={75} priority />
+      <span className="min-w-0 max-w-[230px] sm:max-w-none">
         <span className="block text-[17px] font-bold leading-tight text-[var(--school-blue-dark)] md:text-[19px]">
           {schoolIdentity.name}
         </span>
-        <span className="block text-xs font-semibold text-[var(--school-muted)]">Rise and Shine</span>
+        <span className="block text-xs font-semibold text-[var(--school-muted)]">{officialSchoolProfile.motto}</span>
       </span>
     </Link>
   );
@@ -281,10 +347,25 @@ function HeaderSearch({
   );
 }
 
-function AdmissionsHeaderCTA() {
+function UtilityNewsMenu({ id }: { id: string }) {
   return (
-    <Link href="/admissions" className={`flex min-h-11 items-center bg-[var(--school-gold)] px-5 text-sm font-bold text-[var(--school-ink)] hover:bg-[#c88c27] ${focusClass}`}>
-      Admissions
+    <div id={id} className="absolute right-0 top-full z-50 w-64 border border-[var(--school-border)] bg-white p-3 text-[var(--school-ink)] shadow-lg">
+      <div className="grid gap-1">
+        {newsNavigation.groups?.[0]?.items.map((link) => (
+          <Link key={`${link.label}-${link.href}`} href={link.href} className={`block min-h-10 px-3 py-2 text-sm font-semibold hover:bg-[var(--school-cream)] hover:text-[var(--school-blue)] ${focusClass}`}>
+            {link.label}
+          </Link>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function GalleryHeaderCTA() {
+  return (
+    <Link href="/gallery" aria-label="View School Gallery" className={`flex min-h-11 items-center gap-2 bg-[var(--school-gold)] px-5 text-sm font-bold text-[var(--school-ink)] hover:bg-[#e1ad58] ${focusClass}`}>
+      <GalleryIcon />
+      Gallery
     </Link>
   );
 }
@@ -390,6 +471,42 @@ function SearchIcon() {
     <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
       <path d="m21 21-4.3-4.3" />
       <circle cx="11" cy="11" r="7" />
+    </svg>
+  );
+}
+
+function GalleryIcon() {
+  return (
+    <svg aria-hidden="true" className="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <circle cx="8.5" cy="10" r="1.5" />
+      <path d="m21 15-5-5L5 19" />
+    </svg>
+  );
+}
+
+function LocationIcon() {
+  return (
+    <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M12 21s7-5.1 7-12a7 7 0 1 0-14 0c0 6.9 7 12 7 12Z" />
+      <circle cx="12" cy="9" r="2.5" />
+    </svg>
+  );
+}
+
+function PhoneIcon() {
+  return (
+    <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.4 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2Z" />
+    </svg>
+  );
+}
+
+function MailIcon() {
+  return (
+    <svg aria-hidden="true" className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path d="m3 7 9 6 9-6" />
     </svg>
   );
 }
