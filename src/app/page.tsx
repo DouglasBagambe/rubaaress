@@ -114,11 +114,15 @@ export default function Home() {
         </div>
       </Section>
 
-      <Section className="bg-[var(--school-blue)] text-white">
-        <SectionHeading eyebrow="2026 School Enrolment" title="Rubaare SS at a Glance" description={`Enrolment figures as of ${enrolmentReportingDate}.`} />
+      <Section className="bg-[var(--school-blue-dark)] text-white">
+        <div className="max-w-3xl">
+          <p className="mb-3 text-sm font-bold uppercase tracking-[0.14em] text-[var(--school-gold)]">2026 School Enrolment</p>
+          <h2 className="font-serif text-3xl font-semibold leading-tight text-white md:text-4xl">Rubaare SS at a Glance</h2>
+          <p className="mt-4 text-base leading-7 text-blue-100 md:text-lg">Enrolment figures as of {enrolmentReportingDate}.</p>
+        </div>
         <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {schoolStats.map((stat) => (
-            <div key={stat.label} className="border-t border-white/40 py-6">
+            <div key={stat.label} className="border-t-4 border-[var(--school-gold)] bg-white/10 p-5">
               <p className="font-serif text-4xl font-semibold text-white">{stat.value}</p>
               <p className="mt-2 font-bold text-white">{stat.label}</p>
               <p className="mt-2 text-sm leading-6 text-blue-100">{stat.note}</p>
