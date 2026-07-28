@@ -3,124 +3,401 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
-import { navigation, schoolIdentity, utilityLinks } from "@/lib/site-data";
+import { useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react";
+import { mobileNavigation, navigation, utilityNavigation, type NavigationItem } from "@/content/navigation";
+import { schoolIdentity } from "@/lib/site-data";
 
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2";
 
-function isActive(pathname: string, href: string) {
-  return href === "/" ? pathname === href : pathname.startsWith(href);
+function getNavigationId(label: string) {
+  return label.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+}
+
+function isActiveSection(pathname: string, item: NavigationItem) {
+  const hrefs = [item.href, ...(item.groups?.flatMap((group) => group.items.map((link) => link.href)) ?? [])];
+
+  return hrefs.some((href) => {
+    if (href === "/") return pathname === "/";
+    if (href === "/events") return pathname.startsWith("/events");
+    return pathname === href || pathname.startsWith(`${href}/`);
+  });
 }
 
 export function Header() {
-  const [isOpen, setIsOpen] = useState(false);
+  const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openMobileGroup, setOpenMobileGroup] = useState<string | null>(null);
+  const [activeDesktopMenu, setActiveDesktopMenu] = useState<string | null>(null);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const headerRef = useRef<HTMLElement | null>(null);
+  const searchButtonRef = useRef<HTMLButtonElement | null>(null);
+  const searchInputRef = useRef<HTMLInputElement | null>(null);
+  const mobileDrawerRef = useRef<HTMLDivElement | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
-    if (!isOpen) return;
-    const handleKeyDown = (event: KeyboardEvent) => event.key === "Escape" && setIsOpen(false);
+    if (!activeDesktopMenu && !isSearchOpen && !isMobileOpen) return;
+
+    const handlePointerDown = (event: MouseEvent) => {
+      const target = event.target as Node;
+      if (headerRef.current?.contains(target)) return;
+      setActiveDesktopMenu(null);
+      setIsSearchOpen(false);
+      setIsMobileOpen(false);
+    };
+
+    const handleKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      setActiveDesktopMenu(null);
+      setIsMobileOpen(false);
+      setIsSearchOpen(false);
+      searchButtonRef.current?.focus();
+    };
+
+    document.addEventListener("mousedown", handlePointerDown);
     document.addEventListener("keydown", handleKeyDown);
-    return () => document.removeEventListener("keydown", handleKeyDown);
-  }, [isOpen]);
+    return () => {
+      document.removeEventListener("mousedown", handlePointerDown);
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [activeDesktopMenu, isMobileOpen, isSearchOpen]);
+
+  useEffect(() => {
+    if (!isSearchOpen) return;
+    searchInputRef.current?.focus();
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    if (!isMobileOpen) return;
+    const originalOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    mobileDrawerRef.current?.querySelector<HTMLAnchorElement | HTMLButtonElement>("a, button")?.focus();
+    return () => {
+      document.body.style.overflow = originalOverflow;
+    };
+  }, [isMobileOpen]);
 
   return (
-    <header className="sticky top-0 z-50 border-b border-[var(--school-border)] bg-white">
-      <div className="bg-[var(--school-blue-dark)] text-white">
-        <div className="mx-auto flex max-w-7xl flex-col gap-2 px-4 py-2 text-sm md:flex-row md:items-center md:justify-between md:px-6 lg:px-8">
-          <p className="font-medium">{schoolIdentity.location}</p>
-          <nav aria-label="Utility links" className="flex flex-wrap gap-1">
-            {utilityLinks.map((item) => (
-              <Link key={item.href} href={item.href} className={`min-h-11 px-3 py-2 font-semibold hover:bg-white/10 ${focusClass}`}>
-                {item.label}
-              </Link>
-            ))}
-          </nav>
+    <header ref={headerRef} className="sticky top-0 z-50 border-b border-[var(--school-border)] bg-white shadow-sm">
+      <UtilityBar />
+      <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-4 px-4 py-2 md:px-6 lg:px-8">
+        <SchoolIdentity />
+        <DesktopNavigation activeMenu={activeDesktopMenu} setActiveMenu={setActiveDesktopMenu} pathname={pathname} />
+        <div className="hidden items-center gap-2 lg:flex">
+          <button
+            ref={searchButtonRef}
+            type="button"
+            aria-label="Search the website"
+            aria-expanded={isSearchOpen}
+            aria-controls="header-search"
+            className={`flex min-h-11 min-w-11 items-center justify-center border border-[var(--school-border)] text-[var(--school-blue)] hover:border-[var(--school-gold)] ${focusClass}`}
+            onClick={() => {
+              setActiveDesktopMenu(null);
+              setIsSearchOpen((current) => !current);
+            }}
+          >
+            <SearchIcon />
+          </button>
+          <AdmissionsHeaderCTA />
+        </div>
+        <div className="flex items-center gap-2 lg:hidden">
+          <Link href="/admissions" className={`hidden min-h-11 items-center bg-[var(--school-gold)] px-4 text-sm font-bold text-[var(--school-ink)] sm:flex ${focusClass}`}>
+            Admissions
+          </Link>
+          <button
+            type="button"
+            className={`min-h-11 border border-[var(--school-blue)] px-4 text-sm font-bold text-[var(--school-blue)] ${focusClass}`}
+            aria-expanded={isMobileOpen}
+            aria-controls="mobile-navigation"
+            onClick={() => setIsMobileOpen((current) => !current)}
+          >
+            Menu
+          </button>
         </div>
       </div>
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-3 md:px-6 lg:px-8">
-        <Link href="/" className={`flex min-h-12 items-center gap-3 ${focusClass}`}>
-          <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={42} height={63} priority />
-          <span>
-            <span className="block text-base font-bold text-[var(--school-blue-dark)] md:text-xl">
-              {schoolIdentity.name}
-            </span>
-            <span className="block text-xs font-semibold text-[var(--school-muted)]">
-              Rise and Shine
-            </span>
-          </span>
-        </Link>
-        <nav aria-label="Primary navigation" className="hidden items-center gap-2 lg:flex">
-          {navigation.map((item) => (
-            <div key={item.href} className="group relative">
+      {isSearchOpen ? <HeaderSearch inputRef={searchInputRef} onClose={() => setIsSearchOpen(false)} /> : null}
+      {isMobileOpen ? <MobileNavigation drawerRef={mobileDrawerRef} openGroup={openMobileGroup} setOpenGroup={setOpenMobileGroup} onClose={() => setIsMobileOpen(false)} pathname={pathname} /> : null}
+    </header>
+  );
+}
+
+function UtilityBar() {
+  return (
+    <div className="bg-[var(--school-blue-dark)] text-white">
+      <div className="mx-auto flex min-h-9 max-w-7xl items-center justify-between gap-4 px-4 text-xs md:px-6 lg:px-8">
+        <p className="truncate font-medium">Rubaare, Ntungamo District</p>
+        <nav aria-label="Utility links" className="hidden items-center gap-1 sm:flex">
+          {utilityNavigation.map((item) => (
+            <Link key={`${item.label}-${item.href}`} href={item.href} className={`min-h-9 px-3 py-2 font-semibold text-blue-50 hover:bg-white/10 ${focusClass}`}>
+              {item.label}
+            </Link>
+          ))}
+        </nav>
+      </div>
+    </div>
+  );
+}
+
+function SchoolIdentity() {
+  return (
+    <Link href="/" className={`flex min-h-14 min-w-0 items-center gap-3 ${focusClass}`}>
+      <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={42} height={63} priority />
+      <span className="min-w-0">
+        <span className="block truncate text-base font-bold text-[var(--school-blue-dark)] md:text-xl">
+          {schoolIdentity.name}
+        </span>
+        <span className="block text-xs font-semibold text-[var(--school-muted)]">Rise and Shine</span>
+      </span>
+    </Link>
+  );
+}
+
+function DesktopNavigation({
+  activeMenu,
+  setActiveMenu,
+  pathname,
+}: {
+  activeMenu: string | null;
+  setActiveMenu: (label: string | null) => void;
+  pathname: string;
+}) {
+  return (
+    <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
+      {navigation.map((item) => {
+        const hasMenu = item.type !== "direct";
+        const menuId = `desktop-menu-${getNavigationId(item.label)}`;
+        const isOpen = activeMenu === item.label;
+        const isActive = isActiveSection(pathname, item);
+
+        return (
+          <div key={`${item.label}-${item.href}`} className="relative" onMouseEnter={() => hasMenu && setActiveMenu(item.label)} onMouseLeave={() => hasMenu && setActiveMenu(null)}>
+            <div className="flex items-center">
               <Link
                 href={item.href}
-                aria-current={isActive(pathname, item.href) ? "page" : undefined}
-                className={`flex min-h-11 items-center border-b-2 px-3 py-2 text-sm font-bold ${
-                  isActive(pathname, item.href)
+                aria-current={isActive ? "page" : undefined}
+                className={`flex min-h-11 items-center border-b-2 px-2.5 py-2 text-sm font-bold ${
+                  isActive
                     ? "border-[var(--school-gold)] text-[var(--school-blue)]"
                     : "border-transparent text-[var(--school-ink)] hover:text-[var(--school-blue)]"
                 } ${focusClass}`}
+                onFocus={() => hasMenu && setActiveMenu(item.label)}
+                onClick={() => setActiveMenu(null)}
               >
                 {item.label}
               </Link>
-              {item.children ? (
-                <div className="invisible absolute left-0 top-full w-72 border border-[var(--school-border)] bg-white p-2 opacity-0 shadow-lg transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-                  {item.children.map((child) => (
-                    <Link key={`${item.label}-${child.label}-${child.href}`} href={child.href} className={`block min-h-11 px-3 py-2 text-sm font-semibold text-[var(--school-ink)] hover:bg-[var(--school-cream)] ${focusClass}`}>
-                      {child.label}
-                    </Link>
-                  ))}
-                </div>
+              {hasMenu ? (
+                <button
+                  type="button"
+                  aria-label={`Toggle ${item.label} menu`}
+                  aria-haspopup="true"
+                  aria-expanded={isOpen}
+                  aria-controls={menuId}
+                  className={`flex min-h-11 min-w-10 items-center justify-center text-[var(--school-blue)] ${focusClass}`}
+                  onClick={() => setActiveMenu(isOpen ? null : item.label)}
+                >
+                  <ChevronIcon isOpen={isOpen} />
+                </button>
               ) : null}
             </div>
-          ))}
-        </nav>
-        <button
-          type="button"
-          className={`min-h-11 border border-[var(--school-blue)] px-4 text-sm font-bold text-[var(--school-blue)] lg:hidden ${focusClass}`}
-          aria-expanded={isOpen}
-          aria-controls="mobile-navigation"
-          onClick={() => setIsOpen((current) => !current)}
-        >
-          Menu
+            {hasMenu && isOpen ? <DesktopMenu id={menuId} item={item} /> : null}
+          </div>
+        );
+      })}
+    </nav>
+  );
+}
+
+function DesktopMenu({ id, item }: { id: string; item: NavigationItem }) {
+  const isMega = item.type === "mega";
+
+  return (
+    <div
+      id={id}
+      className={`absolute left-0 top-full z-50 border border-[var(--school-border)] bg-white p-4 shadow-lg ${
+        isMega ? "w-[min(760px,calc(100vw-3rem))]" : "w-80"
+      }`}
+    >
+      <div className={isMega ? "grid gap-5 lg:grid-cols-[1fr_1fr_0.9fr]" : "grid gap-4"}>
+        {item.groups?.map((group) => (
+          <div key={`${item.label}-${group.heading}`}>
+            <p className="mb-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--school-gold)]">{group.heading}</p>
+            <div className="grid gap-1">
+              {group.items.map((link) => (
+                <Link key={`${group.heading}-${link.label}-${link.href}`} href={link.href} className={`block min-h-10 px-2 py-2 text-sm font-semibold text-[var(--school-ink)] hover:bg-[var(--school-cream)] hover:text-[var(--school-blue)] ${focusClass}`}>
+                  {link.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        ))}
+        {item.feature && isMega ? (
+          <Link href={item.feature.href} className={`group border-l border-[var(--school-border)] pl-4 ${focusClass}`}>
+            <span className="relative block aspect-[4/3] overflow-hidden bg-[var(--school-cream)]">
+              <Image src={item.feature.image.src} alt={item.feature.image.alt} fill sizes="240px" className="object-cover transition duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:transform-none" />
+            </span>
+            <span className="mt-3 block font-serif text-lg font-semibold text-[var(--school-blue-dark)]">{item.feature.heading}</span>
+            <span className="mt-1 block text-sm leading-6 text-[var(--school-muted)]">{item.feature.body}</span>
+          </Link>
+        ) : null}
+      </div>
+      {item.label === "Admissions" ? (
+        <div className="mt-4 border-t border-[var(--school-border)] pt-4">
+          <p className="text-sm font-semibold text-[var(--school-blue-dark)]">Begin Your Journey</p>
+          <Link href="/admissions" className={`mt-3 inline-flex min-h-11 items-center bg-[var(--school-gold)] px-4 text-sm font-bold text-[var(--school-ink)] hover:bg-[#c88c27] ${focusClass}`}>
+            View Admissions
+          </Link>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+function HeaderSearch({
+  inputRef,
+  onClose,
+}: {
+  inputRef: RefObject<HTMLInputElement | null>;
+  onClose: () => void;
+}) {
+  return (
+    <div id="header-search" className="border-t border-[var(--school-border)] bg-[var(--school-cream)]">
+      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:px-6 lg:px-8">
+        <label className="sr-only" htmlFor="site-search">
+          Search the website
+        </label>
+        <input
+          ref={inputRef}
+          id="site-search"
+          type="search"
+          autoComplete="off"
+          placeholder="Search Rubaare Secondary School"
+          className={`min-h-11 flex-1 border border-[var(--school-border)] bg-white px-4 text-sm text-[var(--school-ink)] ${focusClass}`}
+        />
+        <button type="button" className={`min-h-11 border border-[var(--school-blue)] px-4 text-sm font-bold text-[var(--school-blue)] ${focusClass}`} onClick={onClose}>
+          Close
         </button>
       </div>
-      {isOpen ? (
-        <div id="mobile-navigation" className="border-t border-[var(--school-border)] bg-white lg:hidden">
-          <nav aria-label="Mobile navigation" className="mx-auto max-w-7xl px-4 py-4 md:px-6">
-            {navigation.map((item) => (
-              <div key={item.href} className="border-b border-[var(--school-border)] py-2">
+    </div>
+  );
+}
+
+function AdmissionsHeaderCTA() {
+  return (
+    <Link href="/admissions" className={`flex min-h-11 items-center bg-[var(--school-gold)] px-5 text-sm font-bold text-[var(--school-ink)] hover:bg-[#c88c27] ${focusClass}`}>
+      Admissions
+    </Link>
+  );
+}
+
+function MobileNavigation({
+  drawerRef,
+  openGroup,
+  setOpenGroup,
+  onClose,
+  pathname,
+}: {
+  drawerRef: RefObject<HTMLDivElement | null>;
+  openGroup: string | null;
+  setOpenGroup: (label: string | null) => void;
+  onClose: () => void;
+  pathname: string;
+}) {
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key !== "Tab" || !drawerRef.current) return;
+    const focusable = Array.from(drawerRef.current.querySelectorAll<HTMLAnchorElement | HTMLButtonElement>("a, button"));
+    if (focusable.length === 0) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    if (event.shiftKey && document.activeElement === first) {
+      event.preventDefault();
+      last.focus();
+    } else if (!event.shiftKey && document.activeElement === last) {
+      event.preventDefault();
+      first.focus();
+    }
+  };
+
+  return (
+    <div className="fixed inset-0 z-[70] bg-[var(--school-blue-dark)]/70 lg:hidden" onMouseDown={onClose}>
+      <div
+        ref={drawerRef}
+        id="mobile-navigation"
+        role="dialog"
+        aria-modal="true"
+        aria-label="Mobile navigation"
+        className="ml-auto flex h-full w-[min(90vw,420px)] flex-col overflow-y-auto bg-white"
+        onMouseDown={(event) => event.stopPropagation()}
+        onKeyDown={handleKeyDown}
+      >
+        <div className="flex items-center justify-between gap-4 border-b border-[var(--school-border)] px-4 py-4">
+          <SchoolIdentity />
+          <button type="button" className={`min-h-11 px-3 text-sm font-bold text-[var(--school-blue)] ${focusClass}`} onClick={onClose}>
+            Close
+          </button>
+        </div>
+        <nav aria-label="Mobile navigation links" className="grid gap-1 px-4 py-4">
+          {mobileNavigation.map((item) => {
+            const hasMenu = item.type !== "direct";
+            const isOpen = openGroup === item.label;
+            const isActive = isActiveSection(pathname, item);
+
+            return (
+              <div key={`${item.label}-${item.href}`} className="border-b border-[var(--school-border)] py-2">
                 <div className="flex items-center justify-between gap-3">
-                  <Link href={item.href} className={`block min-h-11 py-2 text-base font-bold text-[var(--school-blue-dark)] ${focusClass}`} onClick={() => setIsOpen(false)}>
+                  <Link href={item.href} className={`block min-h-11 py-2 text-base font-bold ${isActive ? "text-[var(--school-blue)]" : "text-[var(--school-blue-dark)]"} ${focusClass}`} onClick={onClose}>
                     {item.label}
                   </Link>
-                  {item.children ? (
+                  {hasMenu ? (
                     <button
                       type="button"
-                      className={`min-h-11 px-3 text-sm font-bold text-[var(--school-blue)] ${focusClass}`}
-                      aria-expanded={openMobileGroup === item.label}
-                      onClick={() => setOpenMobileGroup((current) => (current === item.label ? null : item.label))}
+                      className={`flex min-h-11 min-w-11 items-center justify-center text-[var(--school-blue)] ${focusClass}`}
+                      aria-expanded={isOpen}
+                      aria-controls={`mobile-menu-${getNavigationId(item.label)}`}
+                      onClick={() => setOpenGroup(isOpen ? null : item.label)}
                     >
-                      {openMobileGroup === item.label ? "Close" : "Open"}
+                      <ChevronIcon isOpen={isOpen} />
                     </button>
                   ) : null}
                 </div>
-                {item.children && openMobileGroup === item.label ? (
-                  <div className="grid gap-1 pb-2 pl-4">
-                    {item.children.map((child) => (
-                      <Link key={`${item.label}-${child.label}-${child.href}`} href={child.href} className={`block min-h-11 py-2 text-sm font-semibold text-[var(--school-muted)] ${focusClass}`} onClick={() => setIsOpen(false)}>
-                        {child.label}
-                      </Link>
+                {hasMenu && isOpen ? (
+                  <div id={`mobile-menu-${getNavigationId(item.label)}`} className="grid gap-3 pb-2 pl-4">
+                    {item.groups?.map((group) => (
+                      <div key={`${item.label}-${group.heading}`}>
+                        <p className="py-2 text-xs font-bold uppercase tracking-[0.14em] text-[var(--school-gold)]">{group.heading}</p>
+                        <div className="grid gap-1">
+                          {group.items.map((link) => (
+                            <Link key={`${group.heading}-${link.label}-${link.href}`} href={link.href} className={`block min-h-11 py-2 text-sm font-semibold text-[var(--school-muted)] ${focusClass}`} onClick={onClose}>
+                              {link.label}
+                            </Link>
+                          ))}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 ) : null}
               </div>
-            ))}
-          </nav>
-        </div>
-      ) : null}
-    </header>
+            );
+          })}
+        </nav>
+      </div>
+    </div>
+  );
+}
+
+function SearchIcon() {
+  return (
+    <svg aria-hidden="true" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+      <path d="m21 21-4.3-4.3" />
+      <circle cx="11" cy="11" r="7" />
+    </svg>
+  );
+}
+
+function ChevronIcon({ isOpen }: { isOpen: boolean }) {
+  return (
+    <svg aria-hidden="true" className={`h-4 w-4 transition motion-reduce:transition-none ${isOpen ? "rotate-180" : ""}`} viewBox="0 0 20 20" fill="currentColor">
+      <path fillRule="evenodd" d="M5.2 7.2a1 1 0 0 1 1.4 0L10 10.6l3.4-3.4a1 1 0 1 1 1.4 1.4l-4.1 4.1a1 1 0 0 1-1.4 0L5.2 8.6a1 1 0 0 1 0-1.4Z" clipRule="evenodd" />
+    </svg>
   );
 }

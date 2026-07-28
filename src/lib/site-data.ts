@@ -1,4 +1,5 @@
 import { galleryAlbums, masterPlanItems, schoolMedia } from "@/content/media";
+import { navigation } from "@/content/navigation";
 
 export type VerificationStatus = "verified" | "school-confirmation-required";
 
@@ -188,52 +189,7 @@ export const heroSlides: ReadonlyArray<HeroSlide> = [
   },
 ];
 
-export const navigation: ReadonlyArray<NavItem> = [
-  { label: "Home", href: "/" },
-  {
-    label: "About",
-    href: "/about",
-    children: [
-      { label: "Overview", href: "/about" },
-      { label: "School History", href: "/about/history" },
-      { label: "Mission, Vision & Values", href: "/about/mission-vision" },
-      { label: "Leadership", href: "/about/leadership" },
-      { label: "Master Plan", href: "/about/master-plan" },
-      { label: "Facilities", href: "/about" },
-    ],
-  },
-  {
-    label: "Academics",
-    href: "/academics",
-    children: [
-      { label: "Overview", href: "/academics" },
-      { label: "O-Level", href: "/academics/o-level" },
-      { label: "A-Level", href: "/academics/a-level" },
-      { label: "Departments", href: "/academics/departments" },
-      { label: "Academic Performance", href: "/academics" },
-    ],
-  },
-  {
-    label: "Student Life",
-    href: "/school-life",
-    children: [
-      { label: "School Life", href: "/school-life" },
-      { label: "Admissions", href: "/admissions" },
-      { label: "Gallery", href: "/gallery" },
-    ],
-  },
-  {
-    label: "Updates",
-    href: "/news",
-    children: [
-      { label: "Latest News", href: "/news" },
-      { label: "Upcoming Events", href: "/events" },
-      { label: "School Calendar", href: "/events" },
-      { label: "Downloads", href: "/downloads" },
-      { label: "Contact", href: "/contact" },
-    ],
-  },
-];
+export { navigation };
 
 export const utilityLinks: ReadonlyArray<QuickLink> = [
   { label: "Apply", href: "/admissions", description: "Admissions guidance" },

@@ -18,11 +18,13 @@ import {
 
 test("navigation exposes grouped primary items", () => {
   assert.deepEqual(navigation.map((item) => item.label), [
-    "Home",
     "About",
     "Academics",
-    "Student Life",
-    "Updates",
+    "Admissions",
+    "School Life",
+    "News & Events",
+    "Gallery",
+    "Contact",
   ]);
 });
 
