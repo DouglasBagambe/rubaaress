@@ -80,11 +80,9 @@ export const navigation: ReadonlyArray<NavigationItem> = [
         ],
       },
       {
-        heading: "Academic Resources",
+        heading: "Academic Information",
         items: [
           { label: "Academic Performance", href: "/academics" },
-          { label: "School Calendar", href: "/events" },
-          { label: "Downloads", href: "/downloads" },
         ],
       },
     ],
@@ -107,20 +105,23 @@ export const navigation: ReadonlyArray<NavigationItem> = [
         heading: "Joining Rubaare SS",
         items: [
           { label: "Admissions Overview", href: "/admissions" },
+          { label: "How to Apply", href: "/admissions" },
+          { label: "Admission Requirements", href: "/admissions" },
           { label: "Fees & Documents", href: "/downloads" },
+          { label: "Frequently Asked Questions", href: "/admissions" },
         ],
       },
     ],
   },
   {
-    label: "School Life",
+    label: "Student Life",
     href: "/school-life",
     type: "mega",
     groups: [
       {
         heading: "Student Experience",
         items: [
-          { label: "School Life Overview", href: "/school-life" },
+          { label: "Student Life Overview", href: "/school-life" },
           { label: "Sports", href: "/school-life" },
           { label: "Clubs & Societies", href: "/school-life" },
           { label: "Student Leadership", href: "/school-life" },
@@ -147,7 +148,7 @@ export const navigation: ReadonlyArray<NavigationItem> = [
     },
   },
   {
-    label: "News & Events",
+    label: "News",
     href: "/news",
     type: "dropdown",
     groups: [
@@ -162,17 +163,19 @@ export const navigation: ReadonlyArray<NavigationItem> = [
       },
     ],
   },
-  { label: "Gallery", href: "/gallery", type: "direct" },
-  { label: "Contact", href: "/contact", type: "direct" },
 ];
 
 export const utilityNavigation: ReadonlyArray<NavigationLink> = [
   { label: "School Calendar", href: "/events" },
   { label: "Downloads", href: "/downloads" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export const mobileNavigation: ReadonlyArray<NavigationItem> = [
   { label: "Home", href: "/", type: "direct" },
   ...navigation,
+  { label: "Gallery", href: "/gallery", type: "direct" },
   { label: "Downloads", href: "/downloads", type: "direct" },
+  { label: "School Calendar", href: "/events", type: "direct" },
+  { label: "Contact", href: "/contact", type: "direct" },
 ];

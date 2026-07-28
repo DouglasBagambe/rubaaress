@@ -80,10 +80,10 @@ export function Header() {
   return (
     <header ref={headerRef} className="sticky top-0 z-50 border-b border-[var(--school-border)] bg-white shadow-sm">
       <UtilityBar />
-      <div className="mx-auto flex min-h-20 max-w-7xl items-center justify-between gap-4 px-4 py-2 md:px-6 lg:px-8">
+      <div className="mx-auto grid min-h-20 max-w-[1380px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-2 md:px-6 lg:px-8 xl:grid-cols-[minmax(300px,340px)_1fr_auto] xl:gap-8">
         <SchoolIdentity />
         <DesktopNavigation activeMenu={activeDesktopMenu} setActiveMenu={setActiveDesktopMenu} pathname={pathname} />
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center justify-end gap-2 xl:flex">
           <button
             ref={searchButtonRef}
             type="button"
@@ -100,7 +100,7 @@ export function Header() {
           </button>
           <AdmissionsHeaderCTA />
         </div>
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center justify-end gap-2 xl:hidden">
           <Link href="/admissions" className={`hidden min-h-11 items-center bg-[var(--school-gold)] px-4 text-sm font-bold text-[var(--school-ink)] sm:flex ${focusClass}`}>
             Admissions
           </Link>
@@ -124,9 +124,9 @@ export function Header() {
 function UtilityBar() {
   return (
     <div className="bg-[var(--school-blue-dark)] text-white">
-      <div className="mx-auto flex min-h-9 max-w-7xl items-center justify-between gap-4 px-4 text-xs md:px-6 lg:px-8">
+      <div className="mx-auto flex min-h-9 max-w-[1380px] items-center justify-between gap-4 px-4 text-xs md:px-6 lg:px-8">
         <p className="truncate font-medium">Rubaare, Ntungamo District</p>
-        <nav aria-label="Utility links" className="hidden items-center gap-1 sm:flex">
+        <nav aria-label="Utility links" className="hidden items-center gap-1 md:flex">
           {utilityNavigation.map((item) => (
             <Link key={`${item.label}-${item.href}`} href={item.href} className={`min-h-9 px-3 py-2 font-semibold text-blue-50 hover:bg-white/10 ${focusClass}`}>
               {item.label}
@@ -140,10 +140,10 @@ function UtilityBar() {
 
 function SchoolIdentity() {
   return (
-    <Link href="/" className={`flex min-h-14 min-w-0 items-center gap-3 ${focusClass}`}>
-      <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={42} height={63} priority />
+    <Link href="/" className={`flex min-h-14 min-w-0 items-center gap-3 xl:min-w-[300px] xl:shrink-0 ${focusClass}`}>
+      <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={46} height={69} priority />
       <span className="min-w-0">
-        <span className="block truncate text-base font-bold text-[var(--school-blue-dark)] md:text-xl">
+        <span className="block text-[17px] font-bold leading-tight text-[var(--school-blue-dark)] md:text-[19px]">
           {schoolIdentity.name}
         </span>
         <span className="block text-xs font-semibold text-[var(--school-muted)]">Rise and Shine</span>
@@ -162,7 +162,7 @@ function DesktopNavigation({
   pathname: string;
 }) {
   return (
-    <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
+    <nav aria-label="Primary navigation" className="hidden items-center justify-center gap-3 xl:flex">
       {navigation.map((item) => {
         const hasMenu = item.type !== "direct";
         const menuId = `desktop-menu-${getNavigationId(item.label)}`;
@@ -175,7 +175,7 @@ function DesktopNavigation({
               <Link
                 href={item.href}
                 aria-current={isActive ? "page" : undefined}
-                className={`flex min-h-11 items-center border-b-2 px-2.5 py-2 text-sm font-bold ${
+                className={`flex min-h-11 items-center whitespace-nowrap border-b-2 px-2 py-2 text-sm font-bold ${
                   isActive
                     ? "border-[var(--school-gold)] text-[var(--school-blue)]"
                     : "border-transparent text-[var(--school-ink)] hover:text-[var(--school-blue)]"
@@ -192,7 +192,7 @@ function DesktopNavigation({
                   aria-haspopup="true"
                   aria-expanded={isOpen}
                   aria-controls={menuId}
-                  className={`flex min-h-11 min-w-10 items-center justify-center text-[var(--school-blue)] ${focusClass}`}
+                  className={`flex min-h-11 min-w-9 items-center justify-center text-[var(--school-blue)] ${focusClass}`}
                   onClick={() => setActiveMenu(isOpen ? null : item.label)}
                 >
                   <ChevronIcon isOpen={isOpen} />
@@ -214,7 +214,7 @@ function DesktopMenu({ id, item }: { id: string; item: NavigationItem }) {
     <div
       id={id}
       className={`absolute left-0 top-full z-50 border border-[var(--school-border)] bg-white p-4 shadow-lg ${
-        isMega ? "w-[min(760px,calc(100vw-3rem))]" : "w-80"
+        isMega ? "w-[min(740px,calc(100vw-3rem))]" : "w-80"
       }`}
     >
       <div className={isMega ? "grid gap-5 lg:grid-cols-[1fr_1fr_0.9fr]" : "grid gap-4"}>
@@ -261,7 +261,7 @@ function HeaderSearch({
 }) {
   return (
     <div id="header-search" className="border-t border-[var(--school-border)] bg-[var(--school-cream)]">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 md:px-6 lg:px-8">
+      <div className="mx-auto flex max-w-[1380px] items-center gap-3 px-4 py-4 md:px-6 lg:px-8">
         <label className="sr-only" htmlFor="site-search">
           Search the website
         </label>
@@ -319,7 +319,7 @@ function MobileNavigation({
   };
 
   return (
-    <div className="fixed inset-0 z-[70] bg-[var(--school-blue-dark)]/70 lg:hidden" onMouseDown={onClose}>
+    <div className="fixed inset-0 z-[70] bg-[var(--school-blue-dark)]/70 xl:hidden" onMouseDown={onClose}>
       <div
         ref={drawerRef}
         id="mobile-navigation"

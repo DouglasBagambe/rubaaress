@@ -21,15 +21,16 @@ test("navigation exposes grouped primary items", () => {
     "About",
     "Academics",
     "Admissions",
-    "School Life",
-    "News & Events",
-    "Gallery",
-    "Contact",
+    "Student Life",
+    "News",
   ]);
 });
 
 test("main navigation avoids homepage hash links", () => {
-  const links = navigation.flatMap((item) => [item.href, ...(item.children?.map((child) => child.href) ?? [])]);
+  const links = navigation.flatMap((item) => [
+    item.href,
+    ...(item.groups?.flatMap((group) => group.items.map((child) => child.href)) ?? []),
+  ]);
 
   assert.ok(links.every((href) => !href.startsWith("/#")));
 });
