@@ -68,7 +68,7 @@ export function Header() {
               {item.children ? (
                 <div className="invisible absolute left-0 top-full w-72 border border-[var(--school-border)] bg-white p-2 opacity-0 shadow-lg transition group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
                   {item.children.map((child) => (
-                    <Link key={child.href} href={child.href} className={`block min-h-11 px-3 py-2 text-sm font-semibold text-[var(--school-ink)] hover:bg-[var(--school-cream)] ${focusClass}`}>
+                    <Link key={`${item.label}-${child.label}-${child.href}`} href={child.href} className={`block min-h-11 px-3 py-2 text-sm font-semibold text-[var(--school-ink)] hover:bg-[var(--school-cream)] ${focusClass}`}>
                       {child.label}
                     </Link>
                   ))}
@@ -113,7 +113,7 @@ export function Header() {
                 {item.children && openMobileGroup === item.label ? (
                   <div className="grid gap-1 pb-2 pl-4">
                     {item.children.map((child) => (
-                      <Link key={child.href} href={child.href} className={`block min-h-11 py-2 text-sm font-semibold text-[var(--school-muted)] ${focusClass}`} onClick={() => setIsOpen(false)}>
+                      <Link key={`${item.label}-${child.label}-${child.href}`} href={child.href} className={`block min-h-11 py-2 text-sm font-semibold text-[var(--school-muted)] ${focusClass}`} onClick={() => setIsOpen(false)}>
                         {child.label}
                       </Link>
                     ))}
