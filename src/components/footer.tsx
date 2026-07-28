@@ -24,8 +24,11 @@ export function Footer() {
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-10 md:grid-cols-[1.4fr_1fr_1fr_1fr] md:px-6 lg:px-8">
         <div>
           <div className="mb-4 flex items-center gap-3">
-            <Image src={schoolIdentity.logoPath} alt="Temporary RSS mark" width={50} height={56} />
-            <p className="font-serif text-xl font-semibold">{schoolIdentity.name}</p>
+            <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={50} height={56} />
+            <div>
+              <p className="font-serif text-xl font-semibold">{schoolIdentity.name}</p>
+              <p className="mt-1 text-sm font-semibold text-[var(--school-gold)]">Rise and Shine</p>
+            </div>
           </div>
           <p className="max-w-sm text-sm leading-6 text-blue-100">
             A mixed day and boarding secondary school serving learners in Rubaare, Ntungamo District.

@@ -213,19 +213,26 @@ export const navigation: ReadonlyArray<NavItem> = [
       { label: "Academic Performance", href: "/academics" },
     ],
   },
-  { label: "Admissions", href: "/admissions" },
-  { label: "School Life", href: "/school-life" },
   {
-    label: "News & Events",
+    label: "Student Life",
+    href: "/school-life",
+    children: [
+      { label: "School Life", href: "/school-life" },
+      { label: "Admissions", href: "/admissions" },
+      { label: "Gallery", href: "/gallery" },
+    ],
+  },
+  {
+    label: "Updates",
     href: "/news",
     children: [
       { label: "Latest News", href: "/news" },
       { label: "Upcoming Events", href: "/events" },
       { label: "School Calendar", href: "/events" },
+      { label: "Downloads", href: "/downloads" },
+      { label: "Contact", href: "/contact" },
     ],
   },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Contact", href: "/contact" },
 ];
 
 export const utilityLinks: ReadonlyArray<QuickLink> = [

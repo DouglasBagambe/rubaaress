@@ -16,16 +16,13 @@ import {
   utilityLinks,
 } from "./site-data";
 
-test("navigation exposes the requested eight primary items", () => {
+test("navigation exposes grouped primary items", () => {
   assert.deepEqual(navigation.map((item) => item.label), [
     "Home",
     "About",
     "Academics",
-    "Admissions",
-    "School Life",
-    "News & Events",
-    "Gallery",
-    "Contact",
+    "Student Life",
+    "Updates",
   ]);
 });
 

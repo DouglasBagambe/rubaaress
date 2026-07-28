@@ -47,11 +47,11 @@ export function Header() {
               {schoolIdentity.name}
             </span>
             <span className="block text-xs font-semibold text-[var(--school-muted)]">
-              Mixed day and boarding secondary school
+              Rise and Shine
             </span>
           </span>
         </Link>
-        <nav aria-label="Primary navigation" className="hidden items-center gap-1 lg:flex">
+        <nav aria-label="Primary navigation" className="hidden items-center gap-2 lg:flex">
           {navigation.map((item) => (
             <div key={item.href} className="group relative">
               <Link
@@ -77,9 +77,6 @@ export function Header() {
             </div>
           ))}
         </nav>
-        <Link href="/admissions" className={`hidden min-h-11 items-center bg-[var(--school-gold)] px-5 text-sm font-bold text-[var(--school-ink)] hover:bg-[#e1ad58] lg:flex ${focusClass}`}>
-          Admissions
-        </Link>
         <button
           type="button"
           className={`min-h-11 border border-[var(--school-blue)] px-4 text-sm font-bold text-[var(--school-blue)] lg:hidden ${focusClass}`}
