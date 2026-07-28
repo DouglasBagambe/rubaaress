@@ -7,8 +7,10 @@ import {
   heroSlides,
   images,
   latestNews,
+  masterPlanItems,
   navigation,
   pageIntros,
+  galleryAlbums,
   schoolStats,
   upcomingEvents,
   utilityLinks,
@@ -38,14 +40,16 @@ test("content datasets remain CMS-ready and structured", () => {
   assert.equal(heroSlides.length, 3);
   assert.equal(academicPathways.length, 2);
   assert.equal(upcomingEvents.length, 0);
+  assert.ok(masterPlanItems.length >= 6);
+  assert.ok(galleryAlbums.every((album) => album.slug && album.coverImage && album.images.length > 0));
   assert.ok(schoolStats.every((stat) => stat.verificationStatus));
   assert.ok(latestNews.every((item) => item.slug && item.excerpt && item.featuredImage));
   assert.ok(downloads.every((item) => item.fileType === "PDF"));
 });
 
-test("all temporary images use local public paths", () => {
+test("all official images use local public school paths", () => {
   Object.values(images).forEach((image) => {
-    assert.match(image.src, /^\/images\/temporary\//);
+    assert.match(image.src, /^\/images\/school\//);
     assert.ok(image.alt.length > 20);
   });
 });
@@ -61,6 +65,7 @@ test("all secondary pages have page introductions", () => {
     "gallery",
     "downloads",
     "contact",
+    "masterPlan",
   ]);
 });
 

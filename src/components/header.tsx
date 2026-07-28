@@ -41,7 +41,7 @@ export function Header() {
       </div>
       <div className="mx-auto flex max-w-7xl items-center justify-between gap-5 px-4 py-3 md:px-6 lg:px-8">
         <Link href="/" className={`flex min-h-12 items-center gap-3 ${focusClass}`}>
-          <Image src={schoolIdentity.logoPath} alt="Temporary Rubaare Secondary School RSS mark" width={54} height={60} priority />
+          <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={42} height={63} priority />
           <span>
             <span className="block text-base font-bold text-[var(--school-blue-dark)] md:text-xl">
               {schoolIdentity.name}

@@ -1,3 +1,5 @@
+import { galleryAlbums, masterPlanItems, schoolMedia } from "@/content/media";
+
 export type VerificationStatus = "verified" | "school-confirmation-required";
 
 export type NavItem = {
@@ -11,6 +13,8 @@ export type ImageAsset = {
   alt: string;
   credit: string;
   verificationStatus: VerificationStatus;
+  width?: number;
+  height?: number;
 };
 
 export type QuickLink = {
@@ -86,6 +90,10 @@ export type PageIntro = {
   image: ImageAsset;
 };
 
+export type GalleryAlbum = (typeof galleryAlbums)[number];
+
+export type MasterPlanItem = (typeof masterPlanItems)[number];
+
 export type HeroSlide = {
   eyebrow: string;
   heading: string;
@@ -112,66 +120,46 @@ export const schoolIdentity = {
   status: "Government-aided",
   foundingBody: "Church of Uganda",
   headteacher: "Ms Monica Mpeirwe Atukunda",
-  logoPath: "/brand/rubaare-temporary-mark.svg",
-  verificationStatus: "school-confirmation-required" as VerificationStatus,
+  logoPath: schoolMedia.badge.src,
+  verificationStatus: "verified" as VerificationStatus,
 } as const;
 
 export const images = {
   heroCampus: {
-    src: "/images/temporary/hero-campus.jpg",
-    alt: "Students gathered in a classroom during a lesson.",
-    credit: "Temporary image by Quilia on Unsplash",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.studentAssembly,
   },
   heroStudents: {
-    src: "/images/temporary/hero-students.jpg",
-    alt: "African students collaborating on classroom work.",
-    credit: "Temporary image by Tosin Olowoleni on Pexels",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.schoolCompound,
   },
   classroom: {
-    src: "/images/temporary/classroom-learning.jpg",
-    alt: "African students seated at desks during classroom study.",
-    credit: "Temporary image by Tosin Olowoleni on Pexels",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.classroomLearning,
   },
   lab: {
-    src: "/images/temporary/science-laboratory.jpg",
-    alt: "Students taking notes in an academic classroom setting.",
-    credit: "Temporary image by Tosin Olowoleni on Pexels",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.classroomAssembly,
   },
   headteacher: {
-    src: "/images/temporary/headteacher-placeholder.jpg",
-    alt: "Temporary school leadership image, not the actual headteacher.",
-    credit: "Temporary image by Tosin Olowoleni on Pexels",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.headteacher,
   },
   sports: {
-    src: "/images/temporary/school-life-sports.jpg",
-    alt: "Students in a classroom environment used as temporary school life photography.",
-    credit: "Temporary image by Quilia on Unsplash",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.sportsDayVolleyball,
   },
   clubs: {
-    src: "/images/temporary/school-life-clubs.jpg",
-    alt: "Students working together in a classroom activity.",
-    credit: "Temporary image by Tosin Olowoleni on Pexels",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.christmasCarolsPerformance,
   },
   admissions: {
-    src: "/images/temporary/admissions-students.jpg",
-    alt: "Students collaborating in class, used for admissions section.",
-    credit: "Temporary image by Tosin Olowoleni on Pexels",
-    verificationStatus: "school-confirmation-required",
+    ...schoolMedia.outdoorStudentGathering,
   },
 } satisfies Record<string, ImageAsset>;
 
 export const galleryImages: ReadonlyArray<ImageAsset> = [
-  { ...images.heroCampus, src: "/images/temporary/gallery-campus.jpg", alt: "Temporary campus-life photograph for the gallery." },
-  { ...images.heroStudents, src: "/images/temporary/gallery-students.jpg", alt: "Temporary student-life photograph for the gallery." },
-  { ...images.classroom, src: "/images/temporary/gallery-activities.jpg", alt: "Temporary academic-activity photograph for the gallery." },
+  schoolMedia.schoolCompound,
+  schoolMedia.classroomLearning,
+  schoolMedia.sportsDayVolleyball,
+  schoolMedia.waterProjectGroupPhoto,
+  masterPlanItems[0],
 ];
+
+export { galleryAlbums, masterPlanItems };
 
 export const heroSlides: ReadonlyArray<HeroSlide> = [
   {
@@ -210,6 +198,7 @@ export const navigation: ReadonlyArray<NavItem> = [
       { label: "School History", href: "/about/history" },
       { label: "Mission, Vision & Values", href: "/about/mission-vision" },
       { label: "Leadership", href: "/about/leadership" },
+      { label: "Master Plan", href: "/about/master-plan" },
       { label: "Facilities", href: "/about" },
     ],
   },
@@ -284,14 +273,13 @@ export const schoolStats: ReadonlyArray<Stat> = [
 
 export const latestNews: ReadonlyArray<NewsItem> = [
   {
-    title: "Ntungamo officials commission water tank at Rubaare Secondary School",
-    slug: "water-tank-commissioned",
-    excerpt: "District officials commissioned a 24,000-litre water tank at the school, strengthening access to water on campus.",
-    content: "A public district report noted the commissioning of a 24,000-litre water tank at Rubaare Secondary School.",
-    category: "Campus",
-    featuredImage: images.heroCampus,
-    publishedAt: "2026-02-01",
-    author: "District report",
+    title: "Water project documented in official school photography",
+    slug: "water-project-official-photography",
+    excerpt: "Official school photographs show water-project activity and students collecting water on campus.",
+    content: "The supplied school content includes water-project photographs suitable for a development update, pending school confirmation of dates and project details.",
+    category: "School Development",
+    featuredImage: schoolMedia.waterProjectGroupPhoto,
+    author: "Rubaare SS website team",
     featured: true,
     verificationStatus: "school-confirmation-required",
   },
@@ -301,7 +289,7 @@ export const latestNews: ReadonlyArray<NewsItem> = [
     excerpt: "Core public information has been structured for review before the production launch.",
     content: "The website content model separates verified public details from facts that need school confirmation.",
     category: "Administration",
-    featuredImage: images.classroom,
+    featuredImage: schoolMedia.classroomLearning,
     author: "Rubaare SS website team",
     featured: false,
     verificationStatus: "school-confirmation-required",
@@ -312,7 +300,7 @@ export const latestNews: ReadonlyArray<NewsItem> = [
     excerpt: "Admissions guidance, downloads and contact paths now sit in their own website journey.",
     content: "Parents and guardians can use the admissions page as official documents become available.",
     category: "Admissions",
-    featuredImage: images.admissions,
+    featuredImage: schoolMedia.outdoorStudentGathering,
     author: "Rubaare SS website team",
     featured: false,
     verificationStatus: "school-confirmation-required",
@@ -324,7 +312,7 @@ export const upcomingEvents: ReadonlyArray<EventItem> = [];
 export const schoolLife: ReadonlyArray<SchoolLifeItem> = [
   { title: "Sports", href: "/school-life", summary: "Teamwork, health and friendly competition form part of school life.", image: images.sports },
   { title: "Clubs & Societies", href: "/school-life", summary: "Learners can develop confidence, service and practical interests.", image: images.clubs },
-  { title: "Student Leadership", href: "/school-life", summary: "Student responsibility supports discipline and community life.", image: images.heroCampus },
+  { title: "Student Leadership", href: "/school-life", summary: "Student responsibility supports discipline and community life.", image: schoolMedia.studentAssembly },
 ];
 
 export const downloads: ReadonlyArray<DownloadItem> = [
@@ -381,7 +369,7 @@ export const pageIntros: Record<string, PageIntro> = {
   gallery: {
     eyebrow: "Gallery",
     title: "A visual record of learning and school life.",
-    description: "The gallery is ready for official campus, classroom, sports and activity photography.",
+    description: "Official campus, classroom, sports, activity, water-project and master-plan images are organised into focused albums.",
     image: images.heroStudents,
   },
   downloads: {
@@ -395,5 +383,11 @@ export const pageIntros: Record<string, PageIntro> = {
     title: "Reach Rubaare Secondary School.",
     description: "Contact details will be expanded when official phone, email and office hours are confirmed.",
     image: images.heroCampus,
+  },
+  masterPlan: {
+    eyebrow: "Master Plan",
+    title: "Rubaare Secondary School Master Plan.",
+    description: "The school master plan presents proposed future development for the learning environment, facilities and student experience.",
+    image: masterPlanItems[0],
   },
 };

@@ -10,6 +10,7 @@ import {
   heroSlides,
   images,
   latestNews,
+  masterPlanItems,
   quickAccessLinks,
   schoolIdentity,
   schoolLife,
@@ -51,8 +52,24 @@ export default function Home() {
       </Section>
 
       <Section className="bg-white">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <TemporaryImage image={masterPlanItems[0]} className="aspect-[16/10]" priority={false} />
+          <div>
+            <SectionHeading
+              eyebrow="Our Vision for the Future"
+              title="A long-term plan for continued development."
+              description="Rubaare Secondary School's master plan presents a long-term vision for the continued development of its learning environment, facilities and student experience."
+            />
+            <Link href="/about/master-plan" className={`mt-7 inline-flex min-h-12 items-center bg-[var(--school-blue)] px-6 text-sm font-bold text-white hover:bg-[var(--school-blue-dark)] ${focusClass}`}>
+              Explore the Master Plan
+            </Link>
+          </div>
+        </div>
+      </Section>
+
+      <Section className="bg-white">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-          <TemporaryImage image={images.headteacher} className="aspect-[4/5]" showDevelopmentBadge />
+          <TemporaryImage image={images.headteacher} className="aspect-[4/5]" imgClassName="object-[50%_18%]" />
           <div>
             <SectionHeading
               eyebrow="From the Headteacher's Desk"
@@ -132,7 +149,7 @@ export default function Home() {
       </Section>
 
       <Section className="bg-white">
-        <SectionHeading eyebrow="Gallery" title="A visual introduction to school life." description="Official Rubaare Secondary School photography can replace these temporary images before launch." />
+        <SectionHeading eyebrow="Gallery" title="A visual introduction to school life." description="Official Rubaare Secondary School photography is organised across campus, academics, sports, student life and development albums." />
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {galleryImages.map((image) => <TemporaryImage key={image.src} image={image} className="aspect-[4/3]" />)}
         </div>
