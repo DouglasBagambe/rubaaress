@@ -1,0 +1,15 @@
+# Brand — Rubaare Secondary School
+
+_Status: deferred_
+
+The user chose to defer brand setup. This project is currently using a neutral institutional palette and no official school colours. The frontend foundation uses clearly labelled placeholders for official crest, colours, photography, statistics, history and achievements.
+
+To set up a real brand palette, typography, and voice at any time, run:
+
+    /brand-design
+
+or say: "pick brand colors"
+
+When `brand-design` runs, it will detect this deferred state, skip the "confirm overwrite" step, and proceed directly to the full brand setup. The resulting palette will be applied to `app/globals.css` and this file will be replaced with the real brand documentation.
+
+_Deferred at: 2026-07-28T00:00:00Z_

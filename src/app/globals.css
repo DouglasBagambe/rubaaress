@@ -1,15 +1,34 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --school-blue: #173e68;
+  --school-blue-dark: #0f2c4a;
+  --school-gold: #d59a32;
+  --school-green: #327052;
+  --school-red: #a33b3b;
+  --school-cream: #f7f3e9;
+  --school-white: #ffffff;
+  --school-ink: #17212b;
+  --school-muted: #64717d;
+  --school-border: #d9dee3;
+  --background: var(--school-cream);
+  --foreground: var(--school-ink);
 }
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-school-blue: var(--school-blue);
+  --color-school-blue-dark: var(--school-blue-dark);
+  --color-school-gold: var(--school-gold);
+  --color-school-green: var(--school-green);
+  --color-school-red: var(--school-red);
+  --color-school-cream: var(--school-cream);
+  --color-school-ink: var(--school-ink);
+  --color-school-muted: var(--school-muted);
+  --color-school-border: var(--school-border);
+  --font-sans: "Aptos", "Segoe UI", Arial, Helvetica, sans-serif;
+  --font-mono: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -22,5 +41,22 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Aptos", "Segoe UI", Arial, Helvetica, sans-serif;
+}
+
+h1,
+h2,
+h3,
+.font-serif {
+  font-family: Georgia, "Times New Roman", serif;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
 }

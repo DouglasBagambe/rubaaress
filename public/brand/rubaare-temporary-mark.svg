@@ -1,0 +1,9 @@
+<!-- Temporary brand mark. Replace with the official Rubaare Secondary School crest before production launch. -->
+<svg width="160" height="180" viewBox="0 0 160 180" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="title desc">
+  <title id="title">Temporary RSS brand mark</title>
+  <desc id="desc">A temporary shield monogram using the letters RSS.</desc>
+  <path d="M80 8L143 31V83C143 123 119 154 80 171C41 154 17 123 17 83V31L80 8Z" fill="#173E68"/>
+  <path d="M80 20L130 39V82C130 113 112 139 80 154C48 139 30 113 30 82V39L80 20Z" stroke="#D59A32" stroke-width="6"/>
+  <text x="80" y="98" text-anchor="middle" font-family="Georgia, serif" font-size="42" font-weight="700" fill="#FFFFFF" letter-spacing="3">RSS</text>
+  <path d="M51 117H109" stroke="#D59A32" stroke-width="5" stroke-linecap="round"/>
+</svg>
