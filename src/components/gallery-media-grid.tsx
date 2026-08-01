@@ -71,7 +71,7 @@ export function GalleryMediaGrid({ albumTitle, media }: GalleryMediaGridProps) {
               onClick={() => openByIndex(index)}
               className="group relative aspect-[4/3] overflow-hidden border border-[var(--school-border)] bg-[var(--school-blue-dark)] text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2"
             >
-              <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-300 group-hover:scale-[1.03]" />
+              <Image src={image.src} alt={image.alt} fill sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw" className="object-cover transition-transform duration-300 group-hover:scale-[1.03] motion-reduce:transition-none motion-reduce:group-hover:scale-100" />
               <span className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-4 text-sm font-semibold text-white">
                 {item.mediaType === "video" ? "Video" : item.caption ? item.caption : item.title}
               </span>
@@ -80,7 +80,7 @@ export function GalleryMediaGrid({ albumTitle, media }: GalleryMediaGridProps) {
         })}
       </div>
 
-      <dialog ref={dialogRef} onClose={closeLightbox} className="w-[min(1100px,calc(100vw-24px))] max-w-none bg-transparent p-0 backdrop:bg-black/80">
+      <dialog ref={dialogRef} aria-label={`${albumTitle} media viewer`} onClose={closeLightbox} className="w-[min(1100px,calc(100vw-24px))] max-w-none bg-transparent p-0 backdrop:bg-black/80">
         {selected ? (
           <div className="bg-[var(--school-blue-dark)] text-white">
             <div className="flex items-center justify-between border-b border-white/15 px-4 py-3">

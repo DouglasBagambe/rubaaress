@@ -13,6 +13,7 @@ const schoolLinks = [
 
 const resourceLinks = [
   { label: "Events", href: "/events" },
+  { label: "Announcements", href: "/announcements" },
   { label: "Gallery", href: "/gallery" },
   { label: "Downloads", href: "/downloads" },
   { label: "Contact", href: "/contact" },
@@ -59,8 +60,8 @@ export function Footer({ settings }: { settings: ResolvedSiteSettings }) {
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-blue-100 md:flex-row md:items-center md:justify-between md:px-6 lg:px-8">
           <p>{settings.copyrightText}</p>
           <div className="flex gap-4">
-            <Link href="/downloads" className="hover:text-white">Privacy</Link>
-            <Link href="/contact" className="hover:text-white">Accessibility</Link>
+            <Link href="/privacy" className="hover:text-white">Privacy</Link>
+            <Link href="/accessibility" className="hover:text-white">Accessibility</Link>
           </div>
         </div>
       </div>

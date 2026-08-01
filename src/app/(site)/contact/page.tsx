@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
 import { LocationSection } from "@/components/location-section";
+import { PublicForm } from "@/components/public-form";
 import { Section, SectionHeading } from "@/components/section";
 import { pageIntros } from "@/lib/site-data";
 import { getSiteSettings } from "@/sanity/content";
@@ -37,6 +38,12 @@ export default async function ContactPage() {
           <Link href="/downloads" className={`border-l-4 border-[var(--school-gold)] bg-[var(--school-cream)] p-5 font-bold text-[var(--school-blue-dark)] hover:bg-white hover:shadow-sm ${focusClass}`}>
             View Downloads
           </Link>
+        </div>
+      </Section>
+      <Section className="bg-[var(--school-cream)]">
+        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
+          <SectionHeading eyebrow="Message" title="Send a general enquiry." description="Messages are validated server-side. Email delivery requires provider credentials before production launch." />
+          <PublicForm kind="contact" />
         </div>
       </Section>
       <LocationSection settings={settings} />

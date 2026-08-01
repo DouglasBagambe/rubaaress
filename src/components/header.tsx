@@ -328,22 +328,26 @@ function HeaderSearch({
 }) {
   return (
     <div id="header-search" className="border-t border-[var(--school-border)] bg-[var(--school-cream)]">
-      <div className="mx-auto flex max-w-[1380px] items-center gap-3 px-4 py-4 md:px-6 lg:px-8">
+      <form action="/search" className="mx-auto flex max-w-[1380px] items-center gap-3 px-4 py-4 md:px-6 lg:px-8">
         <label className="sr-only" htmlFor="site-search">
           Search the website
         </label>
         <input
           ref={inputRef}
           id="site-search"
+          name="q"
           type="search"
           autoComplete="off"
           placeholder="Search Rubaare Secondary School"
           className={`min-h-11 flex-1 border border-[var(--school-border)] bg-white px-4 text-sm text-[var(--school-ink)] ${focusClass}`}
         />
+        <button type="submit" className={`min-h-11 bg-[var(--school-blue)] px-4 text-sm font-bold text-white ${focusClass}`}>
+          Search
+        </button>
         <button type="button" className={`min-h-11 border border-[var(--school-blue)] px-4 text-sm font-bold text-[var(--school-blue)] ${focusClass}`} onClick={onClose}>
           Close
         </button>
-      </div>
+      </form>
     </div>
   );
 }

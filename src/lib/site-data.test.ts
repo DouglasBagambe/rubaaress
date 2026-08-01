@@ -19,6 +19,8 @@ import {
 } from "./site-data";
 import { calculateEnrolment } from "./enrolment";
 import { countMedia, filterGalleryAlbums, paginateGalleryMedia, sortGalleryMedia, validateExternalVideoUrl } from "./gallery";
+import { checkRateLimit, validatePublicForm } from "./forms";
+import { filterSearchResults, normaliseQuery } from "./search";
 import { resolveAnnouncements, resolveDownloads, resolveEnrolment, resolveEvents, resolveGalleryIndex, resolveHomepage, resolveMasterPlan, resolveSiteSettings } from "@/sanity/content";
 import type { ResolvedGalleryAlbum, ResolvedGalleryMedia } from "@/sanity/types";
 
@@ -265,4 +267,44 @@ test("master plan resolver preserves fallback image metadata", () => {
 
   assert.equal(masterPlan.items[0]?.id, masterPlanItems[0]?.id);
   assert.ok(masterPlan.items.every((item) => item.title && item.caption));
+});
+
+test("search normalises queries and filters public results", () => {
+  const results = filterSearchResults(
+    [
+      { title: "Sports Day", type: "Gallery album", excerpt: "Student sports media", href: "/gallery/sports-day" },
+      { title: "Admissions", type: "Page", excerpt: "How to apply", href: "/admissions" },
+    ],
+    "  sports   day  ",
+  );
+
+  assert.equal(normaliseQuery("  admissions   forms "), "admissions forms");
+  assert.deepEqual(results.map((item) => item.href), ["/gallery/sports-day"]);
+});
+
+test("public form validation rejects spam and accepts clean contact input", () => {
+  const spam = new FormData();
+  spam.set("kind", "contact");
+  spam.set("website", "https://spam.example");
+  assert.equal(validatePublicForm(spam).ok, false);
+
+  const clean = new FormData();
+  clean.set("kind", "contact");
+  clean.set("fullName", "Jane Parent");
+  clean.set("email", "JANE@example.com");
+  clean.set("subject", "Admissions question");
+  clean.set("message", "Please share the admissions process.");
+  clean.set("consent", "on");
+  clean.set("startedAt", String(Date.now() - 5000));
+
+  const result = validatePublicForm(clean);
+  assert.equal(result.ok, true);
+  assert.equal(result.cleaned?.email, "jane@example.com");
+});
+
+test("rate limiting blocks repeated submissions", () => {
+  const key = `test-${Date.now()}`;
+  assert.equal(checkRateLimit(key, 2, 10000), true);
+  assert.equal(checkRateLimit(key, 2, 10000), true);
+  assert.equal(checkRateLimit(key, 2, 10000), false);
 });
