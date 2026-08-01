@@ -24,9 +24,10 @@ type ManifestItem = {
 };
 
 const rootDir = path.resolve(__dirname, "..", "..");
-const sourceRoots = [path.join(rootDir, "content"), path.join(rootDir, "selected_content")];
-const manifestPath = path.resolve(__dirname, "..", "docs", "gallery-import-manifest.json");
-const reportPath = path.resolve(__dirname, "..", "docs", "GALLERY_IMPORT_REPORT.md");
+const selectedOnly = process.argv.includes("--selected-only");
+const sourceRoots = selectedOnly ? [path.join(rootDir, "selected_content")] : [path.join(rootDir, "content"), path.join(rootDir, "selected_content")];
+const manifestPath = path.resolve(__dirname, "..", "docs", selectedOnly ? "gallery-curated-import-manifest.json" : "gallery-import-manifest.json");
+const reportPath = path.resolve(__dirname, "..", "docs", selectedOnly ? "GALLERY_CURATED_IMPORT_REPORT.md" : "GALLERY_IMPORT_REPORT.md");
 const maxMediaFiles = 500;
 const maxTotalBytes = 5 * 1024 * 1024 * 1024;
 const maxVideoBytes = 100 * 1024 * 1024;
@@ -46,6 +47,15 @@ function titleCase(value: string): string {
 
 function albumForFile(filePath: string): string {
   const normalized = filePath.toLowerCase();
+  if (normalized.includes("/selected_content/brand/")) return "Brand Asset";
+  if (normalized.includes("/selected_content/campus/")) return "Campus";
+  if (normalized.includes("/selected_content/water-project/")) return "School Water Project";
+  if (normalized.includes("/selected_content/master-plan/")) return "Master Plan";
+  if (normalized.includes("/selected_content/sports/")) return "Sports Day";
+  if (normalized.includes("/selected_content/events/")) return "School Events";
+  if (normalized.includes("/selected_content/leadership/")) return "Leadership";
+  if (normalized.includes("/selected_content/academics/")) return "Academics";
+  if (normalized.includes("/selected_content/students/") || normalized.includes("/selected_content/gallery/")) return "Student Life";
   if (normalized.includes("sports")) return "Sports Day";
   if (normalized.includes("water")) return "School Water Project";
   if (normalized.includes("master-plan") || normalized.includes("master plan")) return "Master Plan";
@@ -103,6 +113,7 @@ function decide(filePath: string, checksum: string, seen: Set<string>, mediaType
   if (lower.includes("screenshot")) return { decision: "exclude" as const, reason: "Screenshot is not gallery photography." };
   if (mediaType === "document") return { decision: "exclude" as const, reason: "Document belongs in Downloads or archive review, not gallery media." };
   if (mediaType === "unsupported") return { decision: "exclude" as const, reason: "Unsupported gallery file type." };
+  if (albumForFile(filePath) === "Brand Asset") return { decision: "exclude" as const, reason: "Brand assets are not gallery photographs." };
   if (mediaType === "video" && size > maxVideoBytes) return { decision: "defer" as const, reason: "Video exceeds 100 MB and needs hosting approval." };
   if (dimensions && (dimensions.width < 480 || dimensions.height < 320)) return { decision: "exclude" as const, reason: "Image is too small for public gallery use." };
   if (albumForFile(filePath) === "Unresolved Content") return { decision: "defer" as const, reason: "Album meaning needs school confirmation." };
@@ -151,26 +162,54 @@ async function buildManifest() {
 function writeReport(items: ManifestItem[], mode: string) {
   const totalBytes = items.reduce((sum, item) => sum + item.fileSize, 0);
   const mediaItems = items.filter((item) => item.proposedMediaType === "image" || item.proposedMediaType === "video");
+  const uploadCandidates = items.filter((item) => item.decision === "include");
+  const uploadBytes = uploadCandidates.reduce((sum, item) => sum + item.fileSize, 0);
   const largeVideos = items.filter((item) => item.proposedMediaType === "video" && item.fileSize > maxVideoBytes);
   const included = items.filter((item) => item.decision === "include");
   const excluded = items.filter((item) => item.decision === "exclude");
   const deferred = items.filter((item) => item.decision === "defer");
   const thresholdStop = mediaItems.length > maxMediaFiles || totalBytes > maxTotalBytes || largeVideos.length > 0;
+  const albumNames = [...new Set(items.map((item) => item.proposedAlbum))].sort();
+  const albumRows = albumNames.map((album) => {
+    const albumItems = items.filter((item) => item.proposedAlbum === album && item.decision === "include");
+    const imageCount = albumItems.filter((item) => item.proposedMediaType === "image").length;
+    const videoCount = albumItems.filter((item) => item.proposedMediaType === "video").length;
+    const albumBytes = albumItems.reduce((sum, item) => sum + item.fileSize, 0);
+    return `| ${album} | ${imageCount} | ${videoCount} | ${albumBytes} |`;
+  });
 
   const lines = [
     "# Gallery Import Report",
     "",
     `Mode: ${mode}`,
+    `Source scope: ${selectedOnly ? "selected_content only" : "content and selected_content"}`,
     `Generated: ${new Date().toISOString()}`,
     "",
     `Total files scanned: ${items.length}`,
     `Total bytes scanned: ${totalBytes}`,
+    `Total upload candidate size: ${uploadBytes}`,
     `Media files scanned: ${mediaItems.length}`,
     `Included candidates: ${included.length}`,
     `Deferred files: ${deferred.length}`,
     `Excluded files: ${excluded.length}`,
     `Large videos over 100 MB: ${largeVideos.length}`,
     `Safety threshold stop: ${thresholdStop ? "yes" : "no"}`,
+    "",
+    "## Proposed Albums",
+    "",
+    "| Album | Images | Videos | Upload candidate bytes |",
+    "| --- | ---: | ---: | ---: |",
+    ...albumRows,
+    "",
+    "## Excluded Files",
+    "",
+    ...excluded.map((item) => `- ${item.originalSourcePath}: ${item.exclusionReason ?? "Excluded."}`),
+    ...(excluded.length ? [] : ["None."]),
+    "",
+    "## Content Requiring Confirmation",
+    "",
+    ...deferred.map((item) => `- ${item.originalSourcePath}: ${item.exclusionReason ?? "Needs confirmation."}`),
+    ...(deferred.length ? [] : ["None."]),
     "",
     "## Large Videos Deferred",
     "",
