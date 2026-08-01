@@ -11,7 +11,8 @@
     "sanity:seed:phase2": "sanity exec scripts/seed-sanity-phase2.mjs --with-user-token",
     "sanity:smoke:phase2": "sanity exec scripts/smoke-sanity-phase2.mjs --with-user-token",
     "gallery:migrate:dry": "tsx scripts/migrate-gallery.ts",
-    "gallery:migrate": "tsx scripts/migrate-gallery.ts --migrate"
+    "gallery:migrate": "tsx scripts/migrate-gallery.ts --migrate",
+    "route:check": "node scripts/check-routes.mjs"
   },
   "dependencies": {
     "@sanity/vision": "^6.8.0",
