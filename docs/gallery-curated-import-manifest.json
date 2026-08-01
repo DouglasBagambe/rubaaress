@@ -37,7 +37,9 @@
     "proposedTitle": "Classroom Assembly",
     "proposedAltText": "Academics photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-620d6440bf7ad3b32cd825423017625bec206296-3696x2448-jpg",
+    "sanityMediaDocumentId": "galleryMedia-f7d9c8dac8503f5b46da"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/academics/classroom-learning.jpg",
@@ -53,7 +55,9 @@
     "proposedTitle": "Classroom Learning",
     "proposedAltText": "Academics photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-57b2df08617a7a4eb68ef21bf317021e408cb555-3696x2448-jpg",
+    "sanityMediaDocumentId": "galleryMedia-c27579d95111032b86c4"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/brand/rubaare-school-badge.jpg",
@@ -86,7 +90,9 @@
     "proposedTitle": "Main School Building",
     "proposedAltText": "Campus photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-8b376181af191d10edc0e5d63738b9b7ae5d4f56-3696x2448-jpg",
+    "sanityMediaDocumentId": "galleryMedia-3ad509b3f1ad962058a5"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/campus/school-building-and-water-point.jpg",
@@ -102,7 +108,9 @@
     "proposedTitle": "School Building And Water Point",
     "proposedAltText": "Campus photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-1f777b8a8f1916233cd1ee0bd6b50c8ddfb17000-4928x3264-jpg",
+    "sanityMediaDocumentId": "galleryMedia-45cb02365840e11dadd5"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/campus/school-compound.jpg",
@@ -118,7 +126,9 @@
     "proposedTitle": "School Compound",
     "proposedAltText": "Campus photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-1f1c327ac67c90f92a66a01934dea48ab9394f31-2400x1600-jpg",
+    "sanityMediaDocumentId": "galleryMedia-8431350a05a0aecb5991"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/documents/history-presentation.pptx",
@@ -158,7 +168,9 @@
     "proposedTitle": "Christmas Carols Assembly",
     "proposedAltText": "School Events photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-11eee7cb35dc664ca8ef4f18ba17dc993b165947-4928x3264-jpg",
+    "sanityMediaDocumentId": "galleryMedia-13cd4f2eebb90efcf797"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/events/christmas-carols-performance.jpg",
@@ -174,7 +186,9 @@
     "proposedTitle": "Christmas Carols Performance",
     "proposedAltText": "School Events photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-0589c18be98386a355ea9f82f1a32cf3a4eefdab-4928x3264-jpg",
+    "sanityMediaDocumentId": "galleryMedia-36e46cccf48f0e2ded05"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/events/school-event-guests.jpg",
@@ -190,7 +204,9 @@
     "proposedTitle": "School Event Guests",
     "proposedAltText": "School Events photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-a94e07d7afd91741cfe6640bb37455a57e388dc5-4928x3264-jpg",
+    "sanityMediaDocumentId": "galleryMedia-90cb1a9463093efd2ea7"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/gallery/outdoor-student-gathering.jpg",
@@ -206,7 +222,9 @@
     "proposedTitle": "Outdoor Student Gathering",
     "proposedAltText": "Student Life photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-51f2c2004bccf16ea920e54585307199c2879aa2-4928x3264-jpg",
+    "sanityMediaDocumentId": "galleryMedia-cd42b20a964ad61c1a3b"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/leadership/headteacher-ms-mpeirwe-monic-atukunda.jpg",
@@ -222,7 +240,9 @@
     "proposedTitle": "Headteacher Ms Mpeirwe Monic Atukunda",
     "proposedAltText": "Leadership photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-0987b70b1281fda72f807adc234c2135b69fd433-4800x3200-jpg",
+    "sanityMediaDocumentId": "galleryMedia-509ff3c8e63192cadf13"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-additional-building-render.jpg",
@@ -238,7 +258,9 @@
     "proposedTitle": "Master Plan Additional Building Render",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-85cad59476514783fa767c6ac4dd638c250b15ac-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-f09d913856f891d3ea50"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-admin-block.jpg",
@@ -254,7 +276,9 @@
     "proposedTitle": "Master Plan Admin Block",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-8c7ae97a09ce8c1fd999ec04658119f76de1c61c-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-e1f45a57d8ed51b26753"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-classroom-block-render-02.jpg",
@@ -270,7 +294,9 @@
     "proposedTitle": "Master Plan Classroom Block Render 02",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-4f43adf5b7a94c7cda2c355ecdeabc234097ae44-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-b36df123f9f9aa57fc9a"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-classroom-block-render.jpg",
@@ -286,7 +312,9 @@
     "proposedTitle": "Master Plan Classroom Block Render",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-23bcc8f1aaaddc3eb5b0909081cce5dcfda87515-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-25202dda35a54c7eadae"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-deputy-head-teacher-house.jpg",
@@ -302,7 +330,9 @@
     "proposedTitle": "Master Plan Deputy Head Teacher House",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-31f3078d562a120768ac830126f9024994fa2e0f-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-dec8abba469581f23ce5"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-dining-kitchen.jpg",
@@ -318,7 +348,9 @@
     "proposedTitle": "Master Plan Dining Kitchen",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-b1df8abc06e4dcae4b4189be6c410fbc95e75146-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-66f5116fc43719abc108"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-gate.jpg",
@@ -334,7 +366,9 @@
     "proposedTitle": "Master Plan Gate",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-2e43b7cbdd1d40ba16861dfa90435176edacbcf1-2400x1600-jpg",
+    "sanityMediaDocumentId": "galleryMedia-6b2816f2a2a1f50574a3"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-girls-dormitory.jpg",
@@ -350,7 +384,9 @@
     "proposedTitle": "Master Plan Girls Dormitory",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-4b20bca91fb5d67d97d3a943bc48c796ffc39842-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-f5f5869452395a22d128"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-head-teacher-house.jpg",
@@ -366,7 +402,9 @@
     "proposedTitle": "Master Plan Head Teacher House",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-dc6105f533e3977c880e70822959308024448e77-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-df5a458834af89827553"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-overview-building.jpg",
@@ -382,7 +420,9 @@
     "proposedTitle": "Master Plan Overview Building",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-d4a95e11183508b1500fa5a741d232d834647a20-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-795639c2fc66738e9b62"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/master-plan/master-plan-render-collage.jpg",
@@ -398,7 +438,9 @@
     "proposedTitle": "Master Plan Render Collage",
     "proposedAltText": "Master Plan photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-e0c55ec9f5c60dc807a6435b32db3bf5c8941b2c-4160x3120-jpg",
+    "sanityMediaDocumentId": "galleryMedia-e84fe69950fbf9779516"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/sports/sports-day-field.jpg",
@@ -414,7 +456,9 @@
     "proposedTitle": "Sports Day Field",
     "proposedAltText": "Sports Day photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-12d78f06e2e0fe9b32396ca8341253245cb54ef3-5472x3648-jpg",
+    "sanityMediaDocumentId": "galleryMedia-fd1dd214d1e72c7fd054"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/sports/sports-day-running.jpg",
@@ -430,7 +474,9 @@
     "proposedTitle": "Sports Day Running",
     "proposedAltText": "Sports Day photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-1d9b3049b88d2af42b5a6aae0c304df415a8df2a-5472x3648-jpg",
+    "sanityMediaDocumentId": "galleryMedia-54290790cf91b13a9298"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/sports/sports-day-volleyball.jpg",
@@ -446,7 +492,9 @@
     "proposedTitle": "Sports Day Volleyball",
     "proposedAltText": "Sports Day photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-5b6248180b395cfb175405fa247696efb0e38dcf-5472x3648-jpg",
+    "sanityMediaDocumentId": "galleryMedia-75215f4e007d191cc432"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/students/student-assembly.jpg",
@@ -462,7 +510,9 @@
     "proposedTitle": "Student Assembly",
     "proposedAltText": "Student Life photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-70af37d4897ffa74a202141e070167b1dcc28918-4928x3264-jpg",
+    "sanityMediaDocumentId": "galleryMedia-e16d3ff92114940e8058"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/video/sports-day-video.mov",
@@ -474,7 +524,9 @@
     "proposedMediaType": "video",
     "proposedTitle": "Sports Day Video",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "file-23b78a4c3ce7fb654e9f41f95475e0ab28d8f4f5-mov",
+    "sanityMediaDocumentId": "galleryMedia-6101be04e56fe0ae6c89"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/water-project/students-collecting-water.jpg",
@@ -490,7 +542,9 @@
     "proposedTitle": "Students Collecting Water",
     "proposedAltText": "School Water Project photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-c2c4df09896bf629a161745f1cfc0bb3657938fb-2400x1600-jpg",
+    "sanityMediaDocumentId": "galleryMedia-3d8809d92eecc9539194"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/water-project/water-project-group-photo.jpg",
@@ -506,7 +560,9 @@
     "proposedTitle": "Water Project Group Photo",
     "proposedAltText": "School Water Project photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-a4c9d3bbc2b678dc4687bad865a014f153d0b853-2400x1600-jpg",
+    "sanityMediaDocumentId": "galleryMedia-48b47e409e1f112df920"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/water-project/water-project-site-visit.jpg",
@@ -522,7 +578,9 @@
     "proposedTitle": "Water Project Site Visit",
     "proposedAltText": "School Water Project photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-ce95f1f4a798091ee91beefc9e29852f2a2d30fb-2400x1600-jpg",
+    "sanityMediaDocumentId": "galleryMedia-ec260ea902a25a6e04f7"
   },
   {
     "originalSourcePath": "/home/db/WORK/RubaareSS/selected_content/water-project/water-project-technical-discussion.jpg",
@@ -538,6 +596,8 @@
     "proposedTitle": "Water Project Technical Discussion",
     "proposedAltText": "School Water Project photograph at Rubaare Secondary School.",
     "decision": "include",
-    "migrationStatus": "dry-run"
+    "migrationStatus": "uploaded",
+    "sanityAssetId": "image-b95b101d74775cd36c86e5ce1ff0a00d8ad9a6b3-5472x3648-jpg",
+    "sanityMediaDocumentId": "galleryMedia-3cef906cef79945d9ec3"
   }
 ]

@@ -1,8 +1,8 @@
 # Gallery Import Report
 
-Mode: dry-run
+Mode: migrate
 Source scope: selected_content only
-Generated: 2026-08-01T22:29:59.107Z
+Generated: 2026-08-01T22:43:56.107Z
 
 Total files scanned: 35
 Total bytes scanned: 230926136
@@ -47,4 +47,4 @@ None.
 
 ## Next Step
 
-The selected import is below the safety thresholds and may be migrated with authenticated Sanity access.
+The curated gallery migration has been executed. Review the manifest for Sanity asset and document IDs.
