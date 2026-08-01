@@ -1,6 +1,4 @@
 import type { Metadata } from "next";
-import { Footer } from "@/components/footer";
-import { Header } from "@/components/header";
 import { officialSchoolProfile } from "@/content/site";
 import "./globals.css";
 
@@ -20,11 +18,7 @@ export default function RootLayout({
       lang="en"
       className="h-full antialiased"
     >
-      <body className="flex min-h-full flex-col bg-[var(--school-cream)] text-[var(--school-ink)]">
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
-      </body>
+      <body className="min-h-full bg-[var(--school-cream)] text-[var(--school-ink)]">{children}</body>
     </html>
   );
 }
