@@ -1,16 +1,21 @@
 import { calculateEnrolment, type EnrolmentInputRow } from "@/lib/enrolment";
 import {
+  academicPathways,
   coreValues,
+  downloads as localDownloads,
   enrolmentReportingDate,
   enrolmentRows,
   findUs,
   galleryAlbums,
   heroSlides,
   images,
+  latestNews,
   masterPlanItems,
   quickAccessLinks,
   schoolIdentity,
+  schoolLife,
   schoolStats,
+  upcomingEvents,
   type HeroSlide,
   type ImageAsset,
   type QuickLink,
@@ -27,6 +32,31 @@ import {
   type GalleryAlbumQueryItem,
   type GalleryMediaQueryItem,
 } from "@/sanity/queries/gallery";
+import {
+  ACADEMIC_PROGRAMMES_QUERY,
+  ADMISSIONS_QUERY,
+  ANNOUNCEMENTS_QUERY,
+  DEPARTMENTS_QUERY,
+  DOWNLOADS_QUERY,
+  EVENTS_QUERY,
+  FACILITIES_QUERY,
+  MASTER_PLAN_QUERY,
+  NEWS_ARTICLE_BY_SLUG_QUERY,
+  NEWS_ARTICLES_QUERY,
+  SCHOOL_LIFE_QUERY,
+  STAFF_QUERY,
+  type AcademicProgrammeQueryItem,
+  type AdmissionsQueryResult,
+  type AnnouncementQueryItem,
+  type DepartmentQueryItem,
+  type DownloadQueryItem,
+  type EventQueryItem,
+  type FacilityQueryItem,
+  type MasterPlanQueryResult,
+  type NewsArticleQueryItem,
+  type SchoolLifeQueryItem,
+  type StaffQueryItem,
+} from "@/sanity/queries/collections";
 import { HOMEPAGE_QUERY, type HomepageQueryResult } from "@/sanity/queries/homepage";
 import { SITE_SETTINGS_QUERY, type SanityImageResult, type SiteSettingsQueryResult } from "@/sanity/queries/siteSettings";
 import type { ResolvedEnrolment, ResolvedGalleryAlbum, ResolvedGalleryAlbumDetail, ResolvedGalleryIndex, ResolvedGalleryMedia, ResolvedHomepage, ResolvedImage, ResolvedSiteSettings } from "@/sanity/types";
@@ -241,6 +271,146 @@ export function resolveGalleryAlbumDetail(
   };
 }
 
+export function resolveNewsArticles(data: ReadonlyArray<NewsArticleQueryItem> | null) {
+  const articles = data
+    ?.map((item, index) => ({
+      title: withFallback(item.title, latestNews[index]?.title ?? "School news"),
+      slug: withFallback(item.slug, latestNews[index]?.slug ?? item._id),
+      excerpt: withFallback(item.excerpt, latestNews[index]?.excerpt ?? "School news update."),
+      category: withFallback(item.category, latestNews[index]?.category ?? "News"),
+      author: withFallback(item.author, latestNews[index]?.author ?? "Rubaare SS"),
+      publishedAt: cleanString(item.publishedAt),
+      featured: item.featured === true,
+      featuredImage: sanityImageToAsset(item.featuredImage, latestNews[index]?.featuredImage ?? images.heroCampus),
+      content: withFallback(item.plainBody, latestNews[index]?.content ?? "Full article details will be published after school confirmation."),
+    }))
+    .filter((item) => item.title && item.slug);
+
+  return articles?.length ? articles : latestNews;
+}
+
+export function resolveEvents(data: ReadonlyArray<EventQueryItem> | null, now = new Date()) {
+  const events = data
+    ?.map((item, index) => ({
+      title: withFallback(item.title, upcomingEvents[index]?.title ?? "School event"),
+      slug: cleanString(item.slug),
+      description: withFallback(item.summary ?? item.plainDescription, upcomingEvents[index]?.description ?? "Event details will be published after confirmation."),
+      startDate: cleanString(item.startDateTime),
+      endDate: cleanString(item.endDateTime),
+      venue: withFallback(item.venue, upcomingEvents[index]?.venue ?? "Rubaare Secondary School"),
+      category: withFallback(item.category, upcomingEvents[index]?.category ?? "Event"),
+      image: sanityImageToAsset(item.image, upcomingEvents[index]?.image ?? images.heroCampus),
+      eventStatus: item.eventStatus ?? "scheduled",
+    }))
+    .filter((item) => item.eventStatus !== "cancelled");
+
+  const upcoming = events?.filter((item) => !item.startDate || new Date(item.startDate) >= now) ?? upcomingEvents;
+  const past = events?.filter((item) => item.startDate && new Date(item.startDate) < now) ?? [];
+  return { upcoming, past };
+}
+
+export function resolveAnnouncements(data: ReadonlyArray<AnnouncementQueryItem> | null) {
+  return data?.map((item) => ({
+    title: withFallback(item.title, "School announcement"),
+    message: withFallback(item.message, ""),
+    type: withFallback(item.type, "general"),
+    publicationDate: cleanString(item.publicationDate),
+    expiryDate: cleanString(item.expiryDate),
+    priority: item.priority ?? 9999,
+    ctaLabel: cleanString(item.ctaLabel),
+    ctaLink: cleanString(item.ctaLink),
+  })).filter((item) => item.message) ?? [];
+}
+
+export function resolveDownloads(data: ReadonlyArray<DownloadQueryItem> | null) {
+  const downloads = data?.map((item, index) => ({
+    title: withFallback(item.title, localDownloads[index]?.title ?? "School document"),
+    category: withFallback(item.category, localDownloads[index]?.category ?? "Documents"),
+    fileType: withFallback(item.fileType?.toUpperCase(), localDownloads[index]?.fileType ?? "FILE"),
+    fileSize: item.fileSize ? `${Math.ceil(item.fileSize / 1024)} KB` : localDownloads[index]?.fileSize ?? "File size unavailable",
+    publicationDate: withFallback(item.publicationDate, localDownloads[index]?.publicationDate ?? "Publication date unavailable"),
+    description: cleanString(item.description),
+    fileUrl: cleanString(item.fileUrl),
+    academicYear: cleanString(item.academicYear),
+  }));
+
+  return downloads?.length ? downloads : localDownloads;
+}
+
+export function resolveStaff(data: ReadonlyArray<StaffQueryItem> | null) {
+  const staff = data?.map((item) => ({
+    title: withFallback(item.fullName, "Staff member"),
+    body: [item.role, item.biography].filter(Boolean).join(". "),
+  })).filter((item) => item.body);
+
+  return staff?.length ? staff : [{ title: "Headteacher", body: schoolIdentity.headteacher }, { title: "Administration", body: "Additional leadership profiles will be added after confirmation." }];
+}
+
+export function resolveAcademicContent(programmes: ReadonlyArray<AcademicProgrammeQueryItem> | null, departments: ReadonlyArray<DepartmentQueryItem> | null) {
+  const programmeBlocks = programmes?.map((item) => ({
+    id: item.level?.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
+    title: withFallback(item.title, `${item.level ?? "Academic"} Programme`),
+    body: withFallback(item.introduction ?? item.subjectText ?? item.curriculumText, "Programme details will be published after school confirmation."),
+  })).filter((item) => item.title);
+  const departmentBlocks = departments?.map((item) => ({
+    id: item.slug,
+    title: withFallback(item.name, "Department"),
+    body: withFallback(item.introduction, item.subjects?.join(", ") ?? "Department details will be published after school confirmation."),
+  })).filter((item) => item.title);
+
+  return {
+    programmes: programmeBlocks?.length ? programmeBlocks : academicPathways.map((pathway) => ({ id: pathway.title.startsWith("O-Level") ? "o-level" : "a-level", title: pathway.title, body: pathway.summary })),
+    departments: departmentBlocks ?? [],
+  };
+}
+
+export function resolveAdmissions(data: AdmissionsQueryResult) {
+  return {
+    introduction: withFallback(data?.introduction, "Application steps, requirements and downloadable forms are grouped for parents and guardians."),
+    blocks: [
+      { id: "apply", title: "How to Apply", body: data?.applicationSteps?.join(" ") ?? "Application steps will be published here once the school confirms the admissions process." },
+      { id: "requirements", title: "Admission Requirements", body: data?.requirements?.join(" ") ?? "Requirements will be listed clearly for each intake." },
+      { id: "documents", title: "Fees & Documents", body: data?.feesIntroduction ?? "Fee documents and forms will be downloadable when supplied." },
+      { id: "faq", title: "Frequently Asked Questions", body: data?.faqs?.filter((faq) => faq.enabled !== false).map((faq) => `${faq.question}: ${faq.answer}`).join(" ") ?? "Common parent and guardian questions will be answered here." },
+    ],
+  };
+}
+
+export function resolveSchoolLife(data: ReadonlyArray<SchoolLifeQueryItem> | null) {
+  const activities = data?.map((item) => ({
+    id: cleanString(item.slug),
+    title: withFallback(item.title, "School activity"),
+    body: withFallback(item.descriptionText, item.activityLeader ? `Led by ${item.activityLeader}.` : "Activity details will be published after confirmation."),
+  }));
+
+  return activities?.length ? activities : schoolLife.map((item) => ({ id: item.href.split("#")[1], title: item.title, body: item.summary }));
+}
+
+export function resolveFacilities(data: ReadonlyArray<FacilityQueryItem> | null) {
+  return data?.map((item) => ({
+    id: cleanString(item.slug),
+    title: withFallback(item.title, "School facility"),
+    body: withFallback(item.descriptionText, "Facility details will be published after confirmation."),
+  })).filter((item) => item.title) ?? [];
+}
+
+export function resolveMasterPlan(data: MasterPlanQueryResult) {
+  const overview = { ...masterPlanItems[0], ...sanityImageToAsset(data?.overviewImage, masterPlanItems[0]) };
+  const supporting = data?.supportingImages
+    ?.map((item, index) => {
+      const fallback = masterPlanItems[index + 1] ?? masterPlanItems[0];
+      return { ...fallback, ...sanityImageToAsset(item.image, fallback), caption: cleanString(item.caption) ?? fallback.caption };
+    })
+    .filter((item) => item.src);
+
+  return {
+    pageTitle: withFallback(data?.pageTitle, "Rubaare Secondary School Master Plan"),
+    introduction: withFallback(data?.introduction, "The supplied master-plan images represent the school's proposed future development. They should be read as planning material, not as confirmation that construction is completed, funded or scheduled."),
+    developmentSections: data?.developmentSections ?? [],
+    items: [overview, ...(supporting?.length ? supporting : masterPlanItems.slice(1))],
+  };
+}
+
 export function resolveSiteSettings(data: SiteSettingsQueryResult): ResolvedSiteSettings {
   const primaryTelephone = withFallback(data?.primaryTelephone, schoolIdentity.phoneDisplay);
   const physicalLocation = withFallback(data?.physicalLocation, schoolIdentity.location);
@@ -434,4 +604,55 @@ export async function getGalleryAlbumDetail(options: { slug: string; type?: stri
   ]);
 
   return resolveGalleryAlbumDetail(album, media, related, options);
+}
+
+export async function getNewsArticles() {
+  return resolveNewsArticles(await safeFetch<ReadonlyArray<NewsArticleQueryItem>>(NEWS_ARTICLES_QUERY));
+}
+
+export async function getNewsArticle(slug: string) {
+  const article = resolveNewsArticles(await safeFetch<ReadonlyArray<NewsArticleQueryItem>>(NEWS_ARTICLES_QUERY)).find((item) => item.slug === slug);
+  if (article) return article;
+  const single = await safeFetch<NewsArticleQueryItem | null>(NEWS_ARTICLE_BY_SLUG_QUERY, { slug });
+  return resolveNewsArticles(single ? [single] : null).find((item) => item.slug === slug);
+}
+
+export async function getEvents() {
+  return resolveEvents(await safeFetch<ReadonlyArray<EventQueryItem>>(EVENTS_QUERY));
+}
+
+export async function getAnnouncements() {
+  return resolveAnnouncements(await safeFetch<ReadonlyArray<AnnouncementQueryItem>>(ANNOUNCEMENTS_QUERY));
+}
+
+export async function getDownloads() {
+  return resolveDownloads(await safeFetch<ReadonlyArray<DownloadQueryItem>>(DOWNLOADS_QUERY));
+}
+
+export async function getStaff() {
+  return resolveStaff(await safeFetch<ReadonlyArray<StaffQueryItem>>(STAFF_QUERY));
+}
+
+export async function getAcademicContent() {
+  const [programmes, departments] = await Promise.all([
+    safeFetch<ReadonlyArray<AcademicProgrammeQueryItem>>(ACADEMIC_PROGRAMMES_QUERY),
+    safeFetch<ReadonlyArray<DepartmentQueryItem>>(DEPARTMENTS_QUERY),
+  ]);
+  return resolveAcademicContent(programmes, departments);
+}
+
+export async function getAdmissions() {
+  return resolveAdmissions(await safeFetch<AdmissionsQueryResult>(ADMISSIONS_QUERY));
+}
+
+export async function getSchoolLifeActivities() {
+  return resolveSchoolLife(await safeFetch<ReadonlyArray<SchoolLifeQueryItem>>(SCHOOL_LIFE_QUERY));
+}
+
+export async function getFacilities() {
+  return resolveFacilities(await safeFetch<ReadonlyArray<FacilityQueryItem>>(FACILITIES_QUERY));
+}
+
+export async function getMasterPlan() {
+  return resolveMasterPlan(await safeFetch<MasterPlanQueryResult>(MASTER_PLAN_QUERY));
 }

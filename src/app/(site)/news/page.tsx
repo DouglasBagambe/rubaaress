@@ -1,7 +1,10 @@
 import { InteriorHero, ListingSection } from "@/components/interior-page";
-import { latestNews, pageIntros } from "@/lib/site-data";
+import { pageIntros } from "@/lib/site-data";
+import { getNewsArticles } from "@/sanity/content";
 
-export default function NewsPage() {
+export default async function NewsPage() {
+  const latestNews = await getNewsArticles();
+
   return (
     <>
       <InteriorHero intro={pageIntros.news} breadcrumbs={[{ label: "News", href: "/news" }]} />

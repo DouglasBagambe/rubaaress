@@ -9,3 +9,4 @@ export {
   type GalleryAlbumQueryItem,
   type GalleryMediaQueryItem,
 } from "@/sanity/queries/gallery";
+export * from "@/sanity/queries/collections";

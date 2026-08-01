@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
-import { latestNews, pageIntros } from "@/lib/site-data";
+import { pageIntros } from "@/lib/site-data";
+import { getNewsArticle } from "@/sanity/content";
 
 type NewsArticlePageProps = {
   params: Promise<{ slug: string }>;
@@ -8,7 +9,7 @@ type NewsArticlePageProps = {
 
 export default async function NewsArticlePage({ params }: NewsArticlePageProps) {
   const { slug } = await params;
-  const article = latestNews.find((item) => item.slug === slug);
+  const article = await getNewsArticle(slug);
 
   if (!article) {
     notFound();

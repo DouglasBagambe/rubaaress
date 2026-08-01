@@ -36,6 +36,22 @@ Edit the class rows and enter non-negative whole numbers for female day, female 
 
 Use Sanity's **Publish** action. The public site reads published content and keeps local fallback content if a CMS field is empty.
 
+## Manage News, Events And Announcements
+
+Open **News**, **Events**, or **Announcements** in Studio. Publish only verified school updates. Events are grouped as upcoming or past by date, and announcements disappear from the public page after their expiry date.
+
+## Manage Downloads
+
+Open **Downloads**. Upload only public school documents such as forms, calendars, circulars, prospectuses, and approved reports. Keep internal administrative files out of public downloads.
+
+## Manage Staff, Academics, Admissions And Student Life
+
+Use **Leadership & Staff**, **Academics**, **Admissions**, and **Student Life** for normal school updates. Deactivate old staff records instead of deleting them.
+
+## Manage Facilities And Master Plan
+
+Use **Facilities** and **Master Plan** for confirmed school content. Master-plan wording must not claim that proposed buildings are complete, funded, or scheduled unless the school confirms it.
+
 ## Restore A Draft
 
 Use Sanity document history or discard unpublished draft changes before publishing. If unsure, do not publish and ask a site administrator to review.

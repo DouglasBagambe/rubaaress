@@ -3,13 +3,15 @@ import { InteriorHero } from "@/components/interior-page";
 import { MasterPlanLightbox } from "@/components/master-plan-lightbox";
 import { Section, SectionHeading } from "@/components/section";
 import { TemporaryImage } from "@/components/temporary-image";
-import { masterPlanItems, pageIntros } from "@/lib/site-data";
+import { pageIntros } from "@/lib/site-data";
+import { getMasterPlan } from "@/sanity/content";
 
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2";
 
-export default function MasterPlanPage() {
-  const [overviewImage, ...supportingImages] = masterPlanItems;
+export default async function MasterPlanPage() {
+  const masterPlan = await getMasterPlan();
+  const [overviewImage, ...supportingImages] = masterPlan.items;
 
   return (
     <>
@@ -26,8 +28,8 @@ export default function MasterPlanPage() {
           <div>
             <SectionHeading
               eyebrow="Proposed Development"
-              title="Rubaare Secondary School Master Plan"
-              description="The supplied master-plan images represent the school's proposed future development. They should be read as planning material, not as confirmation that construction is completed, funded or scheduled."
+              title={masterPlan.pageTitle}
+              description={masterPlan.introduction}
             />
             <p className="mt-6 text-base leading-7 text-[var(--school-muted)]">
               Where a render includes a visible label, the website uses that label as the caption. Unlabelled renders are described only as supplied master-plan building renders until the school confirms more detail.

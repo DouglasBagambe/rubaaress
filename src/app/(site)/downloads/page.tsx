@@ -1,7 +1,10 @@
 import { InteriorHero, ListingSection } from "@/components/interior-page";
-import { downloads, pageIntros } from "@/lib/site-data";
+import { pageIntros } from "@/lib/site-data";
+import { getDownloads } from "@/sanity/content";
 
-export default function DownloadsPage() {
+export default async function DownloadsPage() {
+  const downloads = await getDownloads();
+
   return (
     <>
       <InteriorHero intro={pageIntros.downloads} breadcrumbs={[{ label: "Downloads", href: "/downloads" }]} />

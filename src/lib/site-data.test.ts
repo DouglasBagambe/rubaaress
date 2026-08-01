@@ -19,7 +19,7 @@ import {
 } from "./site-data";
 import { calculateEnrolment } from "./enrolment";
 import { countMedia, filterGalleryAlbums, paginateGalleryMedia, sortGalleryMedia, validateExternalVideoUrl } from "./gallery";
-import { resolveEnrolment, resolveGalleryIndex, resolveHomepage, resolveSiteSettings } from "@/sanity/content";
+import { resolveAnnouncements, resolveDownloads, resolveEnrolment, resolveEvents, resolveGalleryIndex, resolveHomepage, resolveMasterPlan, resolveSiteSettings } from "@/sanity/content";
 import type { ResolvedGalleryAlbum, ResolvedGalleryMedia } from "@/sanity/types";
 
 test("navigation exposes grouped primary items", () => {
@@ -236,4 +236,33 @@ test("gallery resolver preserves fallback albums and empty-caption behaviour", (
   assert.ok(gallery.albums.length > 0);
   assert.ok(gallery.albums.every((album) => album.published && album.visibility === "public"));
   assert.equal(gallery.albums[0]?.mediaCount, gallery.albums[0]?.photoCount);
+});
+
+test("event resolver classifies upcoming and past events by date", () => {
+  const events = resolveEvents(
+    [
+      { _id: "past", title: "Past", startDateTime: "2026-01-01T08:00:00Z" },
+      { _id: "future", title: "Future", startDateTime: "2026-12-01T08:00:00Z" },
+    ],
+    new Date("2026-08-01T00:00:00Z"),
+  );
+
+  assert.deepEqual(events.upcoming.map((event) => event.title), ["Future"]);
+  assert.deepEqual(events.past.map((event) => event.title), ["Past"]);
+});
+
+test("announcement and download resolvers keep clean public shapes", () => {
+  const announcements = resolveAnnouncements([{ _id: "notice", title: "Notice", message: "Term opens soon.", type: "general", priority: 1 }]);
+  const resolvedDownloads = resolveDownloads([{ _id: "form", title: "Admission Form", category: "Admissions", fileType: "pdf", fileSize: 2048, publicationDate: "2026-08-01" }]);
+
+  assert.equal(announcements[0]?.message, "Term opens soon.");
+  assert.equal(resolvedDownloads[0]?.fileType, "PDF");
+  assert.equal(resolvedDownloads[0]?.fileSize, "2 KB");
+});
+
+test("master plan resolver preserves fallback image metadata", () => {
+  const masterPlan = resolveMasterPlan(null);
+
+  assert.equal(masterPlan.items[0]?.id, masterPlanItems[0]?.id);
+  assert.ok(masterPlan.items.every((item) => item.title && item.caption));
 });
