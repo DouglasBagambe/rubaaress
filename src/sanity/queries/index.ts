@@ -1,5 +1,3 @@
-import { defineQuery } from "next-sanity";
-
-export const SITE_SETTINGS_QUERY = defineQuery(`*[_type == "siteSettings"][0]`);
-export const HOMEPAGE_QUERY = defineQuery(`*[_type == "homepage"][0]`);
-export const CURRENT_ENROLMENT_QUERY = defineQuery(`*[_type == "enrolment" && status == "current"][0]`);
+export { SITE_SETTINGS_QUERY, type SiteSettingsQueryResult } from "@/sanity/queries/siteSettings";
+export { HOMEPAGE_QUERY, type HomepageQueryResult } from "@/sanity/queries/homepage";
+export { CURRENT_ENROLMENT_QUERY, type EnrolmentQueryResult } from "@/sanity/queries/enrolment";

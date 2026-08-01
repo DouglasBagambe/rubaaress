@@ -6,13 +6,13 @@ The public website currently renders from TypeScript content modules and page-le
 
 | Content area | Current source file | Consumers | Editable in CMS | Proposed Sanity type | Priority | Keep fallback |
 | --- | --- | --- | --- | --- | --- | --- |
-| School identity, motto, mission, vision | `src/content/site.ts`, `src/lib/site-data.ts` | Header, footer, homepage, About, mission/vision, metadata | Yes | `siteSettings` | 1 | Yes |
-| Contact, telephone, postal address, maps | `src/content/site.ts`, `src/lib/site-data.ts` | Header utility bar, contact page, footer, location section | Yes | `siteSettings` | 1 | Yes |
+| School identity, motto, mission, vision | `src/content/site.ts`, `src/lib/site-data.ts`, Sanity `siteSettings` | Header, footer, homepage, About, mission/vision, metadata | Yes | `siteSettings` | Phase 2 connected | Yes |
+| Contact, telephone, postal address, maps | `src/content/site.ts`, `src/lib/site-data.ts`, Sanity `siteSettings` | Header utility bar, contact page, footer, location section | Yes | `siteSettings` | Phase 2 connected | Yes |
 | Header, utility links, footer links, quick links | `src/content/navigation.ts`, `src/lib/site-data.ts`, `src/components/header.tsx`, `src/components/footer.tsx` | Header, mobile menu, footer, homepage quick links | Labels and link lists yes; behaviour no | `navigationSettings` | 1 | Yes |
-| Homepage hero slides | `src/lib/site-data.ts` | `src/app/(site)/page.tsx`, `FullWidthHero` | Yes | `homepage` with `heroSlide` objects | 2 | Yes |
-| Homepage introduction and section copy | `src/app/(site)/page.tsx`, `src/lib/site-data.ts` | Homepage sections | Yes | `homepage` | 2 | Yes |
-| Headteacher name, photo and message | `src/lib/site-data.ts`, `src/content/media.ts`, `src/app/(site)/page.tsx` | Homepage, leadership page | Yes | `homepage`, `staffMember` | 2 | Yes |
-| Enrolment data | `src/content/enrolment.ts`, `src/lib/site-data.ts` | Homepage stats, About enrolment table, tests | Yes | `enrolment` | 3 | Yes |
+| Homepage hero slides | `src/lib/site-data.ts`, Sanity `homepage` | `src/app/(site)/page.tsx`, `FullWidthHero` | Yes | `homepage` with `heroSlide` objects | Phase 2 connected | Yes |
+| Homepage introduction and section copy | `src/app/(site)/page.tsx`, `src/lib/site-data.ts`, Sanity `homepage` | Homepage sections | Yes | `homepage` | Phase 2 connected | Yes |
+| Headteacher name, photo and message | `src/lib/site-data.ts`, `src/content/media.ts`, `src/app/(site)/page.tsx`, Sanity `homepage` | Homepage, leadership page | Yes | `homepage`, later `staffMember` | Phase 2 connected for homepage | Yes |
+| Enrolment data | `src/content/enrolment.ts`, `src/lib/site-data.ts`, Sanity `enrolment` | Homepage stats, About enrolment table, tests | Yes | `enrolment` | Phase 2 connected | Yes |
 | News | `src/lib/site-data.ts`, `src/content/news.ts` | News listing, news detail page, homepage latest news | Yes | `newsArticle`, `announcement` | 4 | Yes |
 | Events | `src/lib/site-data.ts`, `src/content/events.ts` | Events page, homepage upcoming events, utility News dropdown | Yes | `event` | 4 | Yes |
 | Gallery albums and images | `src/content/media.ts`, `src/content/gallery.ts`, `src/lib/site-data.ts` | Gallery page, homepage gallery preview, navigation feature images | Yes | `galleryAlbum`, `galleryImage` | 5 | Yes |
@@ -45,3 +45,9 @@ Every migrated query should resolve as:
 1. Published Sanity document
 2. Existing local TypeScript fallback
 3. Never an empty public section
+
+## Phase 2 Connection Notes
+
+- `src/sanity/queries/siteSettings.ts`, `homepage.ts`, and `enrolment.ts` fetch the connected documents.
+- `src/sanity/content.ts` normalises CMS data and preserves local fallbacks for missing documents, empty strings, missing images, and unavailable Sanity responses.
+- Header, footer, contact, Find Us, homepage hero, homepage sections, homepage enrolment, and About enrolment now use resolved CMS content.

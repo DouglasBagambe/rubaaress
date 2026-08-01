@@ -5,8 +5,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState, type KeyboardEvent, type RefObject } from "react";
 import { mobileNavigation, navigation, newsNavigation, utilityNavigation, type NavigationItem } from "@/content/navigation";
-import { officialSchoolProfile } from "@/content/site";
-import { schoolIdentity } from "@/lib/site-data";
+import type { ResolvedSiteSettings } from "@/sanity/types";
 
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2";
@@ -25,7 +24,7 @@ function isActiveSection(pathname: string, item: NavigationItem) {
   });
 }
 
-export function Header() {
+export function Header({ settings }: { settings: ResolvedSiteSettings }) {
   const [isMobileOpen, setIsMobileOpen] = useState(false);
   const [openMobileGroup, setOpenMobileGroup] = useState<string | null>(null);
   const [activeUtilityMenu, setActiveUtilityMenu] = useState<string | null>(null);
@@ -83,9 +82,9 @@ export function Header() {
 
   return (
     <header ref={headerRef} className="sticky top-0 z-50 border-b border-[var(--school-border)] bg-white shadow-sm">
-      <UtilityBar activeMenu={activeUtilityMenu} setActiveMenu={setActiveUtilityMenu} />
+      <UtilityBar settings={settings} activeMenu={activeUtilityMenu} setActiveMenu={setActiveUtilityMenu} />
       <div className="mx-auto grid min-h-20 max-w-[1380px] grid-cols-[minmax(0,1fr)_auto] items-center gap-4 px-4 py-2 md:px-6 lg:px-8 xl:grid-cols-[minmax(285px,330px)_1fr_auto] xl:gap-8">
-        <SchoolIdentity />
+        <SchoolIdentity settings={settings} />
         <DesktopNavigation activeMenu={activeDesktopMenu} setActiveMenu={setActiveDesktopMenu} pathname={pathname} />
         <div className="hidden items-center justify-end gap-2 xl:flex">
           <button
@@ -120,15 +119,17 @@ export function Header() {
         </div>
       </div>
       {isSearchOpen ? <HeaderSearch inputRef={searchInputRef} onClose={() => setIsSearchOpen(false)} /> : null}
-      {isMobileOpen ? <MobileNavigation drawerRef={mobileDrawerRef} openGroup={openMobileGroup} setOpenGroup={setOpenMobileGroup} onClose={() => setIsMobileOpen(false)} pathname={pathname} /> : null}
+      {isMobileOpen ? <MobileNavigation settings={settings} drawerRef={mobileDrawerRef} openGroup={openMobileGroup} setOpenGroup={setOpenMobileGroup} onClose={() => setIsMobileOpen(false)} pathname={pathname} /> : null}
     </header>
   );
 }
 
 function UtilityBar({
+  settings,
   activeMenu,
   setActiveMenu,
 }: {
+  settings: ResolvedSiteSettings;
   activeMenu: string | null;
   setActiveMenu: (label: string | null) => void;
 }) {
@@ -140,31 +141,31 @@ function UtilityBar({
       <div className="mx-auto flex min-h-9 max-w-[1380px] items-center justify-between gap-4 px-4 text-xs md:px-6 lg:px-8">
         <div className="flex min-w-0 items-center gap-3 font-medium">
           <a
-            href={officialSchoolProfile.contact.mapsUrl}
+            href={settings.googleMapsUrl}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Open Rubaare Secondary School location in Google Maps"
             className={`hidden min-h-9 items-center gap-1.5 whitespace-nowrap text-blue-50 hover:text-white sm:inline-flex ${focusClass}`}
           >
             <LocationIcon />
-            {officialSchoolProfile.contact.locationDisplay}
+            {settings.locationDisplay}
           </a>
           <a
-            href={officialSchoolProfile.contact.phoneHref}
-            aria-label={`Call Rubaare Secondary School on ${officialSchoolProfile.contact.phoneDisplay}`}
+            href={settings.primaryTelephoneHref}
+            aria-label={`Call ${settings.schoolName} on ${settings.primaryTelephone}`}
             className={`inline-flex min-h-9 items-center gap-1.5 whitespace-nowrap text-blue-50 hover:text-white ${focusClass}`}
           >
             <PhoneIcon />
-            {officialSchoolProfile.contact.phoneDisplay}
+            {settings.primaryTelephone}
           </a>
-          {officialSchoolProfile.contact.email ? (
+          {settings.email ? (
             <a
-              href={`mailto:${officialSchoolProfile.contact.email}`}
-              aria-label="Email Rubaare Secondary School"
+              href={`mailto:${settings.email}`}
+              aria-label={`Email ${settings.schoolName}`}
               className={`hidden min-h-9 items-center gap-1.5 whitespace-nowrap text-blue-50 hover:text-white lg:inline-flex ${focusClass}`}
             >
               <MailIcon />
-              {officialSchoolProfile.contact.email}
+              {settings.email}
             </a>
           ) : null}
         </div>
@@ -204,15 +205,15 @@ function UtilityBar({
   );
 }
 
-function SchoolIdentity() {
+function SchoolIdentity({ settings }: { settings: ResolvedSiteSettings }) {
   return (
     <Link href="/" className={`flex min-h-14 min-w-0 items-center gap-3 xl:min-w-[285px] xl:max-w-[330px] xl:shrink-0 ${focusClass}`}>
-      <Image src={schoolIdentity.logoPath} alt="Rubaare Secondary School badge" width={50} height={75} priority />
+      <Image src={settings.badge.src} alt={settings.badge.alt} width={50} height={75} priority />
       <span className="min-w-0 max-w-[230px] sm:max-w-none">
         <span className="block text-[17px] font-bold leading-tight text-[var(--school-blue-dark)] md:text-[19px]">
-          {schoolIdentity.name}
+          {settings.schoolName}
         </span>
-        <span className="block text-xs font-semibold text-[var(--school-muted)]">{officialSchoolProfile.motto}</span>
+        <span className="block text-xs font-semibold text-[var(--school-muted)]">{settings.motto}</span>
       </span>
     </Link>
   );
@@ -371,12 +372,14 @@ function GalleryHeaderCTA() {
 }
 
 function MobileNavigation({
+  settings,
   drawerRef,
   openGroup,
   setOpenGroup,
   onClose,
   pathname,
 }: {
+  settings: ResolvedSiteSettings;
   drawerRef: RefObject<HTMLDivElement | null>;
   openGroup: string | null;
   setOpenGroup: (label: string | null) => void;
@@ -412,7 +415,7 @@ function MobileNavigation({
         onKeyDown={handleKeyDown}
       >
         <div className="flex items-center justify-between gap-4 border-b border-[var(--school-border)] px-4 py-4">
-          <SchoolIdentity />
+          <SchoolIdentity settings={settings} />
           <button type="button" className={`min-h-11 px-3 text-sm font-bold text-[var(--school-blue)] ${focusClass}`} onClick={onClose}>
             Close
           </button>

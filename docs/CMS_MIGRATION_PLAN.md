@@ -26,6 +26,20 @@ Do not remove `src/content/*` or `public/images/*` during migration. Public page
 
 Connect Site Settings, Homepage and Current Enrolment to Sanity queries with local fallbacks. Keep page layout, header behaviour, styling and routes controlled in code.
 
+## Phase 2 Seeded Documents
+
+- `siteSettings`
+- `homepage`
+- `enrolment-2026`
+
+## Phase 2 Image Mappings
+
+- `public/images/school/brand/rubaare-school-badge.jpg` -> Site Settings badge
+- `public/images/school/campus/school-compound.webp` -> Homepage welcome hero slide
+- `public/images/school/academics/classroom-learning.webp` -> Homepage academics hero slide
+- `public/images/school/students/student-assembly.webp` -> Homepage school-life hero slide
+- `public/images/school/leadership/headteacher-ms-mpeirwe-monic-atukunda.webp` -> Homepage headteacher section
+
 ## Publishing Model
 
 Editors update content in `/studio`, publish through Sanity, and the Next.js public site later reads published content through `next-sanity` Live Content helpers.

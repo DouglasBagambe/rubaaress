@@ -182,6 +182,8 @@ const siteSettings = defineType({
     defineField({ name: "schoolName", title: "School name", type: "string", validation: (rule) => rule.required() }),
     defineField({ name: "shortSchoolName", title: "Short school name", type: "string" }),
     defineField({ name: "motto", title: "Motto", type: "string" }),
+    defineField({ name: "mission", title: "Mission", type: "text", rows: 2, description: "The approved school mission statement." }),
+    defineField({ name: "vision", title: "Vision", type: "text", rows: 2, description: "The approved school vision statement." }),
     imageField("badge", "School badge"),
     defineField({ name: "primaryTelephone", title: "Primary telephone", type: "string", validation: (rule) => rule.regex(/^[+0-9 ()-]{7,20}$/).warning("Use a valid telephone format.") }),
     defineField({ name: "secondaryTelephone", title: "Secondary telephone", type: "string" }),
@@ -195,6 +197,9 @@ const siteSettings = defineType({
     defineField({ name: "footerIntroduction", title: "Footer introduction", type: "text", rows: 3 }),
     defineField({ name: "copyrightText", title: "Copyright text", type: "string" }),
   ],
+  preview: {
+    select: { title: "schoolName", subtitle: "physicalLocation", media: "badge" },
+  },
 });
 
 const navigationSettings = defineType({
@@ -232,6 +237,13 @@ const homepage = defineType({
     defineField({ name: "admissionsCta", title: "Admissions CTA", type: "object", fields: [defineField({ name: "label", title: "Label", type: "string" }), routeField("href", "Link")] }),
     defineField({ name: "locationSectionIntroduction", title: "Location-section introduction", type: "text", rows: 3 }),
   ],
+  preview: {
+    select: { heroSlides: "heroSlides", media: "heroSlides.0.image" },
+    prepare: ({ heroSlides, media }) => {
+      const count = Array.isArray(heroSlides) ? heroSlides.filter((slide) => slide?.enabled !== false).length : 0;
+      return { title: "Homepage", subtitle: `${count} enabled hero slide${count === 1 ? "" : "s"}`, media };
+    },
+  },
 });
 
 const enrolment = defineType({
@@ -244,7 +256,15 @@ const enrolment = defineType({
     defineField({ name: "status", title: "Status", type: "string", options: { list: ["draft", "current", "archived"], layout: "radio" }, initialValue: "draft", validation: (rule) => rule.required() }),
     defineField({ name: "classRows", title: "Class rows", type: "array", of: [defineArrayMember({ type: "enrolmentClassRow" })], validation: (rule) => rule.required().min(1) }),
   ],
-  preview: { select: { title: "academicYear", subtitle: "status" } },
+  preview: {
+    select: { title: "academicYear", reportingDate: "reportingDate", status: "status", rows: "classRows" },
+    prepare: ({ title, reportingDate, status, rows }) => {
+      const total = Array.isArray(rows)
+        ? rows.reduce((sum, row) => sum + (row?.femaleDay ?? 0) + (row?.femaleBoarding ?? 0) + (row?.maleDay ?? 0) + (row?.maleBoarding ?? 0), 0)
+        : 0;
+      return { title, subtitle: `${reportingDate ?? "No date"} - ${status ?? "draft"} - ${total.toLocaleString("en-US")} learners` };
+    },
+  },
 });
 
 const newsArticle = defineType({

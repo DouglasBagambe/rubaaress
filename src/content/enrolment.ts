@@ -28,20 +28,7 @@ export const enrolmentRows: ReadonlyArray<EnrolmentRow> = [
   { className: "S.6", femaleDay: 2, femaleBoarding: 69, maleDay: 12, maleBoarding: 65, total: 148 },
 ] as const;
 
-function sumBy(key: keyof Omit<EnrolmentRow, "className">) {
-  return enrolmentRows.reduce((total, row) => total + row[key], 0);
-}
-
 export const enrolmentReportingDate = "16 March 2026";
 
-export const enrolmentTotals = {
-  femaleDay: sumBy("femaleDay"),
-  femaleBoarding: sumBy("femaleBoarding"),
-  totalFemale: sumBy("femaleDay") + sumBy("femaleBoarding"),
-  maleDay: sumBy("maleDay"),
-  maleBoarding: sumBy("maleBoarding"),
-  totalMale: sumBy("maleDay") + sumBy("maleBoarding"),
-  totalDay: sumBy("femaleDay") + sumBy("maleDay"),
-  totalBoarding: sumBy("femaleBoarding") + sumBy("maleBoarding"),
-  grandTotal: sumBy("total"),
-} as const satisfies EnrolmentTotals;
+export const enrolmentTotals = calculateEnrolment(enrolmentRows).totals satisfies EnrolmentTotals;
+import { calculateEnrolment } from "@/lib/enrolment";
