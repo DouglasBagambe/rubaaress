@@ -4,6 +4,7 @@ import {
   enrolmentReportingDate,
   enrolmentRows,
   findUs,
+  galleryAlbums,
   heroSlides,
   images,
   masterPlanItems,
@@ -15,11 +16,20 @@ import {
   type QuickLink,
   type Stat,
 } from "@/lib/site-data";
+import { countMedia, filterGalleryAlbums, mediaMatchesType, paginateGalleryMedia, sortGalleryMedia, type GalleryTypeFilter } from "@/lib/gallery";
 import { client } from "@/sanity/client";
 import { CURRENT_ENROLMENT_QUERY, type EnrolmentQueryResult } from "@/sanity/queries/enrolment";
+import {
+  GALLERY_ALBUMS_QUERY,
+  GALLERY_ALBUM_BY_SLUG_QUERY,
+  GALLERY_MEDIA_QUERY,
+  RELATED_GALLERY_ALBUMS_QUERY,
+  type GalleryAlbumQueryItem,
+  type GalleryMediaQueryItem,
+} from "@/sanity/queries/gallery";
 import { HOMEPAGE_QUERY, type HomepageQueryResult } from "@/sanity/queries/homepage";
 import { SITE_SETTINGS_QUERY, type SanityImageResult, type SiteSettingsQueryResult } from "@/sanity/queries/siteSettings";
-import type { ResolvedEnrolment, ResolvedHomepage, ResolvedImage, ResolvedSiteSettings } from "@/sanity/types";
+import type { ResolvedEnrolment, ResolvedGalleryAlbum, ResolvedGalleryAlbumDetail, ResolvedGalleryIndex, ResolvedGalleryMedia, ResolvedHomepage, ResolvedImage, ResolvedSiteSettings } from "@/sanity/types";
 
 function cleanString(value: string | null | undefined) {
   const trimmed = value?.trim();
@@ -62,15 +72,173 @@ function sanityImageToAsset(image: SanityImageResult | undefined, fallback: Imag
   };
 }
 
-async function safeFetch<T>(query: string): Promise<T | null> {
+async function safeFetch<T>(query: string, params: Record<string, unknown> = {}): Promise<T | null> {
   try {
-    return await client.fetch<T>(query, {}, { perspective: "published", next: { revalidate: 60 } });
+    return await client.fetch<T>(query, params, { perspective: "published", next: { revalidate: 60 } });
   } catch (error) {
     if (process.env.NODE_ENV === "development") {
       console.warn("Sanity fetch failed; using local fallback content.", error);
     }
     return null;
   }
+}
+
+function fallbackGalleryMediaForAlbum(album: (typeof galleryAlbums)[number]): ReadonlyArray<ResolvedGalleryMedia> {
+  return album.images.map((image, index) => ({
+    id: `${album.slug}-${index + 1}`,
+    title: image.alt,
+    albumSlug: album.slug,
+    mediaType: "image",
+    image,
+    caption: undefined,
+    displayOrder: index,
+    featured: index === 0,
+  }));
+}
+
+function fallbackGalleryAlbums(): ReadonlyArray<ResolvedGalleryAlbum> {
+  return galleryAlbums.map((album, index) => {
+    const counts = countMedia(fallbackGalleryMediaForAlbum(album));
+    return {
+      id: `fallback-${album.slug}`,
+      title: album.title,
+      slug: album.slug,
+      shortDescription: album.description,
+      category: album.title === "Sports Day" ? "Sports Day" : album.title,
+      coverImage: album.coverImage,
+      featured: index === 0,
+      published: true,
+      visibility: "public",
+      displayOrder: index,
+      ...counts,
+    };
+  });
+}
+
+function sanityAlbumToResolved(album: GalleryAlbumQueryItem, fallback?: ResolvedGalleryAlbum): ResolvedGalleryAlbum | null {
+  const title = cleanString(album.title);
+  const slug = cleanString(album.slug);
+  const category = cleanString(album.category);
+  const coverFallback = fallback?.coverImage ?? galleryAlbums[0]?.coverImage;
+  if (!title || !slug || !category || !coverFallback) return null;
+
+  const photoCount = album.photoCount ?? fallback?.photoCount ?? 0;
+  const videoCount = album.videoCount ?? fallback?.videoCount ?? 0;
+
+  return {
+    id: album._id,
+    title,
+    slug,
+    shortDescription: withFallback(album.shortDescription, fallback?.shortDescription ?? "Official Rubaare Secondary School gallery album."),
+    introduction: cleanString(album.introduction),
+    category,
+    eventDate: cleanString(album.eventDate),
+    academicYear: cleanString(album.academicYear),
+    coverImage: sanityImageToAsset(album.coverImage, coverFallback),
+    bannerImage: album.bannerImage ? sanityImageToAsset(album.bannerImage, coverFallback) : undefined,
+    featured: album.featured === true,
+    published: album.published === true,
+    visibility: album.visibility ?? "public",
+    displayOrder: album.displayOrder ?? fallback?.displayOrder ?? 9999,
+    photoCount,
+    videoCount,
+    mediaCount: photoCount + videoCount,
+    seoTitle: cleanString(album.seoTitle),
+    seoDescription: cleanString(album.seoDescription),
+  };
+}
+
+function sanityMediaToResolved(media: GalleryMediaQueryItem, fallbackImage: ResolvedImage): ResolvedGalleryMedia | null {
+  const mediaType = media.mediaType === "video" ? "video" : "image";
+  const title = withFallback(media.internalTitle, media.videoTitle ?? fallbackImage.alt);
+  const image = media.image ? sanityImageToAsset({ ...media.image, alt: media.imageAlt ?? media.image.alt }, fallbackImage) : undefined;
+  const posterImage = media.videoPosterImage ? sanityImageToAsset(media.videoPosterImage, fallbackImage) : image;
+
+  if (mediaType === "image" && !image) return null;
+  if (mediaType === "video" && !media.uploadedVideoUrl && !media.externalVideoUrl) return null;
+
+  return {
+    id: media._id,
+    title,
+    albumSlug: withFallback(media.albumSlug, ""),
+    mediaType,
+    image,
+    uploadedVideoUrl: cleanString(media.uploadedVideoUrl),
+    videoUrl: cleanString(media.externalVideoUrl),
+    posterImage,
+    videoTitle: cleanString(media.videoTitle),
+    transcript: cleanString(media.transcript),
+    caption: cleanString(media.caption),
+    captureDate: cleanString(media.captureDate),
+    displayOrder: media.displayOrder ?? 9999,
+    featured: media.featured === true,
+    orientation: media.orientation,
+  };
+}
+
+export function resolveGalleryIndex(
+  data: ReadonlyArray<GalleryAlbumQueryItem> | null,
+  filters: { category?: string; year?: string; type?: string; search?: string } = {},
+): ResolvedGalleryIndex {
+  const fallback = fallbackGalleryAlbums();
+  const sanityAlbums = data
+    ?.map((album) => sanityAlbumToResolved(album, fallback.find((item) => item.slug === album.slug)))
+    .filter((album): album is ResolvedGalleryAlbum => Boolean(album));
+  const albums = sanityAlbums?.length ? sanityAlbums : fallback;
+  const selectedType: GalleryTypeFilter = filters.type === "photos" || filters.type === "videos" ? filters.type : "all";
+  const filteredAlbums = filterGalleryAlbums(albums, {
+    category: filters.category,
+    academicYear: filters.year,
+    type: selectedType,
+    search: filters.search,
+  });
+  const categories = [...new Set(albums.filter((album) => album.published && album.visibility === "public").map((album) => album.category))].sort();
+  const academicYears = [...new Set(albums.map((album) => album.academicYear).filter((year): year is string => Boolean(year)))].sort().reverse();
+
+  return {
+    albums: filteredAlbums,
+    featuredAlbum: filteredAlbums.find((album) => album.featured) ?? filteredAlbums[0],
+    categories,
+    academicYears,
+    hasPhotos: albums.some((album) => album.photoCount > 0),
+    hasVideos: albums.some((album) => album.videoCount > 0),
+    search: filters.search ?? "",
+    selectedCategory: filters.category ?? "",
+    selectedYear: filters.year ?? "",
+    selectedType,
+  };
+}
+
+export function resolveGalleryAlbumDetail(
+  albumData: GalleryAlbumQueryItem | null,
+  mediaData: ReadonlyArray<GalleryMediaQueryItem> | null,
+  relatedData: ReadonlyArray<GalleryAlbumQueryItem> | null,
+  options: { slug: string; type?: string; cursor?: string; limit?: number },
+): ResolvedGalleryAlbumDetail | null {
+  const fallbackAlbums = fallbackGalleryAlbums();
+  const fallbackAlbum = fallbackAlbums.find((album) => album.slug === options.slug);
+  const album = albumData ? sanityAlbumToResolved(albumData, fallbackAlbum) : fallbackAlbum;
+  if (!album || !album.published || album.visibility === "archived") return null;
+
+  const type: GalleryTypeFilter = options.type === "photos" || options.type === "videos" ? options.type : "all";
+  const fallbackMedia = galleryAlbums.find((item) => item.slug === options.slug);
+  const resolvedMedia = mediaData?.length
+    ? mediaData.map((item) => sanityMediaToResolved(item, album.coverImage)).filter((item): item is ResolvedGalleryMedia => Boolean(item))
+    : fallbackMedia
+      ? fallbackGalleryMediaForAlbum(fallbackMedia)
+      : [];
+  const filteredMedia = sortGalleryMedia(resolvedMedia).filter((item) => mediaMatchesType(item, type));
+  const paginated = paginateGalleryMedia(filteredMedia, options.cursor, options.limit ?? 24);
+  const relatedAlbums = relatedData
+    ?.map((item) => sanityAlbumToResolved(item, fallbackAlbums.find((fallback) => fallback.slug === item.slug)))
+    .filter((item): item is ResolvedGalleryAlbum => Boolean(item));
+
+  return {
+    album: { ...album, ...countMedia(resolvedMedia) },
+    media: paginated.items,
+    relatedAlbums: relatedAlbums?.length ? relatedAlbums : fallbackAlbums.filter((item) => item.slug !== album.slug && item.category === album.category).slice(0, 3),
+    nextCursor: paginated.nextCursor,
+  };
 }
 
 export function resolveSiteSettings(data: SiteSettingsQueryResult): ResolvedSiteSettings {
@@ -244,4 +412,26 @@ export async function getHomepage() {
 
 export async function getCurrentEnrolment() {
   return resolveEnrolment(await safeFetch<EnrolmentQueryResult>(CURRENT_ENROLMENT_QUERY));
+}
+
+export async function getGalleryIndex(filters: { category?: string; year?: string; type?: string; search?: string } = {}) {
+  return resolveGalleryIndex(await safeFetch<ReadonlyArray<GalleryAlbumQueryItem>>(GALLERY_ALBUMS_QUERY), filters);
+}
+
+export async function getGalleryAlbumDetail(options: { slug: string; type?: string; cursor?: string; limit?: number }) {
+  const album = await safeFetch<GalleryAlbumQueryItem | null>(GALLERY_ALBUM_BY_SLUG_QUERY, { slug: options.slug });
+  if (!album) {
+    return resolveGalleryAlbumDetail(null, null, null, options);
+  }
+
+  const mediaType = options.type === "photos" ? "image" : options.type === "videos" ? "video" : "all";
+  const limit = options.limit ?? 24;
+  const start = 0;
+  const end = limit + 1;
+  const [media, related] = await Promise.all([
+    safeFetch<ReadonlyArray<GalleryMediaQueryItem>>(GALLERY_MEDIA_QUERY, { albumId: album._id, type: mediaType, start, end }),
+    safeFetch<ReadonlyArray<GalleryAlbumQueryItem>>(RELATED_GALLERY_ALBUMS_QUERY, { albumId: album._id, category: album.category ?? "" }),
+  ]);
+
+  return resolveGalleryAlbumDetail(album, media, related, options);
 }

@@ -15,7 +15,7 @@ The public website currently renders from TypeScript content modules and page-le
 | Enrolment data | `src/content/enrolment.ts`, `src/lib/site-data.ts`, Sanity `enrolment` | Homepage stats, About enrolment table, tests | Yes | `enrolment` | Phase 2 connected | Yes |
 | News | `src/lib/site-data.ts`, `src/content/news.ts` | News listing, news detail page, homepage latest news | Yes | `newsArticle`, `announcement` | 4 | Yes |
 | Events | `src/lib/site-data.ts`, `src/content/events.ts` | Events page, homepage upcoming events, utility News dropdown | Yes | `event` | 4 | Yes |
-| Gallery albums and images | `src/content/media.ts`, `src/content/gallery.ts`, `src/lib/site-data.ts` | Gallery page, homepage gallery preview, navigation feature images | Yes | `galleryAlbum`, `galleryImage` | 5 | Yes |
+| Gallery albums, images and videos | `src/content/media.ts`, `src/content/gallery.ts`, `src/lib/site-data.ts`, `~/WORK/RubaareSS/content`, `~/WORK/RubaareSS/selected_content` | Gallery index, gallery detail pages, homepage/gallery previews | Yes | `galleryAlbum`, `galleryMedia` | Phase 3 gallery checkpoint connected | Yes |
 | Downloads and PDFs | `src/lib/site-data.ts`, `src/content/downloads.ts` | Downloads page, admissions page, footer/resources | Yes | `download` | 6 | Yes |
 | Leadership and staff | `src/lib/site-data.ts`, `src/app/(site)/about/leadership/page.tsx` | Leadership page, homepage headteacher section | Yes | `staffMember` | 7 | Yes |
 | Departments and academic programmes | `src/lib/site-data.ts`, `src/app/(site)/academics/*` | Academics overview, O-Level, A-Level, departments pages | Yes | `department`, `academicProgramme` | 8 | Yes |
@@ -51,3 +51,12 @@ Every migrated query should resolve as:
 - `src/sanity/queries/siteSettings.ts`, `homepage.ts`, and `enrolment.ts` fetch the connected documents.
 - `src/sanity/content.ts` normalises CMS data and preserves local fallbacks for missing documents, empty strings, missing images, and unavailable Sanity responses.
 - Header, footer, contact, Find Us, homepage hero, homepage sections, homepage enrolment, and About enrolment now use resolved CMS content.
+
+## Phase 3 Gallery Notes
+
+- Gallery now uses album documents plus separate media documents: `galleryAlbum` and `galleryMedia`.
+- Public routes connected: `/gallery` and `/gallery/[slug]`.
+- Fallback source remains `src/content/media.ts` through `src/lib/site-data.ts`.
+- Original supplied folders were inspected read-only. The dry run scanned `~/WORK/RubaareSS/content` and `~/WORK/RubaareSS/selected_content`.
+- Real bulk upload is deferred because the full source contains more than 500 media files, more than 5 GB total, and videos above 100 MB.
+- School confirmation is still required for unresolved folders, large-video hosting, and any image where the event/date/person context is not supported by supplied metadata.

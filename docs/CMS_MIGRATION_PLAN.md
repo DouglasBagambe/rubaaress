@@ -11,8 +11,8 @@ Do not remove `src/content/*` or `public/images/*` during migration. Public page
 1. Site Settings
 2. Homepage
 3. Enrolment
-4. News and events
-5. Gallery
+4. Gallery
+5. News and events
 6. Downloads
 7. Staff
 8. Academics
@@ -39,6 +39,18 @@ Connect Site Settings, Homepage and Current Enrolment to Sanity queries with loc
 - `public/images/school/academics/classroom-learning.webp` -> Homepage academics hero slide
 - `public/images/school/students/student-assembly.webp` -> Homepage school-life hero slide
 - `public/images/school/leadership/headteacher-ms-mpeirwe-monic-atukunda.webp` -> Homepage headteacher section
+
+## Phase 3 Gallery Checkpoint
+
+Gallery migration uses:
+
+- `galleryAlbum` for album metadata, visibility, ordering, SEO and publication state.
+- `galleryMedia` for individual images and videos, captions, alt text, order and verification state.
+- `scripts/migrate-gallery.ts` for dry-run inventory, checksum deduplication and future authenticated migration.
+- `docs/gallery-import-manifest.json` for file-level decisions.
+- `docs/GALLERY_IMPORT_REPORT.md` for import totals and deferred files.
+
+The first dry run scanned both source folders and stopped before upload because the full source exceeds the configured safety thresholds.
 
 ## Publishing Model
 

@@ -75,3 +75,63 @@ export type ResolvedEnrolment = {
   stats: ReadonlyArray<Stat>;
   warnings: ReadonlyArray<string>;
 };
+
+export type ResolvedGalleryMedia = {
+  id: string;
+  title: string;
+  albumSlug: string;
+  mediaType: "image" | "video";
+  image?: ResolvedImage;
+  videoUrl?: string;
+  uploadedVideoUrl?: string;
+  posterImage?: ResolvedImage;
+  videoTitle?: string;
+  transcript?: string;
+  caption?: string;
+  captureDate?: string;
+  displayOrder: number;
+  featured: boolean;
+  orientation?: "landscape" | "portrait" | "square" | "panorama";
+};
+
+export type ResolvedGalleryAlbum = {
+  id: string;
+  title: string;
+  slug: string;
+  shortDescription: string;
+  introduction?: string;
+  category: string;
+  eventDate?: string;
+  academicYear?: string;
+  coverImage: ResolvedImage;
+  bannerImage?: ResolvedImage;
+  featured: boolean;
+  published: boolean;
+  visibility: "public" | "unlisted" | "archived";
+  displayOrder: number;
+  photoCount: number;
+  videoCount: number;
+  mediaCount: number;
+  seoTitle?: string;
+  seoDescription?: string;
+};
+
+export type ResolvedGalleryIndex = {
+  albums: ReadonlyArray<ResolvedGalleryAlbum>;
+  featuredAlbum?: ResolvedGalleryAlbum;
+  categories: ReadonlyArray<string>;
+  academicYears: ReadonlyArray<string>;
+  hasPhotos: boolean;
+  hasVideos: boolean;
+  search: string;
+  selectedCategory: string;
+  selectedYear: string;
+  selectedType: "all" | "photos" | "videos";
+};
+
+export type ResolvedGalleryAlbumDetail = {
+  album: ResolvedGalleryAlbum;
+  media: ReadonlyArray<ResolvedGalleryMedia>;
+  relatedAlbums: ReadonlyArray<ResolvedGalleryAlbum>;
+  nextCursor?: string;
+};

@@ -18,7 +18,9 @@ import {
   utilityLinks,
 } from "./site-data";
 import { calculateEnrolment } from "./enrolment";
-import { resolveEnrolment, resolveHomepage, resolveSiteSettings } from "@/sanity/content";
+import { countMedia, filterGalleryAlbums, paginateGalleryMedia, sortGalleryMedia, validateExternalVideoUrl } from "./gallery";
+import { resolveEnrolment, resolveGalleryIndex, resolveHomepage, resolveSiteSettings } from "@/sanity/content";
+import type { ResolvedGalleryAlbum, ResolvedGalleryMedia } from "@/sanity/types";
 
 test("navigation exposes grouped primary items", () => {
   assert.deepEqual(navigation.map((item) => item.label), [
@@ -167,4 +169,71 @@ test("homepage resolver filters disabled hero slides and sorts enabled slides", 
   assert.equal(homepage.heroSlides.length, 2);
   assert.equal(homepage.heroSlides[0]?.heading, "First");
   assert.equal(homepage.heroSlides[1]?.heading, "Second");
+});
+
+test("gallery helpers filter albums and exclude archived content", () => {
+  const albums: ReadonlyArray<ResolvedGalleryAlbum> = [
+    {
+      id: "public",
+      title: "Sports Day",
+      slug: "sports-day",
+      shortDescription: "Sports day photographs.",
+      category: "Sports Day",
+      academicYear: "2026",
+      coverImage: images.sports,
+      featured: true,
+      published: true,
+      visibility: "public",
+      displayOrder: 1,
+      photoCount: 3,
+      videoCount: 1,
+      mediaCount: 4,
+    },
+    {
+      id: "archived",
+      title: "Archived",
+      slug: "archived",
+      shortDescription: "Hidden album.",
+      category: "Campus",
+      coverImage: images.heroCampus,
+      featured: false,
+      published: true,
+      visibility: "archived",
+      displayOrder: 2,
+      photoCount: 1,
+      videoCount: 0,
+      mediaCount: 1,
+    },
+  ];
+
+  assert.deepEqual(filterGalleryAlbums(albums, { category: "Sports Day", type: "videos" }).map((album) => album.slug), ["sports-day"]);
+  assert.equal(filterGalleryAlbums(albums, {}).some((album) => album.slug === "archived"), false);
+});
+
+test("gallery media ordering, counts and cursor pagination are stable", () => {
+  const media: ReadonlyArray<ResolvedGalleryMedia> = [
+    { id: "c", title: "C", albumSlug: "album", mediaType: "image", image: images.classroom, displayOrder: 2, featured: false },
+    { id: "a", title: "A", albumSlug: "album", mediaType: "video", uploadedVideoUrl: "/video.mp4", displayOrder: 1, featured: false },
+    { id: "b", title: "B", albumSlug: "album", mediaType: "image", image: images.sports, displayOrder: 1, featured: false },
+  ];
+
+  assert.deepEqual(sortGalleryMedia(media).map((item) => item.id), ["a", "b", "c"]);
+  assert.deepEqual(countMedia(media), { photoCount: 2, videoCount: 1, mediaCount: 3 });
+  assert.deepEqual(paginateGalleryMedia(media, undefined, 2).items.map((item) => item.id), ["a", "b"]);
+  assert.deepEqual(paginateGalleryMedia(media, "b", 2).items.map((item) => item.id), ["c"]);
+});
+
+test("gallery URL validation accepts supported video providers only", () => {
+  assert.equal(validateExternalVideoUrl("https://www.youtube.com/watch?v=abc"), true);
+  assert.equal(validateExternalVideoUrl("https://youtu.be/abc"), true);
+  assert.equal(validateExternalVideoUrl("https://vimeo.com/123"), true);
+  assert.equal(validateExternalVideoUrl("https://example.com/video"), false);
+});
+
+test("gallery resolver preserves fallback albums and empty-caption behaviour", () => {
+  const gallery = resolveGalleryIndex(null);
+
+  assert.ok(gallery.albums.length > 0);
+  assert.ok(gallery.albums.every((album) => album.published && album.visibility === "public"));
+  assert.equal(gallery.albums[0]?.mediaCount, gallery.albums[0]?.photoCount);
 });

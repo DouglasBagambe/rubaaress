@@ -162,6 +162,34 @@ const faq = defineType({
   ],
 });
 
+const galleryCategoryOptions = [
+  { title: "Campus", value: "Campus" },
+  { title: "Academics", value: "Academics" },
+  { title: "Sports", value: "Sports" },
+  { title: "Sports Day", value: "Sports Day" },
+  { title: "Student Life", value: "Student Life" },
+  { title: "School Events", value: "School Events" },
+  { title: "Leadership", value: "Leadership" },
+  { title: "Community", value: "Community" },
+  { title: "Water Project", value: "Water Project" },
+  { title: "Master Plan", value: "Master Plan" },
+  { title: "Clubs and Societies", value: "Clubs and Societies" },
+] as const;
+
+const videoUrlValidation = (value?: string) => {
+  if (!value) return true;
+  try {
+    const url = new URL(value);
+    const host = url.hostname.replace(/^www\./, "");
+    if (host === "youtube.com" || host === "youtu.be" || host === "youtube-nocookie.com" || host === "vimeo.com" || host.endsWith(".vimeo.com")) {
+      return true;
+    }
+    return "Use a valid YouTube or Vimeo URL.";
+  } catch {
+    return "Use a valid YouTube or Vimeo URL.";
+  }
+};
+
 const galleryImage = defineType({
   name: "galleryImage",
   title: "Gallery image",
@@ -329,16 +357,76 @@ const galleryAlbum = defineType({
   title: "Gallery album",
   type: "document",
   fields: [
-    defineField({ name: "title", title: "Title", type: "string", validation: (rule) => rule.required() }),
-    defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title" }, validation: (rule) => rule.required() }),
-    defineField({ name: "description", title: "Description", type: "text", rows: 4 }),
-    defineField({ name: "eventDate", title: "Event date", type: "date" }),
-    defineField({ name: "category", title: "Category", type: "string" }),
-    imageField("coverImage", "Cover image", true),
-    defineField({ name: "images", title: "Images", type: "array", of: [defineArrayMember({ type: "galleryImage" })] }),
+    defineField({ name: "title", title: "Album title", type: "string", validation: (rule) => rule.required() }),
+    defineField({ name: "slug", title: "Website address", type: "slug", options: { source: "title" }, validation: (rule) => rule.required() }),
+    defineField({ name: "shortDescription", title: "Short description", type: "text", rows: 3, validation: (rule) => rule.max(220) }),
+    defineField({ name: "introduction", title: "Full introduction", type: "text", rows: 5, description: "Optional longer introduction shown on the album page." }),
+    defineField({ name: "category", title: "Category", type: "string", options: { list: [...galleryCategoryOptions] }, validation: (rule) => rule.required() }),
+    defineField({ name: "eventDate", title: "Event date", type: "date", description: "Leave empty when the album is not tied to a confirmed date." }),
+    defineField({ name: "academicYear", title: "Academic year", type: "string", description: "Example: 2026." }),
+    defineField({ name: "coverMedia", title: "Cover photo or video", type: "reference", to: [{ type: "galleryMedia" }], description: "Choose the published media item used as the album cover." }),
+    imageField("bannerImage", "Optional banner image"),
+    defineField({ name: "featured", title: "Feature this album", type: "boolean", initialValue: false }),
+    defineField({ name: "published", title: "Published", type: "boolean", initialValue: false }),
+    defineField({ name: "displayOrder", title: "Display order", type: "number", validation: (rule) => rule.integer().min(0) }),
+    defineField({ name: "visibility", title: "Visibility", type: "string", options: { list: ["public", "unlisted", "archived"], layout: "radio" }, initialValue: "public", validation: (rule) => rule.required() }),
+    defineField({ name: "mediaCount", title: "Media count", type: "number", description: "Updated by migration scripts so staff can scan album size.", readOnly: true }),
+    defineField({ name: "seoTitle", title: "SEO title", type: "string" }),
+    defineField({ name: "seoDescription", title: "SEO description", type: "text", rows: 3 }),
+    defineField({ name: "createdDate", title: "Created date", type: "datetime", initialValue: () => new Date().toISOString() }),
+    defineField({ name: "updatedDate", title: "Updated date", type: "datetime" }),
+  ],
+  orderings: [
+    { title: "Display order", name: "displayOrderAsc", by: [{ field: "displayOrder", direction: "asc" }, { field: "title", direction: "asc" }] },
+    { title: "Newest event date", name: "eventDateDesc", by: [{ field: "eventDate", direction: "desc" }, { field: "title", direction: "asc" }] },
+  ],
+  preview: {
+    select: { title: "title", category: "category", eventDate: "eventDate", academicYear: "academicYear", media: "coverMedia.image", mediaCount: "mediaCount", published: "published", visibility: "visibility" },
+    prepare: ({ title, category, eventDate, academicYear, media, mediaCount, published, visibility }) => ({
+      title,
+      subtitle: [category, eventDate ?? academicYear, `${mediaCount ?? 0} media`, published ? "Published" : "Draft", visibility].filter(Boolean).join(" - "),
+      media,
+    }),
+  },
+});
+
+const galleryMedia = defineType({
+  name: "galleryMedia",
+  title: "Gallery media",
+  type: "document",
+  fields: [
+    defineField({ name: "internalTitle", title: "Internal title", type: "string", validation: (rule) => rule.required() }),
+    defineField({ name: "album", title: "Album", type: "reference", to: [{ type: "galleryAlbum" }], validation: (rule) => rule.required() }),
+    defineField({ name: "mediaType", title: "Media type", type: "string", options: { list: ["image", "video"], layout: "radio" }, initialValue: "image", validation: (rule) => rule.required() }),
+    imageField("image", "Image"),
+    defineField({ name: "imageAlt", title: "Image alternative text", type: "string", description: "Describe the image for accessibility. Do not use a caption here." }),
+    defineField({ name: "videoSourceType", title: "Video source", type: "string", options: { list: ["uploaded file", "YouTube", "Vimeo"], layout: "radio" }, hidden: ({ document }) => document?.mediaType !== "video" }),
+    defineField({ name: "uploadedVideo", title: "Uploaded video file", type: "file", options: { accept: "video/mp4,video/webm,video/quicktime" }, hidden: ({ document }) => document?.mediaType !== "video" }),
+    defineField({ name: "externalVideoUrl", title: "YouTube or Vimeo URL", type: "url", validation: (rule) => rule.custom(videoUrlValidation), hidden: ({ document }) => document?.mediaType !== "video" }),
+    imageField("videoPosterImage", "Video poster image"),
+    defineField({ name: "videoTitle", title: "Video title", type: "string", hidden: ({ document }) => document?.mediaType !== "video" }),
+    defineField({ name: "transcript", title: "Video transcript or caption text", type: "text", rows: 5, hidden: ({ document }) => document?.mediaType !== "video" }),
+    defineField({ name: "caption", title: "Visible caption", type: "text", rows: 3, description: "Optional. Leave empty when no useful visitor caption exists." }),
+    defineField({ name: "photographerOrSource", title: "Photographer or source", type: "string" }),
+    defineField({ name: "captureDate", title: "Capture date", type: "date" }),
+    defineField({ name: "displayOrder", title: "Display order", type: "number", validation: (rule) => rule.integer().min(0) }),
     defineField({ name: "featured", title: "Featured", type: "boolean", initialValue: false }),
     defineField({ name: "published", title: "Published", type: "boolean", initialValue: false }),
+    defineField({ name: "orientation", title: "Orientation", type: "string", options: { list: ["landscape", "portrait", "square", "panorama"] } }),
+    defineField({ name: "verificationStatus", title: "Verification status", type: "string", options: { list: ["verified", "school confirmation required", "do not publish"] }, initialValue: "school confirmation required" }),
   ],
+  orderings: [
+    { title: "Album order", name: "albumOrder", by: [{ field: "displayOrder", direction: "asc" }, { field: "captureDate", direction: "asc" }, { field: "_id", direction: "asc" }] },
+    { title: "Recently added", name: "recentlyAdded", by: [{ field: "_createdAt", direction: "desc" }] },
+  ],
+  preview: {
+    select: { title: "internalTitle", album: "album.title", mediaType: "mediaType", caption: "caption", published: "published", media: "image" },
+    prepare: ({ title, album, mediaType, caption, published, media }) => ({
+      title,
+      subtitle: [album, mediaType, caption ? "Captioned" : "Needs caption review", published ? "Published" : "Draft"].filter(Boolean).join(" - "),
+      media,
+    }),
+  },
 });
 
 const download = defineType({
@@ -499,6 +587,7 @@ export const schemaTypes = [
   event,
   announcement,
   galleryAlbum,
+  galleryMedia,
   download,
   staffMember,
   department,

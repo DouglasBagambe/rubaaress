@@ -10,6 +10,47 @@ function singletonItem(S: Parameters<StructureResolver>[0], title: string, schem
     .child(S.document().schemaType(schemaType).documentId(schemaType).title(title));
 }
 
+function gallerySection(S: Parameters<StructureResolver>[0]) {
+  return S.listItem()
+    .title("Gallery")
+    .child(
+      S.list()
+        .title("Gallery")
+        .items([
+          S.documentTypeListItem("galleryAlbum").title("Albums"),
+          S.documentTypeListItem("galleryMedia").title("Media"),
+          S.listItem()
+            .title("Draft Albums")
+            .schemaType("galleryAlbum")
+            .child(S.documentTypeList("galleryAlbum").title("Draft Albums").filter('_type == "galleryAlbum" && published != true')),
+          S.listItem()
+            .title("Featured Albums")
+            .schemaType("galleryAlbum")
+            .child(S.documentTypeList("galleryAlbum").title("Featured Albums").filter('_type == "galleryAlbum" && featured == true && published == true && visibility == "public"')),
+          S.listItem()
+            .title("Archived Albums")
+            .schemaType("galleryAlbum")
+            .child(S.documentTypeList("galleryAlbum").title("Archived Albums").filter('_type == "galleryAlbum" && visibility == "archived"')),
+          S.listItem()
+            .title("Media Missing Alt Text")
+            .schemaType("galleryMedia")
+            .child(S.documentTypeList("galleryMedia").title("Media Missing Alt Text").filter('_type == "galleryMedia" && mediaType == "image" && published == true && (!defined(imageAlt) || imageAlt == "")')),
+          S.listItem()
+            .title("Unpublished Media")
+            .schemaType("galleryMedia")
+            .child(S.documentTypeList("galleryMedia").title("Unpublished Media").filter('_type == "galleryMedia" && published != true')),
+          S.listItem()
+            .title("Videos")
+            .schemaType("galleryMedia")
+            .child(S.documentTypeList("galleryMedia").title("Videos").filter('_type == "galleryMedia" && mediaType == "video"')),
+          S.divider(),
+          S.listItem()
+            .title("Bulk Import Information")
+            .child(S.document().schemaType("genericPage").documentId("gallery-bulk-import-information").title("Bulk Import Information")),
+        ]),
+    );
+}
+
 export const structure: StructureResolver = (S) =>
   S.list()
     .title("School Website")
@@ -21,7 +62,7 @@ export const structure: StructureResolver = (S) =>
       S.documentTypeListItem("newsArticle").title("News"),
       S.documentTypeListItem("event").title("Events"),
       S.documentTypeListItem("announcement").title("Announcements"),
-      S.documentTypeListItem("galleryAlbum").title("Gallery"),
+      gallerySection(S),
       S.documentTypeListItem("download").title("Downloads"),
       S.documentTypeListItem("staffMember").title("Leadership & Staff"),
       S.listItem()
