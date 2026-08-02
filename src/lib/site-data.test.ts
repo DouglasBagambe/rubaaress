@@ -19,10 +19,18 @@ import {
 } from "./site-data";
 import { calculateEnrolment } from "./enrolment";
 import { countMedia, filterGalleryAlbums, paginateGalleryMedia, sortGalleryMedia, validateExternalVideoUrl } from "./gallery";
-import { checkRateLimit, validatePublicForm } from "./forms";
+import { checkRateLimit, sendPublicForm, validatePublicForm, type PublicFormInput } from "./forms";
 import { filterSearchResults, normaliseQuery } from "./search";
 import { resolveAnnouncements, resolveDownloads, resolveEnrolment, resolveEvents, resolveGalleryIndex, resolveHomepage, resolveMasterPlan, resolveSiteSettings } from "@/sanity/content";
 import type { ResolvedGalleryAlbum, ResolvedGalleryMedia } from "@/sanity/types";
+
+function restoreEnv(name: string, value: string | undefined): void {
+  if (value === undefined) {
+    delete process.env[name];
+    return;
+  }
+  process.env[name] = value;
+}
 
 test("navigation exposes grouped primary items", () => {
   assert.deepEqual(navigation.map((item) => item.label), [
@@ -307,4 +315,58 @@ test("rate limiting blocks repeated submissions", () => {
   assert.equal(checkRateLimit(key, 2, 10000), true);
   assert.equal(checkRateLimit(key, 2, 10000), true);
   assert.equal(checkRateLimit(key, 2, 10000), false);
+});
+
+test("public form sender keeps development fallback when email is unconfigured", async () => {
+  const originalProvider = process.env.FORM_EMAIL_PROVIDER;
+  const originalTo = process.env.FORM_TO_EMAIL;
+  const originalFrom = process.env.FORM_FROM_EMAIL;
+  const originalKey = process.env.RESEND_API_KEY;
+  delete process.env.FORM_EMAIL_PROVIDER;
+  delete process.env.FORM_TO_EMAIL;
+  delete process.env.FORM_FROM_EMAIL;
+  delete process.env.RESEND_API_KEY;
+
+  const input: PublicFormInput = {
+    kind: "contact",
+    fullName: "Jane Parent",
+    email: "jane@example.com",
+    subject: "Admissions question",
+    message: "Please share the admissions process.",
+    consent: true,
+  };
+
+  assert.equal(await sendPublicForm(input), "logged");
+
+  restoreEnv("FORM_EMAIL_PROVIDER", originalProvider);
+  restoreEnv("FORM_TO_EMAIL", originalTo);
+  restoreEnv("FORM_FROM_EMAIL", originalFrom);
+  restoreEnv("RESEND_API_KEY", originalKey);
+});
+
+test("public form sender rejects unsupported configured providers", async () => {
+  const originalProvider = process.env.FORM_EMAIL_PROVIDER;
+  const originalTo = process.env.FORM_TO_EMAIL;
+  const originalFrom = process.env.FORM_FROM_EMAIL;
+  const originalKey = process.env.RESEND_API_KEY;
+  process.env.FORM_EMAIL_PROVIDER = "smtp";
+  process.env.FORM_TO_EMAIL = "nilebitlabs@gmail.com";
+  process.env.FORM_FROM_EMAIL = "Rubaare SS Website <onboarding@resend.dev>";
+  process.env.RESEND_API_KEY = "test_key";
+
+  const input: PublicFormInput = {
+    kind: "admissions",
+    fullName: "Jane Parent",
+    email: "jane@example.com",
+    intendedLevel: "O-Level",
+    message: "Please share the admissions process.",
+    consent: true,
+  };
+
+  await assert.rejects(sendPublicForm(input), /Email provider is not configured/);
+
+  restoreEnv("FORM_EMAIL_PROVIDER", originalProvider);
+  restoreEnv("FORM_TO_EMAIL", originalTo);
+  restoreEnv("FORM_FROM_EMAIL", originalFrom);
+  restoreEnv("RESEND_API_KEY", originalKey);
 });
