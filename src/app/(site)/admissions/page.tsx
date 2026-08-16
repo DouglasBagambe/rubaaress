@@ -1,35 +1,14 @@
 import type { Metadata } from "next";
-import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
+import Link from "next/link";
+import { InteriorHero } from "@/components/interior-page";
+import { PdfActions } from "@/components/public-data";
 import { PublicForm } from "@/components/public-form";
 import { Section, SectionHeading } from "@/components/section";
 import { pageIntros } from "@/lib/site-data";
-import { getAdmissions } from "@/sanity/content";
 
-export const metadata: Metadata = {
-  title: "Admissions",
-  description:
-    "Find admissions guidance for day and boarding students applying to O-Level or A-Level at Rubaare Secondary School in Ntungamo District.",
-  alternates: { canonical: "/admissions" },
-};
+export const metadata: Metadata = { title: "Admissions", description: "Official O-Level and A-Level admissions guidance, requirements, fees and documents for Rubaare Secondary School.", alternates: { canonical: "/admissions" } };
+const links = [{ title: "How to Apply", body: "Reporting steps, hours and documents to bring.", href: "/admissions/how-to-apply" }, { title: "Requirements", body: "O-Level and A-Level personal, uniform and boarding requirements.", href: "/admissions/requirements" }, { title: "Fees & Documents", body: "Official S1 and S5 fees plus all admission documents.", href: "/admissions/fees-and-documents" }, { title: "FAQs", body: "Answers drawn directly from the official admission documents.", href: "/admissions/faqs" }] as const;
 
-export default async function AdmissionsPage() {
-  const admissions = await getAdmissions();
-
-  return (
-    <>
-      <InteriorHero intro={pageIntros.admissions} breadcrumbs={[{ label: "Admissions", href: "/admissions" }]} />
-      <TextBlockGrid
-        eyebrow="Apply"
-        title="Admissions information."
-        description={admissions.introduction}
-        blocks={admissions.blocks}
-      />
-      <Section className="bg-white">
-        <div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]">
-          <SectionHeading eyebrow="Enquiry" title="Ask about admissions." description="Use this concise enquiry form for admissions questions only. It is not an online application system." />
-          <PublicForm kind="admissions" />
-        </div>
-      </Section>
-    </>
-  );
+export default function AdmissionsPage() {
+  return <><InteriorHero intro={pageIntros.admissions} breadcrumbs={[{ label: "Admissions", href: "/admissions" }]} /><Section className="bg-[var(--school-cream)]"><SectionHeading eyebrow="Choose a Pathway" title="O-Level and A-Level admissions." description="Download the appropriate complete admission pack, then review the reporting and requirements pages." /><div className="mt-8 grid gap-6 md:grid-cols-2"><article className="bg-white p-6"><h2 className="font-serif text-2xl font-semibold text-[var(--school-blue-dark)]">O-Level Admissions</h2><p className="mt-3 leading-7 text-[var(--school-muted)]">Reporting information, school rules, student information card, S1 fees and requirements.</p><PdfActions href="/downloads/o-level-admission-pack-2026.pdf" title="O-Level Admission Pack 2026" /></article><article className="bg-white p-6"><h2 className="font-serif text-2xl font-semibold text-[var(--school-blue-dark)]">A-Level Admissions</h2><p className="mt-3 leading-7 text-[var(--school-muted)]">Subject offering, reporting information, school rules, student information card, S5 fees and boarding requirements.</p><PdfActions href="/downloads/a-level-admission-pack-2026.pdf" title="A-Level Admission Pack 2026" /></article></div><div className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{links.map((item) => <Link key={item.href} href={item.href} className="border-l-4 border-[var(--school-gold)] bg-white p-5 hover:shadow-sm"><h2 className="font-serif text-xl font-semibold text-[var(--school-blue-dark)]">{item.title}</h2><p className="mt-2 text-sm leading-6 text-[var(--school-muted)]">{item.body}</p></Link>)}</div></Section><Section className="bg-white"><div className="grid gap-8 lg:grid-cols-[0.85fr_1.15fr]"><SectionHeading eyebrow="Admissions Enquiry" title="Ask the school." description="Use this form for an admissions enquiry. It is not an online application or admission submission." /><PublicForm kind="admissions" /></div></Section></>;
 }

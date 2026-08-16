@@ -31,9 +31,7 @@ export default async function MasterPlanPage() {
               title={masterPlan.pageTitle}
               description={masterPlan.introduction}
             />
-            <p className="mt-6 text-base leading-7 text-[var(--school-muted)]">
-              Where a render includes a visible label, the website uses that label as the caption. Unlabelled renders are described only as supplied master-plan building renders until the school confirms more detail.
-            </p>
+            <p className="mt-6 text-base leading-7 text-[var(--school-muted)]">The images present proposed facilities and future campus development. They do not represent a construction schedule or completion status.</p>
             <Link href="/gallery" className={`mt-7 inline-flex min-h-12 items-center border border-[var(--school-blue)] px-6 text-sm font-bold text-[var(--school-blue)] hover:bg-[var(--school-blue)] hover:text-white ${focusClass}`}>
               View Gallery
             </Link>
@@ -46,7 +44,7 @@ export default async function MasterPlanPage() {
         <SectionHeading
           eyebrow="Plan Images"
           title="Explore the proposed facilities."
-          description="Open each render for a larger view. Captions are limited to labels visible in the supplied material or folder evidence."
+          description="Open each official master-plan render for a larger view."
         />
         <div className="mt-10">
           <MasterPlanLightbox items={[overviewImage, ...supportingImages]} />

@@ -23,6 +23,7 @@ import { checkRateLimit, sendPublicForm, validatePublicForm, type PublicFormInpu
 import { filterSearchResults, normaliseQuery } from "./search";
 import { resolveAnnouncements, resolveDownloads, resolveEnrolment, resolveEvents, resolveGalleryIndex, resolveHomepage, resolveMasterPlan, resolveSiteSettings } from "@/sanity/content";
 import type { ResolvedGalleryAlbum, ResolvedGalleryMedia } from "@/sanity/types";
+import { publicDownloads, verifiedEnrolment } from "@/content/verified-school-content";
 
 function restoreEnv(name: string, value: string | undefined): void {
   if (value === undefined) {
@@ -92,14 +93,21 @@ test("find us data uses Rubaare location and map URLs", () => {
   assert.match(findUs.mapEmbedSrc, /^https:\/\/www\.google\.com\/maps/);
 });
 
-test("verified enrolment totals are calculated from class rows", () => {
+test("verified enrolment keeps the official headline and source tables distinct", () => {
   assert.equal(enrolmentRows.length, 6);
-  assert.equal(enrolmentTotals.totalFemale, 801);
-  assert.equal(enrolmentTotals.totalMale, 609);
-  assert.equal(enrolmentTotals.totalDay, 341);
-  assert.equal(enrolmentTotals.totalBoarding, 1069);
-  assert.equal(enrolmentTotals.grandTotal, 1410);
+  assert.equal(enrolmentTotals.totalFemale, 803);
+  assert.equal(enrolmentTotals.totalMale, 615);
+  assert.equal(enrolmentTotals.totalDay, 352);
+  assert.equal(enrolmentTotals.totalBoarding, 1066);
+  assert.equal(enrolmentTotals.grandTotal, 1418);
+  assert.equal(verifiedEnrolment.detailedRows.length, 22);
+  assert.equal(verifiedEnrolment.boardingDayRows.length, 6);
   assert.equal(enrolmentRows.every((row) => row.femaleDay + row.femaleBoarding + row.maleDay + row.maleBoarding === row.total), true);
+});
+
+test("the approved public download library contains twelve local PDFs", () => {
+  assert.equal(publicDownloads.length, 12);
+  assert.ok(publicDownloads.every((item) => item.href.startsWith("/downloads/") && item.href.endsWith(".pdf")));
 });
 
 test("site settings resolver keeps local fallback for empty Sanity strings", () => {
@@ -132,7 +140,9 @@ test("current enrolment resolver selects the newest current record", () => {
       academicYear: "2027",
       reportingDate: "2027-03-16",
       status: "current",
-      classRows: [{ className: "S.1", femaleDay: 1, femaleBoarding: 2, maleDay: 3, maleBoarding: 4 }],
+      headline: { grandTotal: 10, totalFemale: 3, totalMale: 7, totalBoarding: 6, totalDay: 4 },
+      detailedRows: [{ className: "S.1", stream: "Test", male: 7, female: 3, total: 10 }],
+      boardingDayRows: [{ className: "S.1", boarderBoys: 4, boarderGirls: 2, boarderTotal: 6, dayBoys: 3, dayGirls: 1, dayTotal: 4 }],
     },
     {
       _id: "old",
@@ -263,11 +273,12 @@ test("event resolver classifies upcoming and past events by date", () => {
 
 test("announcement and download resolvers keep clean public shapes", () => {
   const announcements = resolveAnnouncements([{ _id: "notice", title: "Notice", message: "Term opens soon.", type: "general", priority: 1 }]);
-  const resolvedDownloads = resolveDownloads([{ _id: "form", title: "Admission Form", category: "Admissions", fileType: "pdf", fileSize: 2048, publicationDate: "2026-08-01" }]);
+  const resolvedDownloads = resolveDownloads([{ _id: "form", title: "Admission Form", category: "Admissions", fileType: "pdf", fileSize: 2048, publicationDate: "2026-08-01", fileUrl: "https://cdn.sanity.io/files/9x78oq9t/production/form.pdf" }]);
 
   assert.equal(announcements[0]?.message, "Term opens soon.");
-  assert.equal(resolvedDownloads[0]?.fileType, "PDF");
-  assert.equal(resolvedDownloads[0]?.fileSize, "2 KB");
+  const admissionForm = resolvedDownloads.find((item) => item.title === "Admission Form");
+  assert.equal(admissionForm?.fileType, "PDF");
+  assert.equal(admissionForm?.fileSize, "2 KB");
 });
 
 test("master plan resolver preserves fallback image metadata", () => {

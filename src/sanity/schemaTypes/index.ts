@@ -160,6 +160,34 @@ const enrolmentClassRow = defineType({
   },
 });
 
+const detailedEnrolmentRow = defineType({
+  name: "detailedEnrolmentRow",
+  title: "Class and stream row",
+  type: "object",
+  fields: [
+    defineField({ name: "className", title: "Class", type: "string", validation: (rule) => rule.required() }),
+    defineField({ name: "stream", title: "Stream or area", type: "string", validation: (rule) => rule.required() }),
+    defineField({ name: "male", title: "Male", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    defineField({ name: "female", title: "Female", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    defineField({ name: "total", title: "Total", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+  ],
+});
+
+const boardingDayEnrolmentRow = defineType({
+  name: "boardingDayEnrolmentRow",
+  title: "Boarding and day row",
+  type: "object",
+  fields: [
+    defineField({ name: "className", title: "Class", type: "string", validation: (rule) => rule.required() }),
+    defineField({ name: "boarderBoys", title: "Boarder boys", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    defineField({ name: "boarderGirls", title: "Boarder girls", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    defineField({ name: "boarderTotal", title: "Boarding total", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    defineField({ name: "dayBoys", title: "Day boys", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    defineField({ name: "dayGirls", title: "Day girls", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    defineField({ name: "dayTotal", title: "Day total", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+  ],
+});
+
 const faq = defineType({
   name: "faq",
   title: "FAQ",
@@ -293,14 +321,20 @@ const enrolment = defineType({
     defineField({ name: "academicYear", title: "Academic year", type: "string", validation: (rule) => rule.required() }),
     defineField({ name: "reportingDate", title: "Reporting date", type: "date", validation: (rule) => rule.required() }),
     defineField({ name: "status", title: "Status", type: "string", options: { list: ["draft", "current", "archived"], layout: "radio" }, initialValue: "draft", validation: (rule) => rule.required() }),
-    defineField({ name: "classRows", title: "Class rows", type: "array", of: [defineArrayMember({ type: "enrolmentClassRow" })], validation: (rule) => rule.required().min(1) }),
+    defineField({ name: "headline", title: "Shared headline totals", type: "object", fields: [
+      defineField({ name: "grandTotal", title: "Total learners", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+      defineField({ name: "totalFemale", title: "Female learners", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+      defineField({ name: "totalMale", title: "Male learners", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+      defineField({ name: "totalBoarding", title: "Boarding learners", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+      defineField({ name: "totalDay", title: "Day scholars", type: "number", validation: (rule) => rule.required().custom(nonNegativeInteger) }),
+    ], validation: (rule) => rule.required() }),
+    defineField({ name: "detailedRows", title: "Class and stream male/female rows", description: "Use the detailed total-enrolment sheet only.", type: "array", of: [defineArrayMember({ type: "detailedEnrolmentRow" })], validation: (rule) => rule.required().min(1) }),
+    defineField({ name: "boardingDayRows", title: "Separate boarding/day rows", description: "Use the boarding/day sheet only. Do not reconcile it with the detailed rows.", type: "array", of: [defineArrayMember({ type: "boardingDayEnrolmentRow" })], validation: (rule) => rule.required().min(1) }),
+    defineField({ name: "classRows", title: "Legacy combined class rows", description: "Retained only for older records. Do not use for new enrolment data.", type: "array", readOnly: true, hidden: true, of: [defineArrayMember({ type: "enrolmentClassRow" })] }),
   ],
   preview: {
-    select: { title: "academicYear", reportingDate: "reportingDate", status: "status", rows: "classRows" },
-    prepare: ({ title, reportingDate, status, rows }) => {
-      const total = Array.isArray(rows)
-        ? rows.reduce((sum, row) => sum + (row?.femaleDay ?? 0) + (row?.femaleBoarding ?? 0) + (row?.maleDay ?? 0) + (row?.maleBoarding ?? 0), 0)
-        : 0;
+    select: { title: "academicYear", reportingDate: "reportingDate", status: "status", total: "headline.grandTotal" },
+    prepare: ({ title, reportingDate, status, total = 0 }) => {
       return { title, subtitle: `${reportingDate ?? "No date"} - ${status ?? "draft"} - ${total.toLocaleString("en-US")} learners` };
     },
   },
@@ -588,6 +622,8 @@ export const schemaTypes = [
   linkItem,
   heroSlide,
   enrolmentClassRow,
+  detailedEnrolmentRow,
+  boardingDayEnrolmentRow,
   faq,
   galleryImage,
   siteSettings,

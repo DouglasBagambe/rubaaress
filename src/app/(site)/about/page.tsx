@@ -1,90 +1,37 @@
 import type { Metadata } from "next";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
+import { ResponsiveTable, StatCards } from "@/components/public-data";
 import { Section, SectionHeading } from "@/components/section";
+import { officialAboutPreamble, verifiedEnrolment } from "@/content/verified-school-content";
 import { pageIntros } from "@/lib/site-data";
-import { getCurrentEnrolment, getSiteSettings } from "@/sanity/content";
 
 export const metadata: Metadata = {
   title: { absolute: "About Rubaare Secondary School | Ntungamo, Uganda" },
-  description:
-    "Learn about Rubaare Secondary School (Rubaare SS), a mixed day and boarding school in Ntungamo District, including its mission, vision, leadership and student enrolment.",
+  description: "Learn about Rubaare Secondary School (Rubaare SS), a mixed day and boarding school in Ntungamo District, including its history, mission, leadership and enrolment.",
   alternates: { canonical: "/about" },
 };
 
-function formatNumber(value: number) {
-  return value.toLocaleString("en-US");
-}
+const format = (value: number) => value.toLocaleString("en-US");
 
-export default async function AboutPage() {
-  const [settings, enrolment] = await Promise.all([getSiteSettings(), getCurrentEnrolment()]);
-
-  return (
-    <>
-      <InteriorHero intro={pageIntros.about} breadcrumbs={[{ label: "About", href: "/about" }]} />
-      <TextBlockGrid
-        eyebrow="School Profile"
-        title="School profile sections."
-        description={`${settings.mission} ${settings.vision}`}
-        blocks={[
-          { title: "School History", body: "A dedicated history page is ready for confirmed founding details and milestones.", href: "/about/history" },
-          { title: "Mission, Vision & Values", body: `${settings.mission} ${settings.vision}`, href: "/about/mission-vision" },
-          { title: "Leadership", body: "Leadership profiles include the headteacher and school administration structure.", href: "/about/leadership" },
-          { title: "Master Plan", body: "The school master plan presents proposed future development for facilities and student experience.", href: "/about/master-plan" },
-          { title: "Facilities", body: "Campus and facilities information will expand as school photography and descriptions are supplied." },
-        ]}
-      />
-      <Section className="bg-white">
-        <SectionHeading
-          eyebrow="School Profile"
-          title={`${enrolment.academicYear} Student Enrolment`}
-          description={`${settings.schoolName} had ${formatNumber(enrolment.totals.grandTotal)} learners recorded as of ${enrolment.reportingDateLabel}.`}
-        />
-        <div className="mt-8 grid gap-6 lg:grid-cols-[1fr_280px]">
-          <div className="overflow-x-auto border border-[var(--school-border)] bg-white shadow-sm">
-            <table className="w-full min-w-[720px] border-collapse text-left text-sm">
-              <caption className="sr-only">Class-by-class student enrolment as of {enrolment.reportingDateLabel}</caption>
-              <thead className="bg-[var(--school-blue-dark)] text-white">
-                <tr>
-                  <th scope="col" className="px-4 py-3 font-bold">Class</th>
-                  <th scope="col" className="px-4 py-3 font-bold">Female Day</th>
-                  <th scope="col" className="px-4 py-3 font-bold">Female Boarding</th>
-                  <th scope="col" className="px-4 py-3 font-bold">Male Day</th>
-                  <th scope="col" className="px-4 py-3 font-bold">Male Boarding</th>
-                  <th scope="col" className="px-4 py-3 font-bold">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {enrolment.rows.map((row) => (
-                  <tr key={row.className} className="border-t border-[var(--school-border)] odd:bg-white even:bg-[var(--school-cream)]/45">
-                    <th scope="row" className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">{row.className}</th>
-                    <td className="px-4 py-3 text-[var(--school-ink)]">{formatNumber(row.femaleDay)}</td>
-                    <td className="px-4 py-3 text-[var(--school-ink)]">{formatNumber(row.femaleBoarding)}</td>
-                    <td className="px-4 py-3 text-[var(--school-ink)]">{formatNumber(row.maleDay)}</td>
-                    <td className="px-4 py-3 text-[var(--school-ink)]">{formatNumber(row.maleBoarding)}</td>
-                    <td className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">{formatNumber(row.total)}</td>
-                  </tr>
-                ))}
-                <tr className="border-t-2 border-[var(--school-blue)] bg-[var(--school-gold)]/15">
-                  <th scope="row" className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">Total</th>
-                  <td className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">{formatNumber(enrolment.totals.femaleDay)}</td>
-                  <td className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">{formatNumber(enrolment.totals.femaleBoarding)}</td>
-                  <td className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">{formatNumber(enrolment.totals.maleDay)}</td>
-                  <td className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">{formatNumber(enrolment.totals.maleBoarding)}</td>
-                  <td className="px-4 py-3 font-bold text-[var(--school-blue-dark)]">{formatNumber(enrolment.totals.grandTotal)}</td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div className="grid content-start gap-3 border-l-4 border-[var(--school-gold)] bg-[var(--school-blue-dark)] p-5 text-sm text-blue-50 shadow-sm">
-            <p className="font-bold text-[var(--school-gold)]">Summary</p>
-            <p className="text-white">Female learners: {formatNumber(enrolment.totals.totalFemale)}</p>
-            <p className="text-white">Male learners: {formatNumber(enrolment.totals.totalMale)}</p>
-            <p className="text-white">Day learners: {formatNumber(enrolment.totals.totalDay)}</p>
-            <p className="text-white">Boarding learners: {formatNumber(enrolment.totals.totalBoarding)}</p>
-            <p className="pt-2 text-xs font-semibold text-blue-100">Figures as of {enrolment.reportingDateLabel}.</p>
-          </div>
-        </div>
-      </Section>
-    </>
-  );
+export default function AboutPage() {
+  return <>
+    <InteriorHero intro={{ ...pageIntros.about, description: officialAboutPreamble[0] }} breadcrumbs={[{ label: "About", href: "/about" }]} />
+    <TextBlockGrid eyebrow="Our School" title="Rubaare Secondary School." description={officialAboutPreamble[0]} blocks={[
+      { title: "Our History", body: officialAboutPreamble[1], href: "/about/history" },
+      { title: "Our Foundation", body: officialAboutPreamble[2], href: "/about/mission-vision" },
+      { title: "Leadership", body: "Meet the headteacher, senior administration, academic leadership, class teachers and hostel leadership.", href: "/about/leadership" },
+      { title: "Facilities", body: "The school has electricity, a standby generator, solar power and clean water.", href: "/about/facilities" },
+    ]} />
+    <Section className="bg-white">
+      <SectionHeading eyebrow="Current Enrolment" title={`${verifiedEnrolment.academicYear} school enrolment.`} description={`Official headline figures reported on ${verifiedEnrolment.reportingDateLabel}.`} />
+      <div className="mt-8"><StatCards items={[
+        { label: "Total Learners", value: format(verifiedEnrolment.headline.grandTotal) },
+        { label: "Female", value: format(verifiedEnrolment.headline.totalFemale) },
+        { label: "Male", value: format(verifiedEnrolment.headline.totalMale) },
+        { label: "Boarding / Day", value: `${format(verifiedEnrolment.headline.totalBoarding)} / ${format(verifiedEnrolment.headline.totalDay)}` },
+      ]} /></div>
+      <div className="mt-12"><h2 className="font-serif text-2xl font-semibold text-[var(--school-blue-dark)]">Class and stream enrolment</h2><p className="mb-5 mt-3 text-sm leading-6 text-[var(--school-muted)]">Male and female figures from the detailed total student enrolment sheet.</p><ResponsiveTable caption="Class and stream enrolment by sex" headers={["Class", "Stream", "Male", "Female", "Total"]} rows={verifiedEnrolment.detailedRows.map((row) => [row.className, row.stream, format(row.male), format(row.female), format(row.total)])} footer={["Total", "", format(verifiedEnrolment.headline.totalMale), format(verifiedEnrolment.headline.totalFemale), format(verifiedEnrolment.headline.grandTotal)]} /></div>
+      <div className="mt-12"><h2 className="font-serif text-2xl font-semibold text-[var(--school-blue-dark)]">Boarding and day scholars</h2><p className="mb-5 mt-3 text-sm leading-6 text-[var(--school-muted)]">Boarding and day figures are presented separately from the school&apos;s second official enrolment sheet.</p><ResponsiveTable caption="Boarding and day scholars by class" headers={["Class", "Boarder Boys", "Boarder Girls", "Boarding Total", "Day Boys", "Day Girls", "Day Total"]} rows={verifiedEnrolment.boardingDayRows.map((row) => [row.className, row.boarderBoys, row.boarderGirls, row.boarderTotal, row.dayBoys, row.dayGirls, row.dayTotal])} footer={["Total", 429, 637, "1,066", 195, 157, 352]} /></div>
+    </Section>
+  </>;
 }

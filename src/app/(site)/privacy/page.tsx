@@ -11,7 +11,7 @@ export default function PrivacyPage() {
       <TextBlockGrid
         eyebrow="Website Privacy"
         title="How website information is handled."
-        description="Final legal review is recommended before launch."
+        description="How information submitted through this website and its connected services is handled."
         blocks={[
           { title: "Forms", body: "Information submitted through website forms is used to respond to enquiries and is not stored in the public Sanity dataset." },
           { title: "Services", body: "The site uses Sanity-hosted public content, Google Maps links or embeds, and hosted media for published school information." },

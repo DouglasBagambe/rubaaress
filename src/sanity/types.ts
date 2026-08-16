@@ -71,6 +71,8 @@ export type ResolvedEnrolment = {
   reportingDateLabel: string;
   status: "draft" | "current" | "archived";
   rows: ReadonlyArray<CalculatedEnrolmentRow>;
+  detailedRows: ReadonlyArray<{ className: string; stream: string; male: number; female: number; total: number }>;
+  boardingDayRows: ReadonlyArray<{ className: string; boarderBoys: number; boarderGirls: number; boarderTotal: number; dayBoys: number; dayGirls: number; dayTotal: number }>;
   totals: CalculatedEnrolmentTotals;
   stats: ReadonlyArray<Stat>;
   warnings: ReadonlyArray<string>;

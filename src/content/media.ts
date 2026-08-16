@@ -290,7 +290,7 @@ export const masterPlanItems: ReadonlyArray<MasterPlanItem> = [
     verificationStatus: "school-confirmation-required",
     source: "official-school-content",
     title: "Proposed Building Render",
-    caption: "Building render supplied in the master-plan folder.",
+    caption: "Proposed building render.",
   },
   {
     id: "master-plan-head-teacher-house",
@@ -355,7 +355,7 @@ export const masterPlanItems: ReadonlyArray<MasterPlanItem> = [
     verificationStatus: "school-confirmation-required",
     source: "official-school-content",
     title: "Render Collage",
-    caption: "Render collage supplied in the master-plan folder.",
+    caption: "Proposed development render collage.",
   },
   {
     id: "master-plan-classroom-block-render",
@@ -368,7 +368,7 @@ export const masterPlanItems: ReadonlyArray<MasterPlanItem> = [
     verificationStatus: "school-confirmation-required",
     source: "official-school-content",
     title: "Classroom Block Render",
-    caption: "Classroom block render supplied in the master-plan folder.",
+    caption: "Proposed classroom block render.",
   },
   {
     id: "master-plan-additional-building-render",
@@ -381,7 +381,7 @@ export const masterPlanItems: ReadonlyArray<MasterPlanItem> = [
     verificationStatus: "school-confirmation-required",
     source: "official-school-content",
     title: "Additional Building Render",
-    caption: "Additional building render supplied in the master-plan folder.",
+    caption: "Proposed building render.",
   },
   {
     id: "master-plan-classroom-block-render-02",
@@ -394,7 +394,7 @@ export const masterPlanItems: ReadonlyArray<MasterPlanItem> = [
     verificationStatus: "school-confirmation-required",
     source: "official-school-content",
     title: "Classroom Block Render",
-    caption: "Classroom block render supplied in the master-plan folder.",
+    caption: "Proposed classroom block render.",
   },
 ];
 

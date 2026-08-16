@@ -1,22 +1,11 @@
 import type { Metadata } from "next";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
-import { academicPathways, pageIntros } from "@/lib/site-data";
-import { getAcademicContent } from "@/sanity/content";
+import { PdfActions } from "@/components/public-data";
+import { Section, SectionHeading } from "@/components/section";
+import { pageIntros } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "O-Level",
-  description:
-    "Learn about O-Level education and subject pathways at Rubaare Secondary School in Rubaare, Ntungamo District, Uganda.",
-  alternates: { canonical: "/academics/o-level" },
-};
+export const metadata: Metadata = { title: "O-Level", description: "Learn about O-Level education and admission preparation at Rubaare Secondary School.", alternates: { canonical: "/academics/o-level" } };
 
-export default async function OLevelPage() {
-  const academicContent = await getAcademicContent();
-  const pathway = academicContent.programmes.find((item) => item.title.includes("O-Level")) ?? academicPathways[0];
-  return (
-    <>
-      <InteriorHero intro={{ ...pageIntros.academics, eyebrow: "O-Level", title: pathway.title }} breadcrumbs={[{ label: "Academics", href: "/academics" }, { label: "O-Level", href: "/academics/o-level" }]} />
-      <TextBlockGrid eyebrow="Pathway" title={pathway.title} description={"summary" in pathway ? pathway.summary : pathway.body} blocks={"highlights" in pathway ? pathway.highlights.map((highlight) => ({ title: highlight, body: "Details will be added as pathway information is confirmed." })) : [{ title: pathway.title, body: pathway.body }]} />
-    </>
-  );
+export default function OLevelPage() {
+  return <><InteriorHero intro={{ ...pageIntros.academics, eyebrow: "O-Level", title: "O-Level education.", description: "Rubaare Secondary School provides O-Level education for day and boarding learners within its broad Arts and Sciences programme." }} breadcrumbs={[{ label: "Academics", href: "/academics" }, { label: "O-Level", href: "/academics/o-level" }]} /><TextBlockGrid eyebrow="Lower Secondary" title="A broad academic foundation." description="The school's subject leadership spans languages, sciences, humanities, creative subjects, agriculture, business, computing and physical education." blocks={[{ title: "Academic Leadership", body: "The subject-head list identifies the teachers responsible for the school's academic subject areas.", href: "/academics/departments" }, { title: "Progression", body: "The school also offers A-Level education across Arts and Science subjects.", href: "/academics/a-level" }, { title: "Admission Preparation", body: "O-Level entrants should review reporting documents, personal items, uniform and boarding requirements.", href: "/admissions/requirements" }]} /><Section className="bg-white"><SectionHeading eyebrow="O-Level Admissions" title="Official 2026 admission pack." description="Download the complete O-Level admission letter, school rules, forms, fees and requirements." /><PdfActions href="/downloads/o-level-admission-pack-2026.pdf" title="O-Level Admission Pack 2026" /></Section></>;
 }

@@ -1,22 +1,12 @@
 import type { Metadata } from "next";
-import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
-import { academicPathways, pageIntros } from "@/lib/site-data";
-import { getAcademicContent } from "@/sanity/content";
+import { InteriorHero } from "@/components/interior-page";
+import { PdfActions } from "@/components/public-data";
+import { Section, SectionHeading } from "@/components/section";
+import { aLevelSubjects } from "@/content/verified-school-content";
+import { pageIntros } from "@/lib/site-data";
 
-export const metadata: Metadata = {
-  title: "A-Level",
-  description:
-    "Learn about A-Level education and academic pathways at Rubaare Secondary School in Rubaare, Ntungamo District, Uganda.",
-  alternates: { canonical: "/academics/a-level" },
-};
+export const metadata: Metadata = { title: "A-Level", description: "A-Level subjects and study requirements at Rubaare Secondary School.", alternates: { canonical: "/academics/a-level" } };
 
-export default async function ALevelPage() {
-  const academicContent = await getAcademicContent();
-  const pathway = academicContent.programmes.find((item) => item.title.includes("A-Level")) ?? academicPathways[1];
-  return (
-    <>
-      <InteriorHero intro={{ ...pageIntros.academics, eyebrow: "A-Level", title: pathway.title }} breadcrumbs={[{ label: "Academics", href: "/academics" }, { label: "A-Level", href: "/academics/a-level" }]} />
-      <TextBlockGrid eyebrow="Pathway" title={pathway.title} description={"summary" in pathway ? pathway.summary : pathway.body} blocks={"highlights" in pathway ? pathway.highlights.map((highlight) => ({ title: highlight, body: "Details will be added as pathway information is confirmed." })) : [{ title: pathway.title, body: pathway.body }]} />
-    </>
-  );
+export default function ALevelPage() {
+  return <><InteriorHero intro={{ ...pageIntros.academics, eyebrow: "A-Level", title: "A-Level education.", description: "Students offer three principal subjects, General Paper and an approved subsidiary subject." }} breadcrumbs={[{ label: "Academics", href: "/academics" }, { label: "A-Level", href: "/academics/a-level" }]} /><Section className="bg-[var(--school-cream)]"><SectionHeading eyebrow="Subject Offering" title="Available A-Level subjects." description="The official 2026 admission letter lists the following subjects. It does not prescribe fixed combinations." /><ul className="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{aLevelSubjects.map((subject) => <li key={subject} className="border-l-4 border-[var(--school-gold)] bg-white p-4 font-semibold text-[var(--school-blue-dark)]">{subject}</li>)}</ul><div className="mt-10 grid gap-5 md:grid-cols-3"><article className="bg-white p-6"><h2 className="font-serif text-xl font-semibold text-[var(--school-blue-dark)]">Principal Subjects</h2><p className="mt-3 text-sm leading-6 text-[var(--school-muted)]">Each student offers three principal subjects.</p></article><article className="bg-white p-6"><h2 className="font-serif text-xl font-semibold text-[var(--school-blue-dark)]">Subsidiary Subject</h2><p className="mt-3 text-sm leading-6 text-[var(--school-muted)]">Students choose either Computer Studies or Sub-Mathematics as a subsidiary.</p></article><article className="bg-white p-6"><h2 className="font-serif text-xl font-semibold text-[var(--school-blue-dark)]">General Paper</h2><p className="mt-3 text-sm leading-6 text-[var(--school-muted)]">General Paper is compulsory.</p></article></div></Section><Section className="bg-white"><SectionHeading eyebrow="A-Level Admissions" title="Official 2026 admission pack." description="Download the complete A-Level admission letter, school rules, forms, fees and requirements." /><PdfActions href="/downloads/a-level-admission-pack-2026.pdf" title="A-Level Admission Pack 2026" /></Section></>;
 }

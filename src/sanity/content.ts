@@ -5,6 +5,7 @@ import {
   downloads as localDownloads,
   enrolmentReportingDate,
   enrolmentRows,
+  enrolmentTotals,
   findUs,
   galleryAlbums,
   heroSlides,
@@ -60,6 +61,7 @@ import {
 import { HOMEPAGE_QUERY, type HomepageQueryResult } from "@/sanity/queries/homepage";
 import { SITE_SETTINGS_QUERY, type SanityImageResult, type SiteSettingsQueryResult } from "@/sanity/queries/siteSettings";
 import type { ResolvedEnrolment, ResolvedGalleryAlbum, ResolvedGalleryAlbumDetail, ResolvedGalleryIndex, ResolvedGalleryMedia, ResolvedHomepage, ResolvedImage, ResolvedSiteSettings } from "@/sanity/types";
+import { officialAboutPreamble, verifiedEnrolment } from "@/content/verified-school-content";
 
 function cleanString(value: string | null | undefined) {
   const trimmed = value?.trim();
@@ -272,6 +274,7 @@ export function resolveGalleryAlbumDetail(
 }
 
 export function resolveNewsArticles(data: ReadonlyArray<NewsArticleQueryItem> | null) {
+  const excludedPhrases = ["prepared for confirmation", "admissions resources moved", "pending confirmation", "school profile information prepared", "website team"];
   const articles = data
     ?.map((item, index) => ({
       title: withFallback(item.title, latestNews[index]?.title ?? "School news"),
@@ -282,9 +285,12 @@ export function resolveNewsArticles(data: ReadonlyArray<NewsArticleQueryItem> | 
       publishedAt: cleanString(item.publishedAt),
       featured: item.featured === true,
       featuredImage: sanityImageToAsset(item.featuredImage, latestNews[index]?.featuredImage ?? images.heroCampus),
-      content: withFallback(item.plainBody, latestNews[index]?.content ?? "Full article details will be published after school confirmation."),
+      content: withFallback(item.plainBody, latestNews[index]?.content ?? item.excerpt ?? ""),
     }))
-    .filter((item) => item.title && item.slug);
+    .filter((item) => {
+      const text = `${item.title} ${item.excerpt} ${item.content} ${item.author}`.toLowerCase();
+      return item.title && item.slug && !excludedPhrases.some((phrase) => text.includes(phrase));
+    });
 
   return articles?.length ? articles : latestNews;
 }
@@ -294,7 +300,7 @@ export function resolveEvents(data: ReadonlyArray<EventQueryItem> | null, now = 
     ?.map((item, index) => ({
       title: withFallback(item.title, upcomingEvents[index]?.title ?? "School event"),
       slug: cleanString(item.slug),
-      description: withFallback(item.summary ?? item.plainDescription, upcomingEvents[index]?.description ?? "Event details will be published after confirmation."),
+      description: withFallback(item.summary ?? item.plainDescription, upcomingEvents[index]?.description ?? "School event."),
       startDate: cleanString(item.startDateTime),
       endDate: cleanString(item.endDateTime),
       venue: withFallback(item.venue, upcomingEvents[index]?.venue ?? "Rubaare Secondary School"),
@@ -334,7 +340,8 @@ export function resolveDownloads(data: ReadonlyArray<DownloadQueryItem> | null) 
     academicYear: cleanString(item.academicYear),
   }));
 
-  return downloads?.length ? downloads : localDownloads;
+  const remote = downloads?.filter((item) => item.fileUrl) ?? [];
+  return [...localDownloads, ...remote.filter((item) => !localDownloads.some((local) => local.title === item.title))];
 }
 
 export function resolveStaff(data: ReadonlyArray<StaffQueryItem> | null) {
@@ -343,19 +350,19 @@ export function resolveStaff(data: ReadonlyArray<StaffQueryItem> | null) {
     body: [item.role, item.biography].filter(Boolean).join(". "),
   })).filter((item) => item.body);
 
-  return staff?.length ? staff : [{ title: "Headteacher", body: schoolIdentity.headteacher }, { title: "Administration", body: "Additional leadership profiles will be added after confirmation." }];
+  return staff?.length ? staff : [{ title: schoolIdentity.headteacher, body: "Headteacher" }];
 }
 
 export function resolveAcademicContent(programmes: ReadonlyArray<AcademicProgrammeQueryItem> | null, departments: ReadonlyArray<DepartmentQueryItem> | null) {
   const programmeBlocks = programmes?.map((item) => ({
     id: item.level?.toLowerCase().replace(/[^a-z0-9]+/g, "-"),
     title: withFallback(item.title, `${item.level ?? "Academic"} Programme`),
-    body: withFallback(item.introduction ?? item.subjectText ?? item.curriculumText, "Programme details will be published after school confirmation."),
+    body: withFallback(item.introduction ?? item.subjectText ?? item.curriculumText, "O-Level and A-Level programmes are offered."),
   })).filter((item) => item.title);
   const departmentBlocks = departments?.map((item) => ({
     id: item.slug,
     title: withFallback(item.name, "Department"),
-    body: withFallback(item.introduction, item.subjects?.join(", ") ?? "Department details will be published after school confirmation."),
+    body: withFallback(item.introduction, item.subjects?.join(", ") ?? "Subject department."),
   })).filter((item) => item.title);
 
   return {
@@ -365,13 +372,14 @@ export function resolveAcademicContent(programmes: ReadonlyArray<AcademicProgram
 }
 
 export function resolveAdmissions(data: AdmissionsQueryResult) {
+  void data;
   return {
-    introduction: withFallback(data?.introduction, "Application steps, requirements and downloadable forms are grouped for parents and guardians."),
+    introduction: "Verified O-Level and A-Level admission guidance, requirements, fees and documents are available in this section.",
     blocks: [
-      { id: "apply", title: "How to Apply", body: data?.applicationSteps?.join(" ") ?? "Application steps will be published here once the school confirms the admissions process." },
-      { id: "requirements", title: "Admission Requirements", body: data?.requirements?.join(" ") ?? "Requirements will be listed clearly for each intake." },
-      { id: "documents", title: "Fees & Documents", body: data?.feesIntroduction ?? "Fee documents and forms will be downloadable when supplied." },
-      { id: "faq", title: "Frequently Asked Questions", body: data?.faqs?.filter((faq) => faq.enabled !== false).map((faq) => `${faq.question}: ${faq.answer}`).join(" ") ?? "Common parent and guardian questions will be answered here." },
+      { id: "apply", title: "How to Apply", body: "Review the appropriate admission letter, prepare the required former-school documents and report between 08:00am and 5:00pm." },
+      { id: "requirements", title: "Admission Requirements", body: "Separate O-Level and A-Level requirements cover reporting documents, uniform, personal items and boarding needs." },
+      { id: "documents", title: "Fees & Documents", body: "Official 2026 admission packs, fee schedules, forms and requirements are available as PDF downloads." },
+      { id: "faq", title: "Frequently Asked Questions", body: "Answers cover day and boarding programmes, meals, reporting, documents, utilities and downloads." },
     ],
   };
 }
@@ -380,7 +388,7 @@ export function resolveSchoolLife(data: ReadonlyArray<SchoolLifeQueryItem> | nul
   const activities = data?.map((item) => ({
     id: cleanString(item.slug),
     title: withFallback(item.title, "School activity"),
-    body: withFallback(item.descriptionText, item.activityLeader ? `Led by ${item.activityLeader}.` : "Activity details will be published after confirmation."),
+    body: withFallback(item.descriptionText, item.activityLeader ? `Led by ${item.activityLeader}.` : "School-life activity."),
   }));
 
   return activities?.length ? activities : schoolLife.map((item) => ({ id: item.href.split("#")[1], title: item.title, body: item.summary }));
@@ -390,7 +398,7 @@ export function resolveFacilities(data: ReadonlyArray<FacilityQueryItem> | null)
   return data?.map((item) => ({
     id: cleanString(item.slug),
     title: withFallback(item.title, "School facility"),
-    body: withFallback(item.descriptionText, "Facility details will be published after confirmation."),
+    body: withFallback(item.descriptionText, "School facility."),
   })).filter((item) => item.title) ?? [];
 }
 
@@ -405,7 +413,7 @@ export function resolveMasterPlan(data: MasterPlanQueryResult) {
 
   return {
     pageTitle: withFallback(data?.pageTitle, "Rubaare Secondary School Master Plan"),
-    introduction: withFallback(data?.introduction, "The supplied master-plan images represent the school's proposed future development. They should be read as planning material, not as confirmation that construction is completed, funded or scheduled."),
+    introduction: withFallback(data?.introduction, "The school master plan presents proposed facilities and future campus development."),
     developmentSections: data?.developmentSections ?? [],
     items: [overview, ...(supporting?.length ? supporting : masterPlanItems.slice(1))],
   };
@@ -495,16 +503,16 @@ export function resolveHomepage(data: HomepageQueryResult): ResolvedHomepage {
     quickAccessLinks: resolveQuickLinks(data),
     welcome: {
       eyebrow: "Welcome",
-      heading: withFallback(data?.welcomeHeading, "A secondary-school community in Rubaare, Ntungamo District."),
-      introduction: withFallback(data?.welcomeIntroduction, `${schoolIdentity.mission} ${schoolIdentity.vision}`),
-      body: "The website is structured around the journeys families use most: admissions, academics, school life, news, events, documents, gallery and contact.",
+      heading: "A mixed day and boarding school serving boys and girls.",
+      introduction: officialAboutPreamble[0],
+      body: `${officialAboutPreamble[1]} ${officialAboutPreamble[2]}`,
     },
     headteacher: {
       eyebrow: "From the Headteacher's Desk",
-      name: withFallback(data?.headteacherName, schoolIdentity.headteacher),
-      message: withFallback(data?.headteacherMessage, "Welcome to Rubaare Secondary School. Our school community is committed to purposeful learning, discipline and the steady development of each learner."),
-      ctaLabel: "View Leadership",
-      ctaHref: "/about/leadership",
+      name: schoolIdentity.headteacher,
+      message: "Rubaare Secondary School is led by Headteacher Ms. Mpeirwe Monic Atukunda, supported by the senior administration and academic leadership team.",
+      ctaLabel: "Meet the Headteacher",
+      ctaHref: "/about/headteacher",
       image: sanityImageToAsset(data?.headteacherPhotograph, images.headteacher),
     },
     academicsIntroduction: withFallback(data?.academicPathwaysIntroduction, "Academic pathways guide learners through lower and advanced secondary study."),
@@ -524,7 +532,7 @@ export function resolveHomepage(data: HomepageQueryResult): ResolvedHomepage {
     admissionsCta: {
       eyebrow: "Admissions",
       title: "Prepare to join Rubaare Secondary School.",
-      description: "Admissions information, forms and dates are organised in one section for parents and guardians.",
+      description: "Review O-Level and A-Level reporting guidance, requirements, fees and official admission documents.",
       label: withFallback(data?.admissionsCta?.label, "Admissions information"),
       href: withFallback(data?.admissionsCta?.href, "/admissions"),
     },
@@ -538,7 +546,13 @@ export function resolveEnrolment(data: EnrolmentQueryResult): ResolvedEnrolment 
     console.warn("Multiple current enrolment records found; using the most recent reporting date.");
   }
 
-  const record = currentRecords[0];
+  const candidate = currentRecords[0];
+  const hasSeparatedOfficialData = Boolean(
+    candidate?.headline?.grandTotal &&
+    candidate.detailedRows?.length &&
+    candidate.boardingDayRows?.length,
+  );
+  const record = candidate?.reportingDate && candidate.reportingDate >= verifiedEnrolment.reportingDate && hasSeparatedOfficialData ? candidate : undefined;
   const rows: ReadonlyArray<EnrolmentInputRow> = record?.classRows?.length
     ? record.classRows.map((row) => ({
         className: row.className ?? "",
@@ -550,14 +564,34 @@ export function resolveEnrolment(data: EnrolmentQueryResult): ResolvedEnrolment 
     : enrolmentRows;
 
   const calculated = calculateEnrolment(rows);
-  const academicYear = withFallback(record?.academicYear, "2026");
-  const reportingDate = record?.reportingDate ?? "2026-03-16";
+  const academicYear = withFallback(record?.academicYear, verifiedEnrolment.academicYear);
+  const reportingDate = record?.reportingDate ?? verifiedEnrolment.reportingDate;
   const reportingDateLabel = record?.reportingDate ? formatDateLabel(record.reportingDate) : enrolmentReportingDate;
+  const boardingDayTotals = record?.boardingDayRows?.reduce(
+    (totals, row) => ({
+      femaleDay: totals.femaleDay + (row.dayGirls ?? 0),
+      femaleBoarding: totals.femaleBoarding + (row.boarderGirls ?? 0),
+      maleDay: totals.maleDay + (row.dayBoys ?? 0),
+      maleBoarding: totals.maleBoarding + (row.boarderBoys ?? 0),
+    }),
+    { femaleDay: 0, femaleBoarding: 0, maleDay: 0, maleBoarding: 0 },
+  );
+  const totals = record && record.headline && boardingDayTotals
+    ? {
+        ...boardingDayTotals,
+        totalFemale: record.headline.totalFemale ?? 0,
+        totalMale: record.headline.totalMale ?? 0,
+        totalDay: record.headline.totalDay ?? 0,
+        totalBoarding: record.headline.totalBoarding ?? 0,
+        grandTotal: record.headline.grandTotal ?? 0,
+      }
+    : enrolmentTotals;
   const stats: ReadonlyArray<Stat> = [
-    { label: "Total Learners", value: calculated.totals.grandTotal.toLocaleString("en-US"), note: `${academicYear} School Enrolment`, verificationStatus: "verified" },
-    { label: "Female Learners", value: calculated.totals.totalFemale.toLocaleString("en-US"), note: "Girls enrolled", verificationStatus: "verified" },
-    { label: "Male Learners", value: calculated.totals.totalMale.toLocaleString("en-US"), note: "Boys enrolled", verificationStatus: "verified" },
-    { label: "Boarding Learners", value: calculated.totals.totalBoarding.toLocaleString("en-US"), note: "Boarding students", verificationStatus: "verified" },
+    { label: "Total Learners", value: totals.grandTotal.toLocaleString("en-US"), note: `${academicYear} School Enrolment`, verificationStatus: "verified" },
+    { label: "Female Learners", value: totals.totalFemale.toLocaleString("en-US"), note: "Girls enrolled", verificationStatus: "verified" },
+    { label: "Male Learners", value: totals.totalMale.toLocaleString("en-US"), note: "Boys enrolled", verificationStatus: "verified" },
+    { label: "Boarding Learners", value: totals.totalBoarding.toLocaleString("en-US"), note: "Boarding students", verificationStatus: "verified" },
+    { label: "Day Scholars", value: totals.totalDay.toLocaleString("en-US"), note: "Day students", verificationStatus: "verified" },
   ];
 
   return {
@@ -566,8 +600,10 @@ export function resolveEnrolment(data: EnrolmentQueryResult): ResolvedEnrolment 
     reportingDateLabel,
     status: record?.status ?? "current",
     rows: calculated.rows,
-    totals: calculated.totals,
-    stats: calculated.totals.grandTotal > 0 ? stats : schoolStats,
+    detailedRows: record?.detailedRows?.map((row) => ({ className: row.className ?? "", stream: row.stream ?? "", male: row.male ?? 0, female: row.female ?? 0, total: row.total ?? 0 })) ?? verifiedEnrolment.detailedRows,
+    boardingDayRows: record?.boardingDayRows?.map((row) => ({ className: row.className ?? "", boarderBoys: row.boarderBoys ?? 0, boarderGirls: row.boarderGirls ?? 0, boarderTotal: row.boarderTotal ?? 0, dayBoys: row.dayBoys ?? 0, dayGirls: row.dayGirls ?? 0, dayTotal: row.dayTotal ?? 0 })) ?? verifiedEnrolment.boardingDayRows,
+    totals,
+    stats: totals.grandTotal > 0 ? stats : schoolStats,
     warnings: calculated.warnings,
   };
 }

@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { InteriorHero, ListingSection } from "@/components/interior-page";
 import { pageIntros } from "@/lib/site-data";
 import { getNewsArticles } from "@/sanity/content";
+
+export const metadata: Metadata = { title: "News", description: "Official news from Rubaare Secondary School.", alternates: { canonical: "/news" } };
 
 export default async function NewsPage() {
   const latestNews = await getNewsArticles();
@@ -11,7 +14,8 @@ export default async function NewsPage() {
       <ListingSection
         eyebrow="News Archive"
         title="Latest news."
-        description="School announcements and community stories are prepared for CMS publishing."
+        description="Official school news is published here."
+        emptyMessage="No current news has been published."
         items={latestNews.map((item) => ({
           title: item.title,
           meta: item.publishedAt ? `${item.category} · ${item.publishedAt}` : item.category,

@@ -1,1 +1,5 @@
-export { default } from "../events/page";
+import { permanentRedirect } from "next/navigation";
+
+export default function SchoolCalendarRedirect() {
+  permanentRedirect("/events");
+}

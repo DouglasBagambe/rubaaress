@@ -5,6 +5,15 @@ export type EnrolmentQueryResult = ReadonlyArray<{
   academicYear?: string;
   reportingDate?: string;
   status?: "draft" | "current" | "archived";
+  headline?: {
+    grandTotal?: number;
+    totalFemale?: number;
+    totalMale?: number;
+    totalBoarding?: number;
+    totalDay?: number;
+  };
+  detailedRows?: ReadonlyArray<{ className?: string; stream?: string; male?: number; female?: number; total?: number }>;
+  boardingDayRows?: ReadonlyArray<{ className?: string; boarderBoys?: number; boarderGirls?: number; boarderTotal?: number; dayBoys?: number; dayGirls?: number; dayTotal?: number }>;
   classRows?: ReadonlyArray<{
     className?: string;
     femaleDay?: number;
@@ -19,6 +28,9 @@ export const CURRENT_ENROLMENT_QUERY = defineQuery(`*[_type == "enrolment" && st
   academicYear,
   reportingDate,
   status,
+  headline,
+  detailedRows[]{className, stream, male, female, total},
+  boardingDayRows[]{className, boarderBoys, boarderGirls, boarderTotal, dayBoys, dayGirls, dayTotal},
   classRows[]{
     className,
     femaleDay,

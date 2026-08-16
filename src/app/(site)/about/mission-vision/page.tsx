@@ -4,8 +4,8 @@ import { pageIntros, schoolIdentity } from "@/lib/site-data";
 export default function MissionVisionPage() {
   return (
     <>
-      <InteriorHero intro={{ ...pageIntros.about, eyebrow: "Mission, Vision & Values", title: "Mission, vision and values." }} breadcrumbs={[{ label: "About", href: "/about" }, { label: "Mission, Vision & Values", href: "/about/mission-vision" }]} />
-      <TextBlockGrid eyebrow="Values" title="Mission, vision and values." description={schoolIdentity.motto} blocks={[{ title: "Mission", body: schoolIdentity.mission }, { title: "Vision", body: schoolIdentity.vision }]} />
+      <InteriorHero intro={{ ...pageIntros.about, eyebrow: "Mission & Vision", title: "Mission, vision and motto." }} breadcrumbs={[{ label: "About", href: "/about" }, { label: "Mission & Vision", href: "/about/mission-vision" }]} />
+      <TextBlockGrid eyebrow="Rise and Shine" title="Mission and vision." description={schoolIdentity.motto} blocks={[{ title: "Mission", body: schoolIdentity.mission }, { title: "Vision", body: schoolIdentity.vision }]} />
     </>
   );
 }

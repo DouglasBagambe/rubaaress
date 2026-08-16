@@ -2,6 +2,7 @@ import { enrolmentTotals } from "@/content/enrolment";
 import { galleryAlbums, masterPlanItems, schoolMedia } from "@/content/media";
 import { navigation } from "@/content/navigation";
 import { officialSchoolProfile } from "@/content/site";
+import { publicDownloads } from "@/content/verified-school-content";
 
 export type VerificationStatus = "verified" | "school-confirmation-required";
 
@@ -84,6 +85,8 @@ export type DownloadItem = {
   fileType: string;
   fileSize: string;
   publicationDate: string;
+  description?: string;
+  fileUrl?: string;
 };
 
 export type PageIntro = {
@@ -129,9 +132,8 @@ export const schoolIdentity = {
   email: officialSchoolProfile.contact.email,
   schoolType: "Mixed day and boarding secondary school",
   levels: "O-Level and A-Level",
-  status: "Government-aided",
   foundingBody: "Church of Uganda",
-  headteacher: "Ms Monica Mpeirwe Atukunda",
+  headteacher: "Ms. Mpeirwe Monic Atukunda",
   logoPath: schoolMedia.badge.src,
   verificationStatus: "verified" as VerificationStatus,
 } as const;
@@ -192,8 +194,8 @@ export const heroSlides: ReadonlyArray<HeroSlide> = [
   },
   {
     eyebrow: "School Life",
-    heading: "Discipline, Service and Community",
-    body: "School life brings together academics, leadership, clubs, sports and shared responsibility.",
+    heading: "Learning and Community",
+    body: "Day and boarding learners share academic, sporting, faith and community life.",
     primaryCta: { label: "School Life", href: "/school-life", description: "Student life" },
     secondaryCta: { label: "Gallery", href: "/gallery", description: "Gallery" },
     image: images.heroCampus,
@@ -205,14 +207,14 @@ export { navigation };
 export const utilityLinks: ReadonlyArray<QuickLink> = [
   { label: "Apply", href: "/admissions", description: "Admissions guidance" },
   { label: "Downloads", href: "/downloads", description: "Forms and circulars" },
-  { label: "School Calendar", href: "/events", description: "Term events" },
+  { label: "Results", href: "/academics/performance", description: "Academic performance" },
   { label: "Contact", href: "/contact", description: "Reach the school" },
 ];
 
 export const quickAccessLinks: ReadonlyArray<QuickLink> = [
   { label: "Admissions", href: "/admissions", description: "How to apply and prepare documents." },
   { label: "Academics", href: "/academics", description: "O-Level, A-Level and departments." },
-  { label: "School Calendar", href: "/events", description: "Upcoming school activities." },
+  { label: "Academic Results", href: "/academics/performance", description: "View verified UCE and UACE results." },
   { label: "Downloads", href: "/downloads", description: "Forms, notices and documents." },
 ];
 
@@ -220,14 +222,14 @@ export const academicPathways: ReadonlyArray<Pathway> = [
   {
     title: "O-Level Pathway",
     href: "/academics/o-level",
-    summary: "Lower secondary learning with broad academic foundations and classroom support.",
-    highlights: ["Broad subject foundation", "Learner guidance", "Progression toward A-Level"],
+    summary: "O-Level education with day and boarding programmes and a broad foundation across Arts and Sciences.",
+    highlights: ["Day and boarding", "Arts and Sciences", "Progression to advanced secondary education"],
   },
   {
     title: "A-Level Pathway",
     href: "/academics/a-level",
-    summary: "Advanced secondary study preparing learners for higher education and future careers.",
-    highlights: ["Advanced combinations", "Career guidance", "University preparation"],
+    summary: "A-Level study across a verified offering of Arts and Science subjects.",
+    highlights: ["Three principal subjects", "General Paper is compulsory", "Computer Studies or Sub-Mathematics as a subsidiary"],
   },
 ];
 
@@ -243,57 +245,28 @@ export const schoolStats: ReadonlyArray<Stat> = [
   { label: "Female Learners", value: enrolmentTotals.totalFemale.toLocaleString("en-US"), note: "Girls enrolled", verificationStatus: "verified" },
   { label: "Male Learners", value: enrolmentTotals.totalMale.toLocaleString("en-US"), note: "Boys enrolled", verificationStatus: "verified" },
   { label: "Boarding Learners", value: enrolmentTotals.totalBoarding.toLocaleString("en-US"), note: "Boarding students", verificationStatus: "verified" },
+  { label: "Day Scholars", value: enrolmentTotals.totalDay.toLocaleString("en-US"), note: "Day students", verificationStatus: "verified" },
 ];
 
-export const latestNews: ReadonlyArray<NewsItem> = [
-  {
-    title: "Water project documented in official school photography",
-    slug: "water-project-official-photography",
-    excerpt: "Official school photographs show water-project activity and students collecting water on campus.",
-    content: "The supplied school content includes water-project photographs suitable for a development update, pending school confirmation of dates and project details.",
-    category: "School Development",
-    featuredImage: schoolMedia.waterProjectGroupPhoto,
-    author: "Rubaare SS website team",
-    featured: true,
-    verificationStatus: "school-confirmation-required",
-  },
-  {
-    title: "School profile information prepared for confirmation",
-    slug: "school-profile-confirmation",
-    excerpt: "Core public information has been structured for review before the production launch.",
-    content: "The website content model separates verified public details from facts that need school confirmation.",
-    category: "Administration",
-    featuredImage: schoolMedia.classroomLearning,
-    author: "Rubaare SS website team",
-    featured: false,
-    verificationStatus: "school-confirmation-required",
-  },
-  {
-    title: "Admissions resources moved to a dedicated section",
-    slug: "admissions-resources",
-    excerpt: "Admissions guidance, downloads and contact paths now sit in their own website journey.",
-    content: "Parents and guardians can use the admissions page as official documents become available.",
-    category: "Admissions",
-    featuredImage: schoolMedia.outdoorStudentGathering,
-    author: "Rubaare SS website team",
-    featured: false,
-    verificationStatus: "school-confirmation-required",
-  },
-];
+export const latestNews: ReadonlyArray<NewsItem> = [];
 
 export const upcomingEvents: ReadonlyArray<EventItem> = [];
 
 export const schoolLife: ReadonlyArray<SchoolLifeItem> = [
-  { title: "Sports", href: "/school-life", summary: "Teamwork, health and friendly competition form part of school life.", image: images.sports },
-  { title: "Clubs & Societies", href: "/school-life", summary: "Learners can develop confidence, service and practical interests.", image: images.clubs },
-  { title: "Student Leadership", href: "/school-life", summary: "Student responsibility supports discipline and community life.", image: schoolMedia.studentAssembly },
+  { title: "Sports", href: "/school-life#sports", summary: "Official school photography records students participating in sports and team activities.", image: images.sports },
+  { title: "Spiritual Life", href: "/school-life#spiritual-life", summary: "The school was founded by the Church of Uganda and welcomes students from all religious backgrounds.", image: images.clubs },
+  { title: "Student Life", href: "/school-life#student-life", summary: "Day and boarding learners share academic, meal and community life at the school.", image: schoolMedia.studentAssembly },
 ];
 
-export const downloads: ReadonlyArray<DownloadItem> = [
-  { title: "Admission form", category: "Admissions", fileType: "PDF", fileSize: "To be uploaded", publicationDate: "Under review" },
-  { title: "Fees structure", category: "Admissions", fileType: "PDF", fileSize: "To be uploaded", publicationDate: "Under review" },
-  { title: "Term circular", category: "Circulars", fileType: "PDF", fileSize: "To be uploaded", publicationDate: "Under review" },
-];
+export const downloads: ReadonlyArray<DownloadItem> = publicDownloads.map((item) => ({
+  title: item.title,
+  category: item.category,
+  fileType: "PDF",
+  fileSize: item.size,
+  publicationDate: "2026",
+  description: item.description,
+  fileUrl: item.href,
+}));
 
 export const findUs: FindUs = {
   heading: "Find Rubaare Secondary School",
@@ -319,25 +292,25 @@ export const pageIntros: Record<string, PageIntro> = {
   admissions: {
     eyebrow: "Admissions",
     title: "A clear path for families preparing to join the school.",
-    description: "Admissions resources will hold application guidance, forms, requirements and important dates once approved.",
+    description: "Find verified O-Level and A-Level reporting guidance, requirements, fees and official admission documents.",
     image: images.admissions,
   },
   schoolLife: {
     eyebrow: "School Life",
-    title: "Formation through study, leadership, service and community.",
-    description: "School life brings together sports, clubs, student leadership and shared responsibility.",
+    title: "Learning, sport, faith and community.",
+    description: "Day and boarding learners share academic, sporting, faith and community life at the school.",
     image: images.clubs,
   },
   news: {
     eyebrow: "News",
     title: "School announcements and community stories.",
-    description: "News items are structured for verified updates, categories and future CMS publishing.",
+    description: "Official school news will be published here.",
     image: images.heroCampus,
   },
   events: {
     eyebrow: "Events",
-    title: "Upcoming school activities and calendar notices.",
-    description: "Events will appear here when the school publishes dates, venues and categories.",
+    title: "School events and calendar notices.",
+    description: "This page lists official school events with confirmed dates and venues.",
     image: images.sports,
   },
   gallery: {
@@ -349,7 +322,7 @@ export const pageIntros: Record<string, PageIntro> = {
   downloads: {
     eyebrow: "Downloads",
     title: "Official documents and forms.",
-    description: "Downloads are grouped for admissions, circulars, calendars and public notices.",
+    description: "Download official admission packs, fee schedules, forms, requirements, rules and academic results.",
     image: images.admissions,
   },
   contact: {

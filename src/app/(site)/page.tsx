@@ -3,20 +3,20 @@ import { FullWidthHero } from "@/components/full-width-hero";
 import { LocationSection } from "@/components/location-section";
 import { Section, SectionHeading } from "@/components/section";
 import { TemporaryImage } from "@/components/temporary-image";
+import { academicResults } from "@/content/verified-school-content";
 import {
   academicPathways,
   galleryImages,
-  latestNews,
   schoolLife,
-  upcomingEvents,
 } from "@/lib/site-data";
-import { getCurrentEnrolment, getHomepage, getSiteSettings } from "@/sanity/content";
+import { getCurrentEnrolment, getEvents, getHomepage, getNewsArticles, getSiteSettings } from "@/sanity/content";
 
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2";
 
 export default async function Home() {
-  const [settings, homepage, enrolment] = await Promise.all([getSiteSettings(), getHomepage(), getCurrentEnrolment()]);
+  const [settings, homepage, enrolment, latestNews, events] = await Promise.all([getSiteSettings(), getHomepage(), getCurrentEnrolment(), getNewsArticles(), getEvents()]);
+  const upcomingEvents = events.upcoming;
 
   return (
     <>
@@ -44,6 +44,24 @@ export default async function Home() {
           <div className="border-l-4 border-[var(--school-gold)] bg-white p-7 text-lg leading-8 text-[var(--school-ink)]">
             {homepage.welcome.body}
           </div>
+        </div>
+      </Section>
+
+      <Section className="bg-white">
+        <div className="grid gap-8 lg:grid-cols-[1fr_auto] lg:items-end">
+          <SectionHeading
+            eyebrow="Academic Performance"
+            title="Official UCE and UACE results."
+            description="The 2025 school results summary records 257 learners in UCE Result 1 and a UACE points distribution covering 132 learners."
+          />
+          <Link href="/academics/performance" className={`inline-flex min-h-12 items-center justify-center bg-[var(--school-blue)] px-6 text-sm font-bold text-white hover:bg-[var(--school-blue-dark)] ${focusClass}`}>
+            View academic performance
+          </Link>
+        </div>
+        <div className="mt-8 grid gap-4 sm:grid-cols-3">
+          <div className="border-t-4 border-[var(--school-gold)] bg-[var(--school-cream)] p-5"><p className="font-serif text-4xl font-semibold text-[var(--school-blue-dark)]">{academicResults.uce.classifications[0].result1}</p><p className="mt-2 font-bold">UCE Result 1</p></div>
+          <div className="border-t-4 border-[var(--school-gold)] bg-[var(--school-cream)] p-5"><p className="font-serif text-4xl font-semibold text-[var(--school-blue-dark)]">{academicResults.uace2025.universityQualified}</p><p className="mt-2 font-bold">Qualify for University Education</p></div>
+          <div className="border-t-4 border-[var(--school-gold)] bg-[var(--school-cream)] p-5"><p className="font-serif text-4xl font-semibold text-[var(--school-blue-dark)]">{academicResults.uace2025.diplomaQualified}</p><p className="mt-2 font-bold">Qualify for Diploma</p></div>
         </div>
       </Section>
 
@@ -97,25 +115,13 @@ export default async function Home() {
         </div>
       </Section>
 
-      <Section className="bg-white">
-        <SectionHeading eyebrow="Why Rubaare" title="Core strengths for learner formation." description="The homepage highlights broad strengths while detailed school information sits on dedicated pages." />
-        <div className="mt-10 grid gap-5 md:grid-cols-4">
-          {homepage.coreStrengths.map((value) => (
-            <article key={value.title} className="border-t-4 border-[var(--school-gold)] bg-[var(--school-cream)] p-5">
-              <h3 className="font-serif text-xl font-semibold text-[var(--school-blue-dark)]">{value.title}</h3>
-              <p className="mt-3 text-sm leading-6 text-[var(--school-muted)]">{value.description}</p>
-            </article>
-          ))}
-        </div>
-      </Section>
-
       <Section className="bg-[var(--school-blue-dark)] text-white">
         <div className="max-w-3xl">
           <p className="mb-3 text-sm font-bold uppercase tracking-[0.14em] text-[var(--school-gold)]">{enrolment.academicYear} School Enrolment</p>
           <h2 className="font-serif text-3xl font-semibold leading-tight text-white md:text-4xl">{homepage.enrolmentSectionHeading}</h2>
           <p className="mt-4 text-base leading-7 text-blue-100 md:text-lg">Enrolment figures as of {enrolment.reportingDateLabel}.</p>
         </div>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
           {enrolment.stats.map((stat) => (
             <div key={stat.label} className="border-t-4 border-[var(--school-gold)] bg-white/10 p-5">
               <p className="font-serif text-4xl font-semibold text-white">{stat.value}</p>
@@ -126,12 +132,14 @@ export default async function Home() {
         </div>
       </Section>
 
-      <Section className="bg-white">
-        <div className="grid gap-12 lg:grid-cols-2">
-          <ContentList title={homepage.latestNewsHeading} items={latestNews.map((item) => ({ title: item.title, href: `/news/${item.slug}`, meta: item.category, summary: item.excerpt }))} href="/news" />
-          <ContentList title={homepage.eventsHeading} items={upcomingEvents.map((item) => ({ title: item.title, href: "/events", meta: item.category, summary: item.description }))} href="/events" emptyMessage="No upcoming events have been published." />
-        </div>
-      </Section>
+      {latestNews.length || upcomingEvents.length ? (
+        <Section className="bg-white">
+          <div className={`grid gap-12 ${latestNews.length && upcomingEvents.length ? "lg:grid-cols-2" : "max-w-3xl"}`}>
+            {latestNews.length ? <ContentList title={homepage.latestNewsHeading} items={latestNews.map((item) => ({ title: item.title, href: `/news/${item.slug}`, meta: item.category, summary: item.excerpt }))} href="/news" /> : null}
+            {upcomingEvents.length ? <ContentList title={homepage.eventsHeading} items={upcomingEvents.map((item) => ({ title: item.title, href: "/events", meta: item.category, summary: item.description }))} href="/events" /> : null}
+          </div>
+        </Section>
+      ) : null}
 
       <Section className="bg-[var(--school-cream)]">
         <SectionHeading eyebrow="School Life" title="Learning beyond the classroom." description={homepage.schoolLifeFeature} />
@@ -181,12 +189,10 @@ function ContentList({
   title,
   items,
   href,
-  emptyMessage,
 }: {
   title: string;
   items: ReadonlyArray<{ title: string; href: string; meta: string; summary: string }>;
   href: string;
-  emptyMessage?: string;
 }) {
   return (
     <div>
@@ -194,21 +200,15 @@ function ContentList({
         <h2 className="font-serif text-3xl font-semibold text-[var(--school-blue-dark)]">{title}</h2>
         <Link href={href} className={`text-sm font-bold text-[var(--school-blue)] underline underline-offset-4 ${focusClass}`}>View all</Link>
       </div>
-      {items.length === 0 ? (
-        <div className="mt-8 border border-[var(--school-border)] bg-[var(--school-cream)] p-6">
-          <p className="font-semibold text-[var(--school-ink)]">{emptyMessage}</p>
-        </div>
-      ) : (
-        <div className="mt-8 grid gap-4">
-          {items.map((item) => (
+      <div className="mt-8 grid gap-4">
+        {items.map((item) => (
             <Link key={item.title} href={item.href} className={`block border border-[var(--school-border)] bg-white p-5 hover:border-[var(--school-gold)] ${focusClass}`}>
               <p className="text-sm font-semibold text-[var(--school-gold)]">{item.meta}</p>
               <h3 className="mt-3 font-serif text-xl font-semibold text-[var(--school-blue-dark)]">{item.title}</h3>
               <p className="mt-3 text-sm leading-6 text-[var(--school-muted)]">{item.summary}</p>
             </Link>
-          ))}
-        </div>
-      )}
+        ))}
+      </div>
     </div>
   );
 }
