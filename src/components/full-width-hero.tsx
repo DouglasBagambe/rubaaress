@@ -2,53 +2,70 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { HeroSlide } from "@/lib/site-data";
 
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--school-blue-dark)]";
 
 export function FullWidthHero({ slides }: { slides: ReadonlyArray<HeroSlide> }) {
-  const [activeIndex, setActiveIndex] = useState(0);
-  const [isPaused, setIsPaused] = useState(false);
+  const [showVideo, setShowVideo] = useState(false);
+  const [isVideoPaused, setIsVideoPaused] = useState(false);
+  const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
-    if (isPaused || slides.length < 2) {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: no-preference) and (min-width: 640px)");
+    const updateVideoPreference = () => setShowVideo(mediaQuery.matches);
+    updateVideoPreference();
+    mediaQuery.addEventListener("change", updateVideoPreference);
+    return () => mediaQuery.removeEventListener("change", updateVideoPreference);
+  }, []);
+
+  const activeSlide = slides[0];
+  if (!activeSlide) return null;
+
+  const toggleVideoPlayback = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    if (video.paused) {
+      void video.play();
+      setIsVideoPaused(false);
       return;
     }
-
-    const interval = window.setInterval(() => {
-      setActiveIndex((current) => (current + 1) % slides.length);
-    }, 6000);
-
-    return () => window.clearInterval(interval);
-  }, [isPaused, slides.length]);
-
-  const activeSlide = slides[activeIndex];
+    video.pause();
+    setIsVideoPaused(true);
+  };
 
   return (
     <section
       className="relative min-h-[560px] overflow-hidden bg-[var(--school-blue-dark)] text-white md:min-h-[650px]"
-      aria-label="School highlights"
-      onMouseEnter={() => setIsPaused(true)}
-      onMouseLeave={() => setIsPaused(false)}
-      onFocus={() => setIsPaused(true)}
-      onBlur={() => setIsPaused(false)}
+      aria-label="Introduction to Rubaare Secondary School"
     >
-      {slides.map((slide, index) => (
-        <Image
-          key={slide.heading}
-          src={slide.image.src}
-          alt={index === activeIndex ? slide.image.alt : ""}
-          fill
-          priority={index === 0}
-          sizes="100vw"
-          className={`object-cover transition-opacity duration-700 motion-reduce:transition-none ${
-            index === activeIndex ? "opacity-100" : "opacity-0"
-          }`}
-        />
-      ))}
-      <div className="absolute inset-0 bg-[rgba(15,44,74,0.74)]" />
+      <Image
+        src="/images/school/campus/rubaare-campus-aerial-poster.webp"
+        alt="Aerial view of the Rubaare Secondary School campus and surrounding landscape."
+        fill
+        priority
+        sizes="100vw"
+        className="object-cover"
+      />
+      {showVideo ? (
+        <video
+          ref={videoRef}
+          className="absolute inset-0 h-full w-full object-cover"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="metadata"
+          poster="/images/school/campus/rubaare-campus-aerial-poster.webp"
+          aria-hidden="true"
+          tabIndex={-1}
+        >
+          <source src="/videos/rubaare-campus-aerial.mp4" type="video/mp4" />
+        </video>
+      ) : null}
+      <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,30,51,0.9)_0%,rgba(12,42,70,0.76)_52%,rgba(12,42,70,0.5)_100%)]" />
       <div className="relative mx-auto flex min-h-[560px] max-w-7xl flex-col justify-center px-4 py-20 md:min-h-[650px] md:px-6 lg:px-8">
         <div className="max-w-3xl">
           <p className="mb-4 text-sm font-semibold text-[var(--school-gold)]">{activeSlide.eyebrow}</p>
@@ -73,47 +90,19 @@ export function FullWidthHero({ slides }: { slides: ReadonlyArray<HeroSlide> }) 
             ) : null}
           </div>
         </div>
-        <div className="mt-12 flex flex-wrap items-center gap-3">
-          <button
-            type="button"
-            className={`min-h-11 border border-white/60 px-4 text-sm font-semibold text-white hover:bg-white/10 ${focusClass}`}
-            onClick={() => setActiveIndex((current) => (current - 1 + slides.length) % slides.length)}
-          >
-            Previous
-          </button>
-          <button
-            type="button"
-            className={`min-h-11 border border-white/60 px-4 text-sm font-semibold text-white hover:bg-white/10 ${focusClass}`}
-            onClick={() => setIsPaused((current) => !current)}
-            aria-pressed={isPaused}
-          >
-            {isPaused ? "Play" : "Pause"}
-          </button>
-          <button
-            type="button"
-            className={`min-h-11 border border-white/60 px-4 text-sm font-semibold text-white hover:bg-white/10 ${focusClass}`}
-            onClick={() => setActiveIndex((current) => (current + 1) % slides.length)}
-          >
-            Next
-          </button>
-          <div className="flex gap-2" aria-label="Hero pagination">
-            {slides.map((slide, index) => (
-              <button
-                key={slide.heading}
-                type="button"
-                className={`h-3 w-10 border border-white/80 ${
-                  index === activeIndex ? "bg-[var(--school-gold)]" : "bg-white/20"
-                } ${focusClass}`}
-                aria-label={`Show slide ${index + 1}`}
-                aria-current={index === activeIndex}
-                onClick={() => setActiveIndex(index)}
-              />
-            ))}
-          </div>
-        </div>
         <div className="absolute bottom-6 left-4 text-xs font-semibold uppercase tracking-[0.2em] text-blue-100 md:left-6 lg:left-8">
-          Scroll
+          Rubaare, Ntungamo District
         </div>
+        {showVideo ? (
+          <button
+            type="button"
+            onClick={toggleVideoPlayback}
+            aria-pressed={isVideoPaused}
+            className={`absolute bottom-4 right-4 min-h-11 border border-white/50 bg-[var(--school-blue-dark)]/70 px-4 text-xs font-semibold text-white backdrop-blur-sm hover:bg-[var(--school-blue-dark)] md:bottom-5 md:right-6 lg:right-8 ${focusClass}`}
+          >
+            {isVideoPaused ? "Play aerial video" : "Pause aerial video"}
+          </button>
+        ) : null}
       </div>
     </section>
   );

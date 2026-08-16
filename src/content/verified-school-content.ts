@@ -8,7 +8,8 @@ export const verifiedEnrolment = {
   academicYear: "2026",
   reportingDate: "2026-07-27",
   reportingDateLabel: "27 July 2026",
-  headline: { grandTotal: 1418, totalFemale: 803, totalMale: 615, totalBoarding: 1066, totalDay: 352 },
+  headline: { grandTotal: 1418, totalBoarding: 1066, totalDay: 352 },
+  unconfirmedGenderTotals: { totalFemale: 803, totalMale: 615 },
   detailedRows: [
     ["S.1", "East", 34, 58, 92], ["S.1", "West", 34, 56, 90], ["S.1", "North", 41, 49, 90], ["S.1", "Subtotal", 109, 163, 272],
     ["S.2", "East", 37, 46, 83], ["S.2", "West", 33, 56, 89], ["S.2", "North", 38, 51, 89], ["S.2", "Subtotal", 108, 153, 261],

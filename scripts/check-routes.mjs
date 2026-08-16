@@ -14,6 +14,7 @@ const routes = [
   "/academics/a-level",
   "/academics/departments",
   "/academics/performance",
+  "/academics/results",
   "/admissions",
   "/admissions/how-to-apply",
   "/admissions/requirements",

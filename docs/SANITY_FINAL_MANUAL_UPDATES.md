@@ -21,7 +21,7 @@ Confirm the singleton contains:
 
 ## Headteacher
 
-Confirm the published headteacher is `Ms. Mpeirwe Monic Atukunda`. Remove or unpublish any conflicting headteacher name or draft biography.
+Confirm the published headteacher is `Ms. Mpeirwe Monic Atukunda`. Replace the existing photograph with the approved professional office portrait in which she is wearing glasses. Remove or unpublish any conflicting headteacher name or draft biography.
 
 ## Current enrolment
 
@@ -29,9 +29,9 @@ Create or update the one `current` enrolment record with:
 
 - Academic year: `2026`
 - Reporting date: `2026-07-27`
-- Headline totals: 1,418 students; 803 female; 615 male; 1,066 boarding; 352 day
+- Public headline totals: 1,418 students; 1,066 boarding; 352 day
 
-Enter the stream table and boarding/day table in their separate fields. Do not derive one from the other or combine them: the school supplied them as distinct official datasets. The complete verified values are recorded in the scoped seed script and rendered by the website fallback on the public About page.
+The two official records conflict on gender totals, and the detailed class/stream sheet does not reconcile cleanly with its printed grand total. Do not publish `803 female` or `615 male` as headline figures. Keep any existing class/stream rows only as an internal reference pending correction. Maintain the boarding/day table as the public class-level breakdown and do not derive or replace official figures.
 
 Archive older current enrolment records after confirming the new record is published.
 
@@ -46,6 +46,8 @@ Archive older current enrolment records after confirming the new record is publi
 ## School life and facilities
 
 Only publish facts confirmed by the school. Do not add club names, student-leader names, coordinates, founding dates, social links, facility counts or programme claims without school confirmation.
+
+Official structure photography from this pass supports the computer laboratory, boys' and girls' dormitory structures, dormitory-area sanitation facilities, junior staff quarters and headteacher accommodation. These may be maintained as factual facilities content without inventing counts, capacities or construction dates.
 
 ## Downloads
 

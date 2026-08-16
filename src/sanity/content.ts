@@ -549,7 +549,6 @@ export function resolveEnrolment(data: EnrolmentQueryResult): ResolvedEnrolment 
   const candidate = currentRecords[0];
   const hasSeparatedOfficialData = Boolean(
     candidate?.headline?.grandTotal &&
-    candidate.detailedRows?.length &&
     candidate.boardingDayRows?.length,
   );
   const record = candidate?.reportingDate && candidate.reportingDate >= verifiedEnrolment.reportingDate && hasSeparatedOfficialData ? candidate : undefined;
@@ -579,8 +578,8 @@ export function resolveEnrolment(data: EnrolmentQueryResult): ResolvedEnrolment 
   const totals = record && record.headline && boardingDayTotals
     ? {
         ...boardingDayTotals,
-        totalFemale: record.headline.totalFemale ?? 0,
-        totalMale: record.headline.totalMale ?? 0,
+        totalFemale: record.headline.totalFemale ?? enrolmentTotals.totalFemale,
+        totalMale: record.headline.totalMale ?? enrolmentTotals.totalMale,
         totalDay: record.headline.totalDay ?? 0,
         totalBoarding: record.headline.totalBoarding ?? 0,
         grandTotal: record.headline.grandTotal ?? 0,
@@ -588,8 +587,6 @@ export function resolveEnrolment(data: EnrolmentQueryResult): ResolvedEnrolment 
     : enrolmentTotals;
   const stats: ReadonlyArray<Stat> = [
     { label: "Total Learners", value: totals.grandTotal.toLocaleString("en-US"), note: `${academicYear} School Enrolment`, verificationStatus: "verified" },
-    { label: "Female Learners", value: totals.totalFemale.toLocaleString("en-US"), note: "Girls enrolled", verificationStatus: "verified" },
-    { label: "Male Learners", value: totals.totalMale.toLocaleString("en-US"), note: "Boys enrolled", verificationStatus: "verified" },
     { label: "Boarding Learners", value: totals.totalBoarding.toLocaleString("en-US"), note: "Boarding students", verificationStatus: "verified" },
     { label: "Day Scholars", value: totals.totalDay.toLocaleString("en-US"), note: "Day students", verificationStatus: "verified" },
   ];

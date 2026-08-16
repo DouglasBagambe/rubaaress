@@ -33,10 +33,10 @@ export const enrolmentReportingDate = verifiedEnrolment.reportingDateLabel;
 export const enrolmentTotals: EnrolmentTotals = {
   femaleDay: verifiedEnrolment.boardingDayTotals.dayGirls,
   femaleBoarding: verifiedEnrolment.boardingDayTotals.boarderGirls,
-  totalFemale: verifiedEnrolment.headline.totalFemale,
+  totalFemale: verifiedEnrolment.unconfirmedGenderTotals.totalFemale,
   maleDay: verifiedEnrolment.boardingDayTotals.dayBoys,
   maleBoarding: verifiedEnrolment.boardingDayTotals.boarderBoys,
-  totalMale: verifiedEnrolment.headline.totalMale,
+  totalMale: verifiedEnrolment.unconfirmedGenderTotals.totalMale,
   totalDay: verifiedEnrolment.headline.totalDay,
   totalBoarding: verifiedEnrolment.headline.totalBoarding,
   grandTotal: verifiedEnrolment.headline.grandTotal,

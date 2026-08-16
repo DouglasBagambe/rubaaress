@@ -83,7 +83,7 @@ export default async function Home() {
 
       <Section className="bg-white">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
-          <TemporaryImage image={homepage.headteacher.image} className="aspect-[4/5]" imgClassName="object-[50%_18%]" />
+          <TemporaryImage image={homepage.headteacher.image} className="aspect-[3/2]" imgClassName="object-center" sizes="(min-width: 1024px) 44vw, 100vw" />
           <div>
             <SectionHeading
               eyebrow={homepage.headteacher.eyebrow}
@@ -121,7 +121,7 @@ export default async function Home() {
           <h2 className="font-serif text-3xl font-semibold leading-tight text-white md:text-4xl">{homepage.enrolmentSectionHeading}</h2>
           <p className="mt-4 text-base leading-7 text-blue-100 md:text-lg">Enrolment figures as of {enrolment.reportingDateLabel}.</p>
         </div>
-        <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        <div className="mt-10 grid gap-4 sm:grid-cols-3">
           {enrolment.stats.map((stat) => (
             <div key={stat.label} className="border-t-4 border-[var(--school-gold)] bg-white/10 p-5">
               <p className="font-serif text-4xl font-semibold text-white">{stat.value}</p>

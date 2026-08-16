@@ -25,5 +25,5 @@ export function PdfActions({ href, title }: { href: string; title: string }) {
 }
 
 export function StatCards({ items }: { items: ReadonlyArray<{ label: string; value: string; note?: string }> }) {
-  return <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">{items.map((item) => <article key={item.label} className="border-t-4 border-[var(--school-gold)] bg-white p-5 shadow-sm"><p className="font-serif text-4xl font-semibold text-[var(--school-blue-dark)]">{item.value}</p><h3 className="mt-2 font-bold text-[var(--school-ink)]">{item.label}</h3>{item.note ? <p className="mt-2 text-sm leading-6 text-[var(--school-muted)]">{item.note}</p> : null}</article>)}</div>;
+  return <div className="grid gap-4 sm:grid-cols-3">{items.map((item) => <article key={item.label} className="border-t-4 border-[var(--school-gold)] bg-white p-5 shadow-sm"><p className="font-serif text-4xl font-semibold text-[var(--school-blue-dark)]">{item.value}</p><h3 className="mt-2 font-bold text-[var(--school-ink)]">{item.label}</h3>{item.note ? <p className="mt-2 text-sm leading-6 text-[var(--school-muted)]">{item.note}</p> : null}</article>)}</div>;
 }

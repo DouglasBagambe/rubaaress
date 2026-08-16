@@ -95,13 +95,16 @@ test("find us data uses Rubaare location and map URLs", () => {
 
 test("verified enrolment keeps the official headline and source tables distinct", () => {
   assert.equal(enrolmentRows.length, 6);
-  assert.equal(enrolmentTotals.totalFemale, 803);
-  assert.equal(enrolmentTotals.totalMale, 615);
   assert.equal(enrolmentTotals.totalDay, 352);
   assert.equal(enrolmentTotals.totalBoarding, 1066);
   assert.equal(enrolmentTotals.grandTotal, 1418);
+  assert.equal("totalFemale" in verifiedEnrolment.headline, false);
+  assert.equal("totalMale" in verifiedEnrolment.headline, false);
+  assert.deepEqual(verifiedEnrolment.unconfirmedGenderTotals, { totalFemale: 803, totalMale: 615 });
   assert.equal(verifiedEnrolment.detailedRows.length, 22);
   assert.equal(verifiedEnrolment.boardingDayRows.length, 6);
+  assert.deepEqual(schoolStats.map((stat) => stat.label), ["Total Learners", "Boarding Learners", "Day Scholars"]);
+  assert.ok(schoolStats.every((stat) => !/female|male/i.test(stat.label)));
   assert.equal(enrolmentRows.every((row) => row.femaleDay + row.femaleBoarding + row.maleDay + row.maleBoarding === row.total), true);
 });
 
@@ -140,8 +143,7 @@ test("current enrolment resolver selects the newest current record", () => {
       academicYear: "2027",
       reportingDate: "2027-03-16",
       status: "current",
-      headline: { grandTotal: 10, totalFemale: 3, totalMale: 7, totalBoarding: 6, totalDay: 4 },
-      detailedRows: [{ className: "S.1", stream: "Test", male: 7, female: 3, total: 10 }],
+      headline: { grandTotal: 10, totalBoarding: 6, totalDay: 4 },
       boardingDayRows: [{ className: "S.1", boarderBoys: 4, boarderGirls: 2, boarderTotal: 6, dayBoys: 3, dayGirls: 1, dayTotal: 4 }],
     },
     {
@@ -155,6 +157,7 @@ test("current enrolment resolver selects the newest current record", () => {
 
   assert.equal(enrolment.academicYear, "2027");
   assert.equal(enrolment.totals.grandTotal, 10);
+  assert.deepEqual(enrolment.stats.map((stat) => stat.label), ["Total Learners", "Boarding Learners", "Day Scholars"]);
 });
 
 test("homepage resolver filters disabled hero slides and sorts enabled slides", () => {

@@ -242,8 +242,6 @@ export const coreValues: ReadonlyArray<ValueItem> = [
 
 export const schoolStats: ReadonlyArray<Stat> = [
   { label: "Total Learners", value: enrolmentTotals.grandTotal.toLocaleString("en-US"), note: "2026 School Enrolment", verificationStatus: "verified" },
-  { label: "Female Learners", value: enrolmentTotals.totalFemale.toLocaleString("en-US"), note: "Girls enrolled", verificationStatus: "verified" },
-  { label: "Male Learners", value: enrolmentTotals.totalMale.toLocaleString("en-US"), note: "Boys enrolled", verificationStatus: "verified" },
   { label: "Boarding Learners", value: enrolmentTotals.totalBoarding.toLocaleString("en-US"), note: "Boarding students", verificationStatus: "verified" },
   { label: "Day Scholars", value: enrolmentTotals.totalDay.toLocaleString("en-US"), note: "Day students", verificationStatus: "verified" },
 ];

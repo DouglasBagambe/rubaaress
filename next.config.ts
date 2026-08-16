@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
       { source: "/school-life/student-leadership", destination: "/school-life#student-life", permanent: true },
       { source: "/school-life/clubs", destination: "/school-life", permanent: true },
       { source: "/school-calendar", destination: "/events", permanent: true },
+      { source: "/academics/results", destination: "/academics/performance", permanent: true },
     ];
   },
   images: {

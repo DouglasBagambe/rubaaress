@@ -53,7 +53,7 @@ const badge = await uploadImage("badge", "images/school/brand/rubaare-school-bad
 const heroCampus = await uploadImage("hero-campus", "images/school/students/student-assembly.webp", "Rubaare Secondary School students seated outdoors during a school gathering.");
 const classroom = await uploadImage("classroom", "images/school/academics/classroom-learning.webp", "Rubaare Secondary School students in a classroom lesson.");
 const compound = await uploadImage("compound", "images/school/campus/school-compound.webp", "A landscaped compound at Rubaare Secondary School.");
-const headteacher = await uploadImage("headteacher", "images/school/leadership/headteacher-ms-mpeirwe-monic-atukunda.webp", "Headteacher Ms. Mpeirwe Monic Atukunda seated at her desk.");
+const headteacher = await uploadImage("headteacher", "images/school/leadership/headteacher-mpeirwe-monic-atukunda.jpg", "Headteacher Ms. Mpeirwe Monic Atukunda wearing glasses and seated at her desk.");
 
 const results = [];
 
@@ -146,7 +146,7 @@ results.push(await createIfMissing({
   academicYear: "2026",
   reportingDate: "2026-07-27",
   status: "current",
-  headline: { grandTotal: 1418, totalFemale: 803, totalMale: 615, totalBoarding: 1066, totalDay: 352 },
+  headline: { grandTotal: 1418, totalBoarding: 1066, totalDay: 352 },
   detailedRows: [
     ["s1e","S.1","East",34,58,92], ["s1w","S.1","West",34,56,90], ["s1n","S.1","North",41,49,90], ["s1t","S.1","Subtotal",109,163,272],
     ["s2e","S.2","East",37,46,83], ["s2w","S.2","West",33,56,89], ["s2n","S.2","North",38,51,89], ["s2t","S.2","Subtotal",108,153,261],
