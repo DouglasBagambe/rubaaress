@@ -111,7 +111,7 @@ test("site settings resolver keeps local fallback for empty Sanity strings", () 
 
   assert.equal(settings.schoolName, "Rubaare Secondary School");
   assert.equal(settings.motto, "New motto");
-  assert.equal(settings.primaryTelephone, "0772 923571");
+  assert.equal(settings.primaryTelephone, "0772 923 571");
 });
 
 test("enrolment calculation handles malformed rows with warnings", () => {

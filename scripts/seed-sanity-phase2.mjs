@@ -66,7 +66,7 @@ results.push(await createIfMissing({
   mission: "To provide equitable, affordable and quality education.",
   vision: "To provide educated and responsible citizens for self and community improvement.",
   badge,
-  primaryTelephone: "0772 923571",
+  primaryTelephone: "0772 923 571",
   postalAddress: "P.O. Box 65, Ntungamo",
   physicalLocation: "Rubaare, Ntungamo District, Uganda",
   googleMapsUrl: "https://www.google.com/maps/search/?api=1&query=Rubaare+Secondary+School+Ntungamo+Uganda",

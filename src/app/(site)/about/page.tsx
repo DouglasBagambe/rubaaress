@@ -1,7 +1,15 @@
+import type { Metadata } from "next";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
 import { Section, SectionHeading } from "@/components/section";
 import { pageIntros } from "@/lib/site-data";
 import { getCurrentEnrolment, getSiteSettings } from "@/sanity/content";
+
+export const metadata: Metadata = {
+  title: { absolute: "About Rubaare Secondary School | Ntungamo, Uganda" },
+  description:
+    "Learn about Rubaare Secondary School (Rubaare SS), a mixed day and boarding school in Ntungamo District, including its mission, vision, leadership and student enrolment.",
+  alternates: { canonical: "/about" },
+};
 
 function formatNumber(value: number) {
   return value.toLocaleString("en-US");

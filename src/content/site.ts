@@ -29,8 +29,11 @@ export const officialSchoolProfile: OfficialSchoolProfile = {
     location: "Rubaare, Ntungamo District, Uganda",
     mapsUrl: "https://www.google.com/maps/search/?api=1&query=Rubaare+Secondary+School+Ntungamo+Uganda",
     mapEmbedSrc: "https://www.google.com/maps?q=Rubaare%20Secondary%20School%20Ntungamo%20Uganda&output=embed",
-    phoneDisplay: "0772 923571",
+    phoneDisplay: "0772 923 571",
     phoneHref: "tel:+256772923571",
     postalAddress: "P.O. Box 65, Ntungamo",
+    email: "rubaaress2012@gmail.com",
   },
 };
+
+export const canonicalSiteUrl = "https://rubaaress.sc.ug";

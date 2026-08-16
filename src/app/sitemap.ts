@@ -1,7 +1,6 @@
 import type { MetadataRoute } from "next";
+import { canonicalSiteUrl } from "@/content/site";
 import { getGalleryIndex, getNewsArticles } from "@/sanity/content";
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rubaaress.vercel.app";
 
 const staticRoutes = [
   "/",
@@ -46,9 +45,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   return [...staticRoutes, ...dynamicRoutes].map((route) => ({
-    url: `${baseUrl}${route}`,
-    lastModified: new Date(),
-    changeFrequency: route === "/" ? "weekly" : "monthly",
-    priority: route === "/" ? 1 : 0.7,
+    url: `${canonicalSiteUrl}${route}`,
   }));
 }

@@ -1,6 +1,5 @@
 import type { MetadataRoute } from "next";
-
-const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://rubaaress.vercel.app";
+import { canonicalSiteUrl } from "@/content/site";
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -9,6 +8,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/studio", "/api", "/search?*", "/*?media=*"],
     },
-    sitemap: `${baseUrl}/sitemap.xml`,
+    sitemap: `${canonicalSiteUrl}/sitemap.xml`,
   };
 }

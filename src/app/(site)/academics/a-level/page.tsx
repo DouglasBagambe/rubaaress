@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
 import { academicPathways, pageIntros } from "@/lib/site-data";
 import { getAcademicContent } from "@/sanity/content";
+
+export const metadata: Metadata = {
+  title: "A-Level",
+  description:
+    "Learn about A-Level education and academic pathways at Rubaare Secondary School in Rubaare, Ntungamo District, Uganda.",
+  alternates: { canonical: "/academics/a-level" },
+};
 
 export default async function ALevelPage() {
   const academicContent = await getAcademicContent();

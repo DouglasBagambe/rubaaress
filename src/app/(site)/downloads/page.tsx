@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { InteriorHero, ListingSection } from "@/components/interior-page";
 import { pageIntros } from "@/lib/site-data";
 import { getDownloads } from "@/sanity/content";
+
+export const metadata: Metadata = {
+  title: "Downloads",
+  description:
+    "Access official Rubaare Secondary School forms, circulars, calendars and other published school documents.",
+  alternates: { canonical: "/downloads" },
+};
 
 export default async function DownloadsPage() {
   const downloads = await getDownloads();

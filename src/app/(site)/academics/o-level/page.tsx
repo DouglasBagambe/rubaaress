@@ -1,6 +1,14 @@
+import type { Metadata } from "next";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
 import { academicPathways, pageIntros } from "@/lib/site-data";
 import { getAcademicContent } from "@/sanity/content";
+
+export const metadata: Metadata = {
+  title: "O-Level",
+  description:
+    "Learn about O-Level education and subject pathways at Rubaare Secondary School in Rubaare, Ntungamo District, Uganda.",
+  alternates: { canonical: "/academics/o-level" },
+};
 
 export default async function OLevelPage() {
   const academicContent = await getAcademicContent();

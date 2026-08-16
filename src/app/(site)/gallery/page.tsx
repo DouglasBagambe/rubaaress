@@ -1,9 +1,17 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import { InteriorHero } from "@/components/interior-page";
 import { Section, SectionHeading } from "@/components/section";
 import { pageIntros } from "@/lib/site-data";
 import { getGalleryIndex } from "@/sanity/content";
 import Link from "next/link";
+
+export const metadata: Metadata = {
+  title: "Gallery",
+  description:
+    "Explore official photos and videos of academics, campus activities, sports and student life at Rubaare Secondary School.",
+  alternates: { canonical: "/gallery" },
+};
 
 type GalleryPageProps = {
   searchParams: Promise<{ category?: string; year?: string; type?: string; search?: string }>;

@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
 import { LocationSection } from "@/components/location-section";
@@ -5,6 +6,13 @@ import { PublicForm } from "@/components/public-form";
 import { Section, SectionHeading } from "@/components/section";
 import { pageIntros } from "@/lib/site-data";
 import { getSiteSettings } from "@/sanity/content";
+
+export const metadata: Metadata = {
+  title: "Contact",
+  description:
+    "Contact Rubaare Secondary School in Rubaare, Ntungamo District, Uganda by phone or email, and find official location and postal details.",
+  alternates: { canonical: "/contact" },
+};
 
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2";

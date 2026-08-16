@@ -1,5 +1,6 @@
 import { Footer } from "@/components/footer";
 import { Header } from "@/components/header";
+import { canonicalSiteUrl, officialSchoolProfile } from "@/content/site";
 import { getSiteSettings } from "@/sanity/content";
 
 export default async function PublicSiteLayout({
@@ -11,16 +12,17 @@ export default async function PublicSiteLayout({
   const schoolJsonLd = {
     "@context": "https://schema.org",
     "@type": "School",
-    name: settings.schoolName,
-    alternateName: settings.shortSchoolName,
-    slogan: settings.motto,
-    url: process.env.NEXT_PUBLIC_SITE_URL || "https://rubaaress.vercel.app",
+    name: officialSchoolProfile.schoolName,
+    alternateName: officialSchoolProfile.shortName,
+    slogan: officialSchoolProfile.motto,
+    url: canonicalSiteUrl,
     logo: settings.badge.src,
-    telephone: settings.primaryTelephone,
-    email: settings.email,
+    telephone: "+256772923571",
+    email: officialSchoolProfile.contact.email,
     address: {
       "@type": "PostalAddress",
-      streetAddress: settings.physicalLocation,
+      addressLocality: "Rubaare",
+      addressRegion: "Ntungamo District",
       postOfficeBoxNumber: settings.postalAddress,
       addressCountry: "UG",
     },
