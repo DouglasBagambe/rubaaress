@@ -59,7 +59,18 @@ export function Footer({ settings }: { settings: ResolvedSiteSettings }) {
       <div className="border-t border-white/15">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 text-xs text-blue-100 md:flex-row md:items-center md:justify-between md:px-6 lg:px-8">
           <p>{settings.copyrightText}</p>
-          <div className="flex gap-4">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <p className="text-blue-200/80">
+              Built by{" "}
+              <a
+                href="https://nilebitlabs.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="underline decoration-white/25 underline-offset-4 transition-colors hover:text-white hover:decoration-[var(--school-gold)] focus-visible:rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--school-blue-dark)]"
+              >
+                NileBit Labs
+              </a>
+            </p>
             <Link href="/privacy" className="hover:text-white">Privacy</Link>
             <Link href="/accessibility" className="hover:text-white">Accessibility</Link>
           </div>
