@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 import { InteriorHero } from "@/components/interior-page";
 import { MasterPlanLightbox } from "@/components/master-plan-lightbox";
@@ -8,6 +9,12 @@ import { getMasterPlan } from "@/sanity/content";
 
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2";
+
+export const metadata: Metadata = {
+  title: "School Master Plan",
+  description: "Proposed facilities and long-term campus development plans for Rubaare Secondary School.",
+  alternates: { canonical: "/about/master-plan" },
+};
 
 export default async function MasterPlanPage() {
   const masterPlan = await getMasterPlan();
@@ -38,6 +45,14 @@ export default async function MasterPlanPage() {
           </div>
           <TemporaryImage image={overviewImage} className="aspect-[16/11]" imgClassName="object-contain bg-white" priority />
         </div>
+      </Section>
+
+      <Section className="bg-[var(--school-cream)]">
+        <SectionHeading
+          eyebrow="Current Development Status"
+          title="Completed work and construction in progress."
+          description="The water project and Junior Staff Quarters I are complete. A three-storeyed girls' dormitory is under construction after its launch on 11 August 2026. The renders below remain proposed master-plan concepts unless explicitly identified otherwise."
+        />
       </Section>
 
       <Section className="bg-white">

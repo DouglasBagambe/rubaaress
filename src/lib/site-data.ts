@@ -2,6 +2,7 @@ import { enrolmentTotals } from "@/content/enrolment";
 import { galleryAlbums, masterPlanItems, schoolMedia } from "@/content/media";
 import { navigation } from "@/content/navigation";
 import { officialSchoolProfile } from "@/content/site";
+import { termThreeAnnouncement, termThreeEvents, termTwoClosingUpdate } from "@/content/school-updates";
 import { publicDownloads } from "@/content/verified-school-content";
 
 export type VerificationStatus = "verified" | "school-confirmation-required";
@@ -45,6 +46,9 @@ export type NewsItem = {
   author: string;
   featured: boolean;
   verificationStatus: VerificationStatus;
+  circularHref?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 };
 
 export type EventItem = {
@@ -53,7 +57,7 @@ export type EventItem = {
   description: string;
   startDate?: string;
   endDate?: string;
-  venue: string;
+  venue?: string;
   category: string;
   image: ImageAsset;
   featured: boolean;
@@ -215,7 +219,7 @@ export const quickAccessLinks: ReadonlyArray<QuickLink> = [
   { label: "Admissions", href: "/admissions", description: "How to apply and prepare documents." },
   { label: "Academics", href: "/academics", description: "O-Level, A-Level and departments." },
   { label: "Academic Results", href: "/academics/performance", description: "View verified UCE and UACE results." },
-  { label: "Downloads", href: "/downloads", description: "Forms, notices and documents." },
+  { label: "Downloads", href: "/downloads", description: "Forms, fees, circulars and documents." },
 ];
 
 export const academicPathways: ReadonlyArray<Pathway> = [
@@ -246,9 +250,29 @@ export const schoolStats: ReadonlyArray<Stat> = [
   { label: "Day Scholars", value: enrolmentTotals.totalDay.toLocaleString("en-US"), note: "Day students", verificationStatus: "verified" },
 ];
 
-export const latestNews: ReadonlyArray<NewsItem> = [];
+export const latestNews: ReadonlyArray<NewsItem> = [
+  {
+    ...termTwoClosingUpdate,
+    featuredImage: {
+      src: "/images/school/campus/rubaare-campus-aerial-poster.webp",
+      alt: "Aerial view of Rubaare Secondary School in Ntungamo District, Uganda.",
+      width: 1920,
+      height: 1080,
+      credit: "Official Rubaare Secondary School content",
+      verificationStatus: "verified",
+    },
+    verificationStatus: "verified",
+  },
+];
 
-export const upcomingEvents: ReadonlyArray<EventItem> = [];
+export const currentAnnouncements = [termThreeAnnouncement] as const;
+
+export const upcomingEvents: ReadonlyArray<EventItem> = termThreeEvents.map((event) => ({
+  ...event,
+  image: images.heroCampus,
+  featured: event.slug === "beginning-of-term-iii-2026",
+  verificationStatus: "verified",
+}));
 
 export const schoolLife: ReadonlyArray<SchoolLifeItem> = [
   { title: "Sports", href: "/school-life#sports", summary: "Official school photography records students participating in sports and team activities.", image: images.sports },
@@ -261,7 +285,7 @@ export const downloads: ReadonlyArray<DownloadItem> = publicDownloads.map((item)
   category: item.category,
   fileType: "PDF",
   fileSize: item.size,
-  publicationDate: "2026",
+  publicationDate: item.publicationDate ?? "2026",
   description: item.description,
   fileUrl: item.href,
 }));
@@ -302,7 +326,7 @@ export const pageIntros: Record<string, PageIntro> = {
   news: {
     eyebrow: "News",
     title: "School announcements and community stories.",
-    description: "Official school news will be published here.",
+    description: "Official school news and verified updates are published here.",
     image: images.heroCampus,
   },
   events: {

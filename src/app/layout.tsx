@@ -5,6 +5,12 @@ import "./globals.css";
 
 const description =
   "Rubaare Secondary School is a mixed day and boarding secondary school in Rubaare, Ntungamo District, Uganda, offering O-Level and A-Level education. Rise and Shine.";
+const socialImage = {
+  url: "/images/school/campus/rubaare-campus-aerial-poster.webp",
+  width: 1920,
+  height: 1080,
+  alt: "Aerial view of Rubaare Secondary School in Ntungamo District, Uganda.",
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL(canonicalSiteUrl),
@@ -23,24 +29,17 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Rubaare Secondary School | Ntungamo, Uganda",
     description,
-    url: canonicalSiteUrl,
+    url: `${canonicalSiteUrl}/`,
     siteName: "Rubaare Secondary School",
     type: "website",
     locale: "en_UG",
-    images: [
-      {
-        url: schoolMedia.badge.src,
-        width: schoolMedia.badge.width,
-        height: schoolMedia.badge.height,
-        alt: schoolMedia.badge.alt,
-      },
-    ],
+    images: [socialImage],
   },
   twitter: {
     card: "summary_large_image",
     title: "Rubaare Secondary School | Ntungamo, Uganda",
     description,
-    images: [schoolMedia.badge.src],
+    images: [socialImage],
   },
   robots: {
     index: true,

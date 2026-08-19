@@ -19,6 +19,7 @@ export async function generateMetadata({ params }: GalleryAlbumPageProps) {
   return {
     title: detail.album.seoTitle ?? `${detail.album.title} | Rubaare Secondary School Gallery`,
     description: detail.album.seoDescription ?? detail.album.shortDescription,
+    alternates: { canonical: `/gallery/${detail.album.slug}` },
     openGraph: {
       title: detail.album.seoTitle ?? detail.album.title,
       description: detail.album.seoDescription ?? detail.album.shortDescription,

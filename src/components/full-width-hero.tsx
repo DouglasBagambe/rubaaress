@@ -5,6 +5,13 @@ import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
 import type { HeroSlide } from "@/lib/site-data";
 
+type NetworkInformation = {
+  saveData?: boolean;
+  effectiveType?: string;
+  addEventListener?: (type: "change", listener: () => void) => void;
+  removeEventListener?: (type: "change", listener: () => void) => void;
+};
+
 const focusClass =
   "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2 focus-visible:ring-offset-[var(--school-blue-dark)]";
 
@@ -15,10 +22,18 @@ export function FullWidthHero({ slides }: { slides: ReadonlyArray<HeroSlide> }) 
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(prefers-reduced-motion: no-preference) and (min-width: 640px)");
-    const updateVideoPreference = () => setShowVideo(mediaQuery.matches);
+    const connection = (navigator as Navigator & { connection?: NetworkInformation }).connection;
+    const updateVideoPreference = () => {
+      const slowConnection = connection?.effectiveType === "slow-2g" || connection?.effectiveType === "2g";
+      setShowVideo(mediaQuery.matches && connection?.saveData !== true && !slowConnection);
+    };
     updateVideoPreference();
     mediaQuery.addEventListener("change", updateVideoPreference);
-    return () => mediaQuery.removeEventListener("change", updateVideoPreference);
+    connection?.addEventListener?.("change", updateVideoPreference);
+    return () => {
+      mediaQuery.removeEventListener("change", updateVideoPreference);
+      connection?.removeEventListener?.("change", updateVideoPreference);
+    };
   }, []);
 
   const activeSlide = slides[0];
@@ -43,7 +58,7 @@ export function FullWidthHero({ slides }: { slides: ReadonlyArray<HeroSlide> }) 
     >
       <Image
         src="/images/school/campus/rubaare-campus-aerial-poster.webp"
-        alt="Aerial view of the Rubaare Secondary School campus and surrounding landscape."
+        alt="Aerial view of Rubaare Secondary School in Ntungamo District, Uganda."
         fill
         priority
         sizes="100vw"

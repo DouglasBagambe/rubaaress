@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   alternates: { canonical: "/downloads" },
 };
 
-const categoryOrder = ["Admission Packs", "Admissions", "Fees & Requirements", "Policies & Forms", "Academic Results"] as const;
+const categoryOrder = ["School Circulars", "Admission Packs", "Admissions", "Fees & Requirements", "Policies & Forms", "Academic Results"] as const;
 
 export default function DownloadsPage() {
   return (
@@ -27,7 +27,7 @@ export default function DownloadsPage() {
             <div className="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
               {documents.map((document) => (
                 <article key={document.href} className="border border-[var(--school-border)] bg-white p-6 shadow-sm">
-                  <p className="text-sm font-semibold text-[var(--school-gold)]">PDF · {document.size}</p>
+                  <p className="text-sm font-semibold text-[var(--school-gold)]">PDF · {document.size} · {document.publicationDate ?? "2026"}</p>
                   <h2 className="mt-3 font-serif text-2xl font-semibold text-[var(--school-blue-dark)]">{document.title}</h2>
                   <p className="mt-3 text-sm leading-6 text-[var(--school-muted)]">{document.description}</p>
                   <PdfActions href={document.href} title={document.title} />

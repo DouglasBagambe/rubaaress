@@ -18,6 +18,6 @@ export async function POST(request: Request) {
     const mode = await sendPublicForm(validation.cleaned);
     return NextResponse.json({ ok: true, mode });
   } catch {
-    return NextResponse.json({ ok: false, errors: { form: "The message could not be sent because email delivery is not configured." } }, { status: 503 });
+    return NextResponse.json({ ok: false, errors: { form: "Your message could not be sent right now. Please try again or contact the school by phone or email." } }, { status: 503 });
   }
 }

@@ -18,7 +18,7 @@ export default async function NewsPage() {
         emptyMessage="No current news has been published."
         items={latestNews.map((item) => ({
           title: item.title,
-          meta: item.publishedAt ? `${item.category} · ${item.publishedAt}` : item.category,
+          meta: item.publishedAt ? `${item.category} · ${new Intl.DateTimeFormat("en-UG", { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Kampala" }).format(new Date(item.publishedAt))}` : item.category,
           summary: item.excerpt,
           href: `/news/${item.slug}`,
         }))}

@@ -8,18 +8,18 @@ const IMAGE_PROJECTION = `{
 }`;
 
 export const NEWS_ARTICLES_QUERY = defineQuery(`*[_type == "newsArticle" && defined(slug.current) && defined(title)] | order(coalesce(publishedAt, _createdAt) desc) {
-  _id, title, "slug": slug.current, excerpt, category, author, publishedAt, featured,
+  _id, title, "slug": slug.current, excerpt, category, author, publishedAt, featured, seoTitle, seoDescription,
   "featuredImage": featuredImage ${IMAGE_PROJECTION}
 }`);
 
 export const NEWS_ARTICLE_BY_SLUG_QUERY = defineQuery(`*[_type == "newsArticle" && slug.current == $slug][0] {
-  _id, title, "slug": slug.current, excerpt, category, author, publishedAt, featured,
+  _id, title, "slug": slug.current, excerpt, category, author, publishedAt, featured, seoTitle, seoDescription,
   "featuredImage": featuredImage ${IMAGE_PROJECTION},
   "plainBody": pt::text(body)
 }`);
 
-export const EVENTS_QUERY = defineQuery(`*[_type == "event" && defined(title)] | order(startDateTime asc) {
-  _id, title, "slug": slug.current, summary, "plainDescription": pt::text(description), startDateTime, endDateTime, venue, category, eventStatus,
+export const EVENTS_QUERY = defineQuery(`*[_type == "event" && defined(title)] | order(coalesce(startDate, startDateTime) asc) {
+  _id, title, "slug": slug.current, summary, "plainDescription": pt::text(description), "startDateTime": coalesce(startDate, startDateTime), "endDateTime": coalesce(endDate, endDateTime), venue, category, eventStatus,
   "image": image ${IMAGE_PROJECTION}
 }`);
 
@@ -84,6 +84,8 @@ export type NewsArticleQueryItem = {
   featured?: boolean;
   featuredImage?: SanityImageResult;
   plainBody?: string;
+  seoTitle?: string;
+  seoDescription?: string;
 };
 
 export type EventQueryItem = {

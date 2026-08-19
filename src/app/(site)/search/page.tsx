@@ -3,7 +3,7 @@ import Link from "next/link";
 import { InteriorHero } from "@/components/interior-page";
 import { Section, SectionHeading } from "@/components/section";
 import { pageIntros } from "@/lib/site-data";
-import { filterSearchResults, normaliseQuery, type SearchResult } from "@/lib/search";
+import { corePageSearchResults, filterSearchResults, normaliseQuery, type SearchResult } from "@/lib/search";
 import { getAcademicContent, getAnnouncements, getDownloads, getEvents, getFacilities, getGalleryIndex, getNewsArticles, getSchoolLifeActivities } from "@/sanity/content";
 
 export const metadata: Metadata = {
@@ -29,7 +29,8 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
     getFacilities(),
   ]);
   const sourceResults: SearchResult[] = [
-    ...news.map((item) => ({ title: item.title, type: "News", excerpt: item.excerpt, href: `/news/${item.slug}` })),
+    ...corePageSearchResults,
+    ...news.map((item) => ({ title: item.title, type: "News", excerpt: item.excerpt, href: `/news/${item.slug}`, keywords: item.circularHref ? "term iii term 3 circular 18 august school fees career day visiting day" : undefined })),
     ...events.upcoming.map((item) => ({ title: item.title, type: "Event", excerpt: item.description, href: "/events" })),
     ...announcements.map((item) => ({ title: item.title, type: "Announcement", excerpt: item.message, href: "/announcements" })),
     ...downloads.map((item) => {

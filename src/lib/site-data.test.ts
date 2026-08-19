@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import test from "node:test";
 import {
   academicPathways,
@@ -20,10 +21,13 @@ import {
 import { calculateEnrolment } from "./enrolment";
 import { countMedia, filterGalleryAlbums, paginateGalleryMedia, sortGalleryMedia, validateExternalVideoUrl } from "./gallery";
 import { checkRateLimit, sendPublicForm, validatePublicForm, type PublicFormInput } from "./forms";
-import { filterSearchResults, normaliseQuery } from "./search";
-import { resolveAnnouncements, resolveDownloads, resolveEnrolment, resolveEvents, resolveGalleryIndex, resolveHomepage, resolveMasterPlan, resolveSiteSettings } from "@/sanity/content";
+import { corePageSearchResults, filterSearchResults, normaliseQuery } from "./search";
+import { resolveAnnouncements, resolveDownloads, resolveEnrolment, resolveEvents, resolveGalleryIndex, resolveHomepage, resolveMasterPlan, resolveNewsArticles, resolveSiteSettings } from "@/sanity/content";
 import type { ResolvedGalleryAlbum, ResolvedGalleryMedia } from "@/sanity/types";
 import { publicDownloads, verifiedEnrolment } from "@/content/verified-school-content";
+import { canonicalSiteUrl, websiteStructuredData } from "@/content/site";
+import { termThreeEvents, termTwoClosingUpdate } from "@/content/school-updates";
+import { staticRoutes } from "@/app/sitemap";
 
 function restoreEnv(name: string, value: string | undefined): void {
   if (value === undefined) {
@@ -39,7 +43,7 @@ test("navigation exposes grouped primary items", () => {
     "About",
     "Academics",
     "Admissions",
-    "Student Life",
+    "School Life",
   ]);
 });
 
@@ -56,7 +60,7 @@ test("content datasets remain CMS-ready and structured", () => {
   assert.equal(utilityLinks.length, 4);
   assert.equal(heroSlides.length, 3);
   assert.equal(academicPathways.length, 2);
-  assert.equal(upcomingEvents.length, 0);
+  assert.equal(upcomingEvents.length, 9);
   assert.ok(masterPlanItems.length >= 6);
   assert.ok(galleryAlbums.every((album) => album.slug && album.coverImage && album.images.length > 0));
   assert.ok(schoolStats.every((stat) => stat.verificationStatus));
@@ -108,8 +112,8 @@ test("verified enrolment keeps the official headline and source tables distinct"
   assert.equal(enrolmentRows.every((row) => row.femaleDay + row.femaleBoarding + row.maleDay + row.maleBoarding === row.total), true);
 });
 
-test("the approved public download library contains twelve local PDFs", () => {
-  assert.equal(publicDownloads.length, 12);
+test("the approved public download library contains thirteen local PDFs", () => {
+  assert.equal(publicDownloads.length, 13);
   assert.ok(publicDownloads.every((item) => item.href.startsWith("/downloads/") && item.href.endsWith(".pdf")));
 });
 
@@ -270,8 +274,40 @@ test("event resolver classifies upcoming and past events by date", () => {
     new Date("2026-08-01T00:00:00Z"),
   );
 
-  assert.deepEqual(events.upcoming.map((event) => event.title), ["Future"]);
-  assert.deepEqual(events.past.map((event) => event.title), ["Past"]);
+  assert.ok(events.upcoming.some((event) => event.title === "Future"));
+  assert.ok(events.past.some((event) => event.title === "Past"));
+});
+
+test("event resolver excludes undated and cancelled entries without inventing venues", () => {
+  const events = resolveEvents(
+    [
+      { _id: "undated", title: "Undated", eventStatus: "scheduled" },
+      { _id: "cancelled", title: "Cancelled", startDateTime: "2026-12-01", eventStatus: "cancelled" },
+      { _id: "future", title: "Future", slug: "future", startDateTime: "2026-12-02", eventStatus: "scheduled" },
+    ],
+    new Date("2026-08-19T00:00:00Z"),
+  );
+
+  assert.ok(!events.upcoming.some((event) => event.title === "Undated"));
+  assert.ok(!events.upcoming.some((event) => event.title === "Cancelled"));
+  assert.ok(events.upcoming.some((event) => event.title === "Future"));
+  assert.equal(events.upcoming.find((event) => event.title === "Future")?.venue, undefined);
+});
+
+test("verified Term III events contain dates and exclude unconfirmed programme items", () => {
+  assert.ok(termThreeEvents.every((event) => event.startDate));
+  assert.ok(!termThreeEvents.some((event) => /farewell|dedication/i.test(event.title)));
+});
+
+test("news resolver uses full article bodies and filters process content", () => {
+  const articles = resolveNewsArticles([
+    { _id: "real", title: "Real school update", slug: "real-school-update", excerpt: "Short list excerpt.", plainBody: "Complete verified article body.", publishedAt: "2026-08-18T12:00:00+03:00" },
+    { _id: "process", title: "Website team migration", slug: "process", excerpt: "Prepared for confirmation." },
+  ]);
+
+  assert.equal(articles.find((article) => article.slug === "real-school-update")?.content, "Complete verified article body.");
+  assert.ok(!articles.some((article) => article.slug === "process"));
+  assert.ok(articles.some((article) => article.slug === termTwoClosingUpdate.slug));
 });
 
 test("announcement and download resolvers keep clean public shapes", () => {
@@ -302,6 +338,30 @@ test("search normalises queries and filters public results", () => {
 
   assert.equal(normaliseQuery("  admissions   forms "), "admissions forms");
   assert.deepEqual(results.map((item) => item.href), ["/gallery/sports-day"]);
+});
+
+test("site search covers core pages and the Term III circular", () => {
+  assert.ok(filterSearchResults(corePageSearchResults, "headteacher").some((item) => item.href === "/about/headteacher"));
+  assert.ok(filterSearchResults(corePageSearchResults, "term 3").some((item) => item.href === "/admissions/fees-and-documents"));
+  assert.ok(filterSearchResults(corePageSearchResults, "visiting day").some((item) => item.href === "/events"));
+});
+
+test("homepage site-name data uses the HTTPS apex and preferred school name", () => {
+  assert.equal(canonicalSiteUrl, "https://rubaaress.sc.ug");
+  assert.equal(websiteStructuredData.name, "Rubaare Secondary School");
+  assert.equal(websiteStructuredData.url, "https://rubaaress.sc.ug/");
+  assert.deepEqual(websiteStructuredData.alternateName, ["Rubaare SS", "rubaaress.sc.ug"]);
+});
+
+test("homepage source places the Headteacher section before the Master Plan section", () => {
+  const homepageSource = readFileSync(new URL("../app/(site)/page.tsx", import.meta.url), "utf8");
+  assert.ok(homepageSource.indexOf("homepage.headteacher.eyebrow") < homepageSource.indexOf("homepage.masterPlanPreview.eyebrow"));
+});
+
+test("sitemap static routes exclude private, search and redirect-only paths", () => {
+  assert.ok(!staticRoutes.some((route) => route.startsWith("/studio") || route.startsWith("/api") || route.startsWith("/search")));
+  assert.ok(!staticRoutes.includes("/school-calendar"));
+  assert.ok(!staticRoutes.includes("/academics/results"));
 });
 
 test("public form validation rejects spam and accepts clean contact input", () => {
@@ -364,7 +424,7 @@ test("public form sender rejects unsupported configured providers", async () => 
   const originalFrom = process.env.FORM_FROM_EMAIL;
   const originalKey = process.env.RESEND_API_KEY;
   process.env.FORM_EMAIL_PROVIDER = "smtp";
-  process.env.FORM_TO_EMAIL = "nilebitlabs@gmail.com";
+  process.env.FORM_TO_EMAIL = "rubaaress2012@gmail.com";
   process.env.FORM_FROM_EMAIL = "Rubaare SS Website <onboarding@resend.dev>";
   process.env.RESEND_API_KEY = "test_key";
 

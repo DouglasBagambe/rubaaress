@@ -43,7 +43,7 @@ export const navigation: ReadonlyArray<NavigationItem> = [
         items: [
           { label: "Overview", href: "/about" },
           { label: "School History", href: "/about/history" },
-          { label: "Mission, Vision & Values", href: "/about/mission-vision" },
+          { label: "Mission & Vision", href: "/about/mission-vision" },
           { label: "Headteacher", href: "/about/headteacher" },
         ],
       },
@@ -115,16 +115,16 @@ export const navigation: ReadonlyArray<NavigationItem> = [
     ],
   },
   {
-    label: "Student Life",
+    label: "School Life",
     href: "/school-life",
     type: "mega",
     groups: [
       {
-        heading: "Student Experience",
+        heading: "School Experience",
         items: [
-          { label: "Student Life Overview", href: "/school-life" },
+          { label: "School Life Overview", href: "/school-life" },
           { label: "Sports", href: "/school-life#sports" },
-          { label: "Student Life", href: "/school-life#student-life" },
+          { label: "Day and Boarding Life", href: "/school-life#student-life" },
           { label: "Spiritual Life", href: "/school-life#spiritual-life" },
         ],
       },

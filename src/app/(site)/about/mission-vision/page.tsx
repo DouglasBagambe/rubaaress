@@ -1,5 +1,12 @@
+import type { Metadata } from "next";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
 import { pageIntros, schoolIdentity } from "@/lib/site-data";
+
+export const metadata: Metadata = {
+  title: "Mission & Vision",
+  description: "The official mission, vision and Rise and Shine motto of Rubaare Secondary School.",
+  alternates: { canonical: "/about/mission-vision" },
+};
 
 export default function MissionVisionPage() {
   return (

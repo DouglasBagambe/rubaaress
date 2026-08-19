@@ -34,6 +34,7 @@ const knownRoutes = [
 const routeValidation = (value?: string) => {
   if (!value) return true;
   if (knownRoutes.includes(value as (typeof knownRoutes)[number])) return true;
+  if (/^\/(news|gallery)\/[a-z0-9-]+$/.test(value)) return true;
   if (value.startsWith("https://") || value.startsWith("mailto:") || value.startsWith("tel:")) return true;
   return "Use an approved website route, HTTPS URL, mailto link, or telephone link.";
 };
@@ -369,8 +370,10 @@ const event = defineType({
     defineField({ name: "slug", title: "Slug", type: "slug", options: { source: "title" }, validation: (rule) => rule.required() }),
     defineField({ name: "summary", title: "Summary", type: "text", rows: 3 }),
     defineField({ name: "description", title: "Description", type: "richText" }),
-    defineField({ name: "startDateTime", title: "Start date and time", type: "datetime", validation: (rule) => rule.required() }),
-    defineField({ name: "endDateTime", title: "End date and time", type: "datetime" }),
+    defineField({ name: "startDate", title: "Start date", type: "date", description: "Use this for events where only the date is confirmed." }),
+    defineField({ name: "endDate", title: "End date", type: "date", description: "Use this for a confirmed multi-day date range." }),
+    defineField({ name: "startDateTime", title: "Start date and time (only when confirmed)", type: "datetime", description: "Leave empty unless the official source gives an exact time." }),
+    defineField({ name: "endDateTime", title: "End date and time (only when confirmed)", type: "datetime", description: "Leave empty unless the official source gives an exact end time." }),
     defineField({ name: "venue", title: "Venue", type: "string" }),
     imageField("image", "Image"),
     defineField({ name: "category", title: "Category", type: "string" }),

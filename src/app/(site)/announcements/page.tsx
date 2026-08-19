@@ -10,11 +10,11 @@ export default async function AnnouncementsPage() {
 
   return (
     <>
-      <InteriorHero intro={{ ...pageIntros.news, eyebrow: "Announcements", title: "School announcements." }} breadcrumbs={[{ label: "Announcements", href: "/announcements" }]} />
+      <InteriorHero intro={{ ...pageIntros.news, eyebrow: "Announcements", title: "School announcements.", description: "Official school notices and important updates are published here." }} breadcrumbs={[{ label: "Announcements", href: "/announcements" }]} />
       <ListingSection
         eyebrow="Notices"
         title="Current announcements."
-        description="Published announcements appear here until their expiry date passes."
+        description="Official school notices and important updates are published here until their expiry date passes."
         emptyMessage="No announcements have been published."
         items={announcements.map((item) => ({
           title: item.title,

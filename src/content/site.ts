@@ -37,3 +37,12 @@ export const officialSchoolProfile: OfficialSchoolProfile = {
 };
 
 export const canonicalSiteUrl = "https://rubaaress.sc.ug";
+
+export const websiteStructuredData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": `${canonicalSiteUrl}/#website`,
+  url: `${canonicalSiteUrl}/`,
+  name: officialSchoolProfile.schoolName,
+  alternateName: [officialSchoolProfile.shortName, "rubaaress.sc.ug"],
+} as const;

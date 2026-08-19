@@ -2,6 +2,7 @@ import { calculateEnrolment, type EnrolmentInputRow } from "@/lib/enrolment";
 import {
   academicPathways,
   coreValues,
+  currentAnnouncements,
   downloads as localDownloads,
   enrolmentReportingDate,
   enrolmentRows,
@@ -275,48 +276,61 @@ export function resolveGalleryAlbumDetail(
 
 export function resolveNewsArticles(data: ReadonlyArray<NewsArticleQueryItem> | null) {
   const excludedPhrases = ["prepared for confirmation", "admissions resources moved", "pending confirmation", "school profile information prepared", "website team"];
-  const articles = data
-    ?.map((item, index) => ({
-      title: withFallback(item.title, latestNews[index]?.title ?? "School news"),
-      slug: withFallback(item.slug, latestNews[index]?.slug ?? item._id),
-      excerpt: withFallback(item.excerpt, latestNews[index]?.excerpt ?? "School news update."),
-      category: withFallback(item.category, latestNews[index]?.category ?? "News"),
-      author: withFallback(item.author, latestNews[index]?.author ?? "Rubaare SS"),
+  const remoteArticles = data
+    ?.map((item) => {
+      const fallback = latestNews.find((article) => article.slug === item.slug);
+      return {
+      title: withFallback(item.title, fallback?.title ?? "School news"),
+      slug: withFallback(item.slug, fallback?.slug ?? item._id),
+      excerpt: withFallback(item.excerpt, fallback?.excerpt ?? "School news update."),
+      category: withFallback(item.category, fallback?.category ?? "News"),
+      author: withFallback(item.author, fallback?.author ?? "Rubaare Secondary School"),
       publishedAt: cleanString(item.publishedAt),
       featured: item.featured === true,
-      featuredImage: sanityImageToAsset(item.featuredImage, latestNews[index]?.featuredImage ?? images.heroCampus),
-      content: withFallback(item.plainBody, latestNews[index]?.content ?? item.excerpt ?? ""),
-    }))
+      featuredImage: sanityImageToAsset(item.featuredImage, fallback?.featuredImage ?? images.heroCampus),
+      content: withFallback(item.plainBody, fallback?.content ?? item.excerpt ?? ""),
+      circularHref: fallback?.circularHref,
+      seoTitle: cleanString(item.seoTitle),
+      seoDescription: cleanString(item.seoDescription),
+    };
+    })
     .filter((item) => {
       const text = `${item.title} ${item.excerpt} ${item.content} ${item.author}`.toLowerCase();
       return item.title && item.slug && !excludedPhrases.some((phrase) => text.includes(phrase));
     });
 
-  return articles?.length ? articles : latestNews;
+  const remoteSlugs = new Set(remoteArticles?.map((item) => item.slug) ?? []);
+  return [...(remoteArticles ?? []), ...latestNews.filter((item) => !remoteSlugs.has(item.slug))]
+    .sort((a, b) => (b.publishedAt ?? "").localeCompare(a.publishedAt ?? ""));
 }
 
 export function resolveEvents(data: ReadonlyArray<EventQueryItem> | null, now = new Date()) {
-  const events = data
+  const remoteEvents = data
     ?.map((item, index) => ({
       title: withFallback(item.title, upcomingEvents[index]?.title ?? "School event"),
       slug: cleanString(item.slug),
       description: withFallback(item.summary ?? item.plainDescription, upcomingEvents[index]?.description ?? "School event."),
       startDate: cleanString(item.startDateTime),
       endDate: cleanString(item.endDateTime),
-      venue: withFallback(item.venue, upcomingEvents[index]?.venue ?? "Rubaare Secondary School"),
+      venue: cleanString(item.venue),
       category: withFallback(item.category, upcomingEvents[index]?.category ?? "Event"),
       image: sanityImageToAsset(item.image, upcomingEvents[index]?.image ?? images.heroCampus),
       eventStatus: item.eventStatus ?? "scheduled",
-    }))
-    .filter((item) => item.eventStatus !== "cancelled");
+    }));
 
-  const upcoming = events?.filter((item) => !item.startDate || new Date(item.startDate) >= now) ?? upcomingEvents;
-  const past = events?.filter((item) => item.startDate && new Date(item.startDate) < now) ?? [];
+  const remoteSlugs = new Set(remoteEvents?.map((item) => item.slug).filter(Boolean) ?? []);
+  const events = [
+    ...(remoteEvents ?? []),
+    ...upcomingEvents.filter((item) => !remoteSlugs.has(item.slug)).map((item) => ({ ...item, eventStatus: "scheduled" })),
+  ].filter((item) => item.eventStatus !== "cancelled" && Boolean(item.startDate));
+
+  const upcoming = events.filter((item) => item.startDate && new Date(item.startDate) >= now).sort((a, b) => (a.startDate ?? "").localeCompare(b.startDate ?? ""));
+  const past = events.filter((item) => item.startDate && new Date(item.startDate) < now).sort((a, b) => (b.startDate ?? "").localeCompare(a.startDate ?? ""));
   return { upcoming, past };
 }
 
-export function resolveAnnouncements(data: ReadonlyArray<AnnouncementQueryItem> | null) {
-  return data?.map((item) => ({
+export function resolveAnnouncements(data: ReadonlyArray<AnnouncementQueryItem> | null, now = new Date()) {
+  const remote = data?.map((item) => ({
     title: withFallback(item.title, "School announcement"),
     message: withFallback(item.message, ""),
     type: withFallback(item.type, "general"),
@@ -326,6 +340,14 @@ export function resolveAnnouncements(data: ReadonlyArray<AnnouncementQueryItem> 
     ctaLabel: cleanString(item.ctaLabel),
     ctaLink: cleanString(item.ctaLink),
   })).filter((item) => item.message) ?? [];
+  const remoteTitles = new Set(remote.map((item) => item.title));
+  return [...remote, ...currentAnnouncements.filter((item) => !remoteTitles.has(item.title))]
+    .filter((item) => {
+      const publicationDate = item.publicationDate ? new Date(item.publicationDate) : undefined;
+      const expiryDate = item.expiryDate ? new Date(item.expiryDate) : undefined;
+      return (!publicationDate || publicationDate <= now) && (!expiryDate || expiryDate >= now);
+    })
+    .sort((a, b) => a.priority - b.priority);
 }
 
 export function resolveDownloads(data: ReadonlyArray<DownloadQueryItem> | null) {
@@ -513,7 +535,7 @@ export function resolveHomepage(data: HomepageQueryResult): ResolvedHomepage {
       message: "Rubaare Secondary School is led by Headteacher Ms. Mpeirwe Monic Atukunda, supported by the senior administration and academic leadership team.",
       ctaLabel: "Meet the Headteacher",
       ctaHref: "/about/headteacher",
-      image: sanityImageToAsset(data?.headteacherPhotograph, images.headteacher),
+      image: images.headteacher,
     },
     academicsIntroduction: withFallback(data?.academicPathwaysIntroduction, "Academic pathways guide learners through lower and advanced secondary study."),
     coreStrengths: coreValues,
@@ -644,8 +666,6 @@ export async function getNewsArticles() {
 }
 
 export async function getNewsArticle(slug: string) {
-  const article = resolveNewsArticles(await safeFetch<ReadonlyArray<NewsArticleQueryItem>>(NEWS_ARTICLES_QUERY)).find((item) => item.slug === slug);
-  if (article) return article;
   const single = await safeFetch<NewsArticleQueryItem | null>(NEWS_ARTICLE_BY_SLUG_QUERY, { slug });
   return resolveNewsArticles(single ? [single] : null).find((item) => item.slug === slug);
 }

@@ -18,17 +18,28 @@ export function PublicForm({ kind }: PublicFormProps) {
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    const form = event.currentTarget;
     setStatus("loading");
     setMessage("");
-    const response = await fetch("/api/contact", { method: "POST", body: new FormData(event.currentTarget) });
-    const payload = await response.json() as { ok: boolean; errors?: Record<string, string>; mode?: string };
-    if (payload.ok) {
+    try {
+      const response = await fetch("/api/contact", { method: "POST", body: new FormData(form) });
+      const payload: unknown = await response.json();
+      if (!payload || typeof payload !== "object" || !("ok" in payload) || typeof payload.ok !== "boolean") {
+        throw new Error("Malformed response");
+      }
+      const result = payload as { ok: boolean; errors?: Record<string, string>; mode?: string };
+      if (!response.ok || !result.ok) {
+        setStatus("error");
+        setMessage(Object.values(result.errors ?? {})[0] ?? "Your message could not be sent right now. Please try again or contact the school by phone or email.");
+        return;
+      }
+
       setStatus("success");
-      setMessage(payload.mode === "logged" ? "Your message was checked successfully. Email delivery still needs provider setup before production launch." : "Your message has been sent.");
-      event.currentTarget.reset();
-    } else {
+      setMessage(result.mode === "logged" ? "Your message was checked successfully." : "Your message has been sent.");
+      form.reset();
+    } catch {
       setStatus("error");
-      setMessage(Object.values(payload.errors ?? {})[0] ?? "Please check the form and try again.");
+      setMessage("Your message could not be sent right now. Please try again or contact the school by phone or email.");
     }
   }
 
@@ -75,7 +86,7 @@ export function PublicForm({ kind }: PublicFormProps) {
         <input required name="consent" type="checkbox" className="mt-1 h-4 w-4" />
         <span>I agree that the school may use these details to respond to this enquiry.</span>
       </label>
-      <button disabled={status === "loading"} type="submit" className="min-h-12 bg-[var(--school-blue)] px-6 text-sm font-bold text-white disabled:opacity-70">
+      <button disabled={status === "loading"} type="submit" className="min-h-12 bg-[var(--school-blue)] px-6 text-sm font-bold text-white disabled:opacity-70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--school-gold)] focus-visible:ring-offset-2">
         {status === "loading" ? "Sending..." : kind === "admissions" ? "Send Admissions Enquiry" : "Send Message"}
       </button>
       {message ? (

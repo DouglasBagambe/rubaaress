@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { InteriorHero, TextBlockGrid } from "@/components/interior-page";
 import { pageIntros } from "@/lib/site-data";
 
-export const metadata: Metadata = { title: "Accessibility", description: "Accessibility information for the Rubaare Secondary School website." };
+export const metadata: Metadata = { title: "Accessibility", description: "Keyboard, readability and accessibility support on the Rubaare Secondary School website.", alternates: { canonical: "/accessibility" } };
 
 export default function AccessibilityPage() {
   return (

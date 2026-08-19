@@ -4,6 +4,7 @@ import { LocationSection } from "@/components/location-section";
 import { Section, SectionHeading } from "@/components/section";
 import { TemporaryImage } from "@/components/temporary-image";
 import { academicResults } from "@/content/verified-school-content";
+import { websiteStructuredData } from "@/content/site";
 import {
   academicPathways,
   galleryImages,
@@ -17,9 +18,9 @@ const focusClass =
 export default async function Home() {
   const [settings, homepage, enrolment, latestNews, events] = await Promise.all([getSiteSettings(), getHomepage(), getCurrentEnrolment(), getNewsArticles(), getEvents()]);
   const upcomingEvents = events.upcoming;
-
   return (
     <>
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteStructuredData) }} />
       <FullWidthHero slides={homepage.heroSlides} />
 
       <section className="bg-white py-6">
@@ -66,22 +67,6 @@ export default async function Home() {
       </Section>
 
       <Section className="bg-white">
-        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
-          <TemporaryImage image={homepage.masterPlanPreview.image} className="aspect-[16/10]" priority={false} />
-          <div>
-            <SectionHeading
-              eyebrow={homepage.masterPlanPreview.eyebrow}
-              title={homepage.masterPlanPreview.title}
-              description={homepage.masterPlanPreview.description}
-            />
-            <Link href={homepage.masterPlanPreview.ctaHref} className={`mt-7 inline-flex min-h-12 items-center bg-[var(--school-blue)] px-6 text-sm font-bold text-white hover:bg-[var(--school-blue-dark)] ${focusClass}`}>
-              {homepage.masterPlanPreview.ctaLabel}
-            </Link>
-          </div>
-        </div>
-      </Section>
-
-      <Section className="bg-white">
         <div className="grid gap-10 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <TemporaryImage image={homepage.headteacher.image} className="aspect-[3/2]" imgClassName="object-center" sizes="(min-width: 1024px) 44vw, 100vw" />
           <div>
@@ -92,6 +77,22 @@ export default async function Home() {
             />
             <Link href={homepage.headteacher.ctaHref} className={`mt-7 inline-flex min-h-12 items-center bg-[var(--school-blue)] px-6 text-sm font-bold text-white hover:bg-[var(--school-blue-dark)] ${focusClass}`}>
               {homepage.headteacher.ctaLabel}
+            </Link>
+          </div>
+        </div>
+      </Section>
+
+      <Section className="bg-white">
+        <div className="grid gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+          <TemporaryImage image={homepage.masterPlanPreview.image} className="aspect-[16/10]" priority={false} />
+          <div>
+            <SectionHeading
+              eyebrow={homepage.masterPlanPreview.eyebrow}
+              title={homepage.masterPlanPreview.title}
+              description={homepage.masterPlanPreview.description}
+            />
+            <Link href={homepage.masterPlanPreview.ctaHref} className={`mt-7 inline-flex min-h-12 items-center bg-[var(--school-blue)] px-6 text-sm font-bold text-white hover:bg-[var(--school-blue-dark)] ${focusClass}`}>
+              {homepage.masterPlanPreview.ctaLabel}
             </Link>
           </div>
         </div>
@@ -135,8 +136,8 @@ export default async function Home() {
       {latestNews.length || upcomingEvents.length ? (
         <Section className="bg-white">
           <div className={`grid gap-12 ${latestNews.length && upcomingEvents.length ? "lg:grid-cols-2" : "max-w-3xl"}`}>
-            {latestNews.length ? <ContentList title={homepage.latestNewsHeading} items={latestNews.map((item) => ({ title: item.title, href: `/news/${item.slug}`, meta: item.category, summary: item.excerpt }))} href="/news" /> : null}
-            {upcomingEvents.length ? <ContentList title={homepage.eventsHeading} items={upcomingEvents.map((item) => ({ title: item.title, href: "/events", meta: item.category, summary: item.description }))} href="/events" /> : null}
+            {latestNews.length ? <ContentList title={homepage.latestNewsHeading} items={latestNews.slice(0, 3).map((item) => ({ title: item.title, href: `/news/${item.slug}`, meta: item.category, summary: item.excerpt }))} href="/news" /> : null}
+            {upcomingEvents.length ? <ContentList title={homepage.eventsHeading} items={upcomingEvents.slice(0, 3).map((item) => ({ title: item.title, href: "/events", meta: formatEventDate(item.startDate, item.endDate), summary: item.description }))} href="/events" /> : null}
           </div>
         </Section>
       ) : null}
@@ -161,6 +162,9 @@ export default async function Home() {
         <div className="mt-10 grid gap-4 md:grid-cols-3">
           {galleryImages.map((image) => <TemporaryImage key={image.src} image={image} className="aspect-[4/3]" />)}
         </div>
+        <Link href="/gallery" className={`mt-8 inline-flex min-h-12 items-center border border-[var(--school-blue)] px-6 text-sm font-bold text-[var(--school-blue)] hover:bg-[var(--school-blue)] hover:text-white ${focusClass}`}>
+          View Full Gallery
+        </Link>
       </Section>
 
       <section className="bg-[var(--school-blue-dark)] py-16 text-white md:py-20">
@@ -183,6 +187,14 @@ export default async function Home() {
       <LocationSection settings={settings} introduction={homepage.locationIntroduction} />
     </>
   );
+}
+
+function formatEventDate(startDate?: string, endDate?: string) {
+  if (!startDate) return "Confirmed date";
+  const formatter = new Intl.DateTimeFormat("en-UG", { day: "numeric", month: "long", year: "numeric", timeZone: "Africa/Kampala" });
+  const start = formatter.format(new Date(`${startDate.slice(0, 10)}T12:00:00Z`));
+  if (!endDate) return start;
+  return `${start} – ${formatter.format(new Date(`${endDate.slice(0, 10)}T12:00:00Z`))}`;
 }
 
 function ContentList({

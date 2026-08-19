@@ -34,6 +34,7 @@ export function Header({ settings }: { settings: ResolvedSiteSettings }) {
   const searchButtonRef = useRef<HTMLButtonElement | null>(null);
   const searchInputRef = useRef<HTMLInputElement | null>(null);
   const mobileDrawerRef = useRef<HTMLDivElement | null>(null);
+  const mobileMenuButtonRef = useRef<HTMLButtonElement | null>(null);
   const pathname = usePathname();
 
   useEffect(() => {
@@ -54,7 +55,8 @@ export function Header({ settings }: { settings: ResolvedSiteSettings }) {
       setActiveDesktopMenu(null);
       setIsMobileOpen(false);
       setIsSearchOpen(false);
-      searchButtonRef.current?.focus();
+      if (isMobileOpen) mobileMenuButtonRef.current?.focus();
+      else searchButtonRef.current?.focus();
     };
 
     document.addEventListener("mousedown", handlePointerDown);
@@ -108,6 +110,7 @@ export function Header({ settings }: { settings: ResolvedSiteSettings }) {
             Gallery
           </Link>
           <button
+            ref={mobileMenuButtonRef}
             type="button"
             className={`min-h-11 border border-[var(--school-blue)] px-4 text-sm font-bold text-[var(--school-blue)] ${focusClass}`}
             aria-expanded={isMobileOpen}
@@ -241,7 +244,7 @@ function DesktopNavigation({
             <div className="flex items-center">
               <Link
                 href={item.href}
-                aria-current={isActive ? "page" : undefined}
+                aria-current={pathname === item.href ? "page" : undefined}
                 className={`flex min-h-11 items-center whitespace-nowrap border-b-2 px-2 py-2 text-sm font-bold ${
                   isActive
                     ? "border-[var(--school-gold)] text-[var(--school-blue)]"
@@ -433,7 +436,7 @@ function MobileNavigation({
             return (
               <div key={`${item.label}-${item.href}`} className="border-b border-[var(--school-border)] py-2">
                 <div className="flex items-center justify-between gap-3">
-                  <Link href={item.href} className={`block min-h-11 py-2 text-base font-bold ${isActive ? "text-[var(--school-blue)]" : "text-[var(--school-blue-dark)]"} ${focusClass}`} onClick={onClose}>
+                  <Link href={item.href} aria-current={pathname === item.href ? "page" : undefined} className={`block min-h-11 py-2 text-base font-bold ${isActive ? "text-[var(--school-blue)]" : "text-[var(--school-blue-dark)]"} ${focusClass}`} onClick={onClose}>
                     {item.label}
                   </Link>
                   {hasMenu ? (

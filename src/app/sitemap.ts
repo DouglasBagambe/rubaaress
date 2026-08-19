@@ -2,7 +2,7 @@ import type { MetadataRoute } from "next";
 import { canonicalSiteUrl } from "@/content/site";
 import { getGalleryIndex, getNewsArticles } from "@/sanity/content";
 
-const staticRoutes = [
+export const staticRoutes = [
   "/",
   "/about",
   "/about/history",

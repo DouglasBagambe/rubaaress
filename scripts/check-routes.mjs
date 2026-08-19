@@ -26,6 +26,7 @@ const routes = [
   "/school-life/student-leadership",
   "/school-life/spiritual-life",
   "/news",
+  "/news/term-ii-2026-closing-circular-term-iii-programme",
   "/events",
   "/announcements",
   "/gallery",
@@ -34,10 +35,13 @@ const routes = [
   "/school-calendar",
   "/contact",
   "/search?q=admissions",
+  "/search?q=term+iii",
+  "/search?q=headteacher",
   "/privacy",
   "/accessibility",
   "/sitemap.xml",
   "/robots.txt",
+  "/downloads/communication-from-school-18-august-2026.pdf",
   "/studio",
 ];
 

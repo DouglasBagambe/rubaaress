@@ -12,10 +12,11 @@ export default async function PublicSiteLayout({
   const schoolJsonLd = {
     "@context": "https://schema.org",
     "@type": "School",
+    "@id": `${canonicalSiteUrl}/#school`,
     name: officialSchoolProfile.schoolName,
     alternateName: officialSchoolProfile.shortName,
     slogan: officialSchoolProfile.motto,
-    url: canonicalSiteUrl,
+    url: `${canonicalSiteUrl}/`,
     logo: settings.badge.src,
     telephone: "+256772923571",
     email: officialSchoolProfile.contact.email,

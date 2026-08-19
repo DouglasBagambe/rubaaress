@@ -84,8 +84,9 @@ export const fees = {
   },
 } as const;
 
-export type PublicDownload = { title: string; category: string; href: string; description: string; size: string };
+export type PublicDownload = { title: string; category: string; href: string; description: string; size: string; publicationDate?: string };
 export const publicDownloads: ReadonlyArray<PublicDownload> = [
+  { title: "Communication from School — 18 August 2026", category: "School Circulars", href: "/downloads/communication-from-school-18-august-2026.pdf", description: "Official Term II closing communication to parents and guardians, including Term III 2026 programme, school fees, requirements and development updates.", size: "133 KB", publicationDate: "18 August 2026" },
   { title: "O-Level Admission Pack 2026", category: "Admission Packs", href: "/downloads/o-level-admission-pack-2026.pdf", description: "Complete O-Level admission letter, rules, forms, fees and requirements.", size: "185 KB" },
   { title: "A-Level Admission Pack 2026", category: "Admission Packs", href: "/downloads/a-level-admission-pack-2026.pdf", description: "Complete A-Level admission letter, rules, forms, fees and requirements.", size: "170 KB" },
   { title: "O-Level Admission Letter 2026", category: "Admissions", href: "/downloads/o-level-admission-letter-2026.pdf", description: "Official O-Level reporting and admission information.", size: "108 KB" },
